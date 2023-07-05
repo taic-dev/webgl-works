@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import GUI from "lil-gui";
 
 window.addEventListener('DOMContentLoaded', () => {
   const app = new App3();
@@ -91,6 +92,7 @@ class App3 {
     this.radius = 0.1;
     this.isDown;
     this.controls;
+    this.guiValue;
     this.render = this.render.bind(this);
 
     window.addEventListener("keydown",(keyEvent)=>{
@@ -173,11 +175,19 @@ class App3 {
       const { x, y, z } = App3.Coordinate(this.degree, this.radius);
       this.box.position.set(x,y,z);
       this.scene.add(this.box);
-      this.boxArray.push({ box: this.box, degree: this.degree, radius: this.radius});
+      this.boxArray.push({ box: this.box, degree: this.degree, radius: this.radius, material: this.material});
     }
 
     // コントロール
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+
+    const gui = new GUI();
+    this.guiValue = {
+      DodecahedronColor: App3.MAIN_MATERIAL_PARAM.color,
+      BoxColor: App3.MATERIAL_PARAM.color
+    }
+    gui.addColor(this.guiValue, 'DodecahedronColor');
+    gui.addColor(this.guiValue, 'BoxColor');
 
     // ヘルパー
     // const axesBarLength = 5.0;
@@ -201,6 +211,8 @@ class App3 {
       boxInfo.degree += 0.2
       let { x, y, z } = App3.Coordinate(boxInfo.degree, boxInfo.radius);
       boxInfo.box.position.set(x,y,z);
+      // 色の変更
+      boxInfo.material.color.set(this.guiValue.BoxColor);
     });
 
     if(this.isDown) {
@@ -216,6 +228,9 @@ class App3 {
         boxInfo.box.position.set(x,y,z);
       });
     }
+
+    // 色の変更
+    this.mainMaterial.color.set(this.guiValue.DodecahedronColor);
 
     this.renderer.render(this.scene, this.camera);
   }
