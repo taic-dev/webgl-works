@@ -10,7 +10,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: resolve(__dirname, './src/index.html'),
-        lesson01: resolve(__dirname, './src/pages/task01/index.html'),
+        lesson01: resolve(__dirname, './src/task01/index.html'),
       },
     },
   },
