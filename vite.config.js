@@ -5,7 +5,6 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   root: resolve(__dirname, "src"),
   base: "/webgl-shool-task/",
-  pages: resolve(__dirname, 'src', 'pages'),
   build: {
     rollupOptions: {
       input: {
