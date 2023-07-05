@@ -4,6 +4,7 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   root: resolve(__dirname, "src"),
+  pages: resolve(__dirname, 'src', 'pages'),
   build: {
     rollupOptions: {
       input: {
