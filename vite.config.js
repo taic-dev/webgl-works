@@ -3,10 +3,11 @@ import { resolve } from 'path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  root: resolve(__dirname, "src"),
+  root: "src",
   base: "/webgl-shool-task/",
   build: {
-    // outDir: '../dist',
+    outDir: '../dist',
+    emptyOutDir: true,
     rollupOptions: {
       input: {
         index: resolve(__dirname, './src/index.html'),
