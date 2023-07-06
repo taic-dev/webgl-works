@@ -4,7 +4,7 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   root: "src",
-  base: "/webgl-school-task/",
+  // base: "/webgl-school-task/",
   build: {
     outDir: '../dist',
     emptyOutDir: true,
