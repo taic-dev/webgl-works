@@ -7,6 +7,14 @@ canvas {
   z-index: -1;
 }
 
-h1 {
+h2 {
+  margin-left: 15px;
+}
+
+ul {
+  margin-left: 35px;
+}
+
+.wrapper {
   margin: 10px;
 }
