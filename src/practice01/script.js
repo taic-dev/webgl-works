@@ -1,11 +1,24 @@
 import * as THREE from "three";
+import Lenis from "@studio-freight/lenis";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import GUI from "lil-gui";
 
 window.addEventListener("DOMContentLoaded",()=>{
-  const app = new App3;
-  app.init();
-  app.render();
+  const lenis = new Lenis()
+
+  lenis.on('scroll', (e) => {
+    console.log(e)
+  })
+
+  function raf(time) {
+    lenis.raf(time)
+    requestAnimationFrame(raf)
+  }
+
+  requestAnimationFrame(raf)
+    const app = new App3;
+    app.init();
+    app.render();
 });
 
 
@@ -34,7 +47,7 @@ class App3 {
   static get DIRECTIONAL_LIGHT_PARAM() {
     return {
       clearColor: 0xffffff,
-      intensity: 1.0,
+      intensity: 1.3,
       x: 0,
       y: 1.0,
       z: 1.0,
@@ -50,6 +63,7 @@ class App3 {
 
   static get MATERIAL_PARAM() {
     return {
+      color: 0xffffff,
       map: new THREE.TextureLoader().load("./img/card.png"),
     }
   }
@@ -66,6 +80,12 @@ class App3 {
     this.boxGeometry;
     this.axesHelper
     this.render = this.render.bind(this);
+
+    window.addEventListener("resize",()=>{
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+    }, false);
   }
 
   init() {
