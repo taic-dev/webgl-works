@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import Lenis from "@studio-freight/lenis";
+import cardImage from "./img/card.png";
 
 window.addEventListener("DOMContentLoaded",()=>{
   const lenis = new Lenis()
@@ -62,7 +63,7 @@ class App3 {
   static get MATERIAL_PARAM() {
     return {
       color: 0xffffff,
-      map: new THREE.TextureLoader().load("./img/card.png"),
+      map: new THREE.TextureLoader().load(cardImage),
     }
   }
 
