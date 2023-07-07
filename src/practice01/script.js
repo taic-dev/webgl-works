@@ -1,7 +1,5 @@
 import * as THREE from "three";
 import Lenis from "@studio-freight/lenis";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import GUI from "lil-gui";
 
 window.addEventListener("DOMContentLoaded",()=>{
   const lenis = new Lenis()
@@ -133,25 +131,12 @@ class App3 {
     this.card = new THREE.Mesh(this.boxGeometry, this.material);
     this.card.rotation.z = -0.5;
     this.scene.add(this.card);
-    
-    const axesBarLength = 5.0;
-    this.axesHelper = new THREE.AxesHelper(axesBarLength);
-    this.scene.add(this.axesHelper);
-
-    // コントロール
-    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
   }
 
   render() {
     requestAnimationFrame(this.render);
     
-    // window.addEventListener("mousemove", (e) => {
-    //   this.card.rotation.x = e.clientX - this.card.position.x * 0.003
-    //   this.card.rotation.y = e.clientY - this.card.position.x * 0.003
-    // })
-
     window.addEventListener("scroll", () => {
-      // console.log(this.card.position.y, window.pageYOffset);
       this.card.position.y = window.scrollY * 0.005;
       this.card.rotation.x = -window.scrollY * 0.005;
     })
