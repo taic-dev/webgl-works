@@ -5,19 +5,16 @@ import cardImage from "./img/card.png";
 window.addEventListener("DOMContentLoaded",()=>{
   const lenis = new Lenis()
 
-  lenis.on('scroll', (e) => {
-    console.log(e)
-  })
-
   function raf(time) {
     lenis.raf(time)
     requestAnimationFrame(raf)
   }
 
   requestAnimationFrame(raf)
-    const app = new App3;
-    app.init();
-    app.render();
+
+  const app = new App3;
+  app.init();
+  app.render();
 });
 
 
