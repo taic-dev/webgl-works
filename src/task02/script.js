@@ -16,7 +16,7 @@ class App3 {
       near: 1,
       far: 100.0,
       x: 0.0,
-      y: 8.5,
+      y: 5.5,
       z: 8.5,
       lookAt: new THREE.Vector3(0.0, 0.0, 0.0)
     }
@@ -24,7 +24,7 @@ class App3 {
 
   static get RENDERER_PARAM() {
     return {
-      clearColor: 0xf5f5f5,
+      clearColor: 0x333333,
       width: window.innerWidth,
       height: window.innerHeight
     }
@@ -36,7 +36,7 @@ class App3 {
       intensity: 1.0,
       x: 1.0,
       y: 1.0,
-      z: 0.0,
+      z: 1.0,
     }
   }
 
@@ -117,6 +117,11 @@ class App3 {
     this.directionalLight = new THREE.DirectionalLight(
       App3.DIRECTIONAL_LIGHT_PARAM.color,
       App3.DIRECTIONAL_LIGHT_PARAM.intensity,
+    )
+    this.directionalLight.position.set(
+      App3.DIRECTIONAL_LIGHT_PARAM.x,
+      App3.DIRECTIONAL_LIGHT_PARAM.y,
+      App3.DIRECTIONAL_LIGHT_PARAM.z,
     )
     this.scene.add(this.directionalLight);
 
