@@ -183,9 +183,9 @@ class App3 {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     // ヘルパー
-    const axesBarLength = 5.0;
-    this.axesHelper = new THREE.AxesHelper(axesBarLength);
-    this.scene.add(this.axesHelper);
+    // const axesBarLength = 5.0;
+    // this.axesHelper = new THREE.AxesHelper(axesBarLength);
+    // this.scene.add(this.axesHelper);
 
     const gui = new GUI();
     this.guiValue = {
