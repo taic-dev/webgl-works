@@ -78,9 +78,12 @@ class App3 {
     this.cylinderMainGeometry;
     this.cylinderGroup;
     
+    this.wingRotation = true;
+    this.mainRotation = true;
     this.vectorY = false;
     this.controls;
     this.axesHelper;
+    this.gui;
 
     this.render = this.render.bind(this);
 
@@ -177,28 +180,41 @@ class App3 {
 
     // コントロール
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+
     // ヘルパー
     const axesBarLength = 5.0;
     this.axesHelper = new THREE.AxesHelper(axesBarLength);
     this.scene.add(this.axesHelper);
+
+    const gui = new GUI();
+    this.guiValue = {
+      mainRotation: this.mainRotation,
+      wingRotation: this.wingRotation,
+    }
+    gui.add(this.guiValue, "mainRotation");
+    gui.add(this.guiValue, "wingRotation");
   }
 
   render() {
     requestAnimationFrame(this.render);
     this.controls.update();
 
-    if(this.cylinderGroup.rotation.y >= 1) {
-      this.vectorY = false;
+    if(this.guiValue.mainRotation) {
+      if(this.cylinderGroup.rotation.y >= 1) {
+        this.vectorY = false;
+      }
+  
+      if(this.cylinderGroup.rotation.y <= -1) {
+        this.vectorY = true;
+      }
+      this.vectorY ? this.cylinderGroup.rotation.y += 0.005 : this.cylinderGroup.rotation.y -= 0.005;
     }
 
-    if(this.cylinderGroup.rotation.y <= -1) {
-      this.vectorY = true;
+    if(this.wingRotation) {
+      this.wing1.rotation.z += this.guiValue.wingRotation;
+      this.wing2.rotation.z += this.guiValue.wingRotation;
     }
-
-    this.vectorY ? this.cylinderGroup.rotation.y += 0.005 : this.cylinderGroup.rotation.y -= 0.005;
     
-    this.wing1.rotation.z += 1;
-    this.wing2.rotation.z += 1;
     this.renderer.render(this.scene, this.camera);
   }
 }
