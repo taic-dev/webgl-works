@@ -1,10 +1,16 @@
 // vite.config.js
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
+import gltf from 'vite-plugin-gltf';
 
 export default defineConfig({
   root: "src",
   // base: '/webgl-school-task/',
+  plugins: [
+    gltf({
+      include: ["**/*.gltf",]
+    })
+  ],
   build: {
     outDir: './dist',
     emptyOutDir: true,
@@ -17,5 +23,7 @@ export default defineConfig({
         practice01: resolve(__dirname, 'src/practice01/index.html'),
       },
     },
+    assetsInclude: ['*.gltf'],
+    chunkSizeWarningLimit: 100000000,
   },
 })

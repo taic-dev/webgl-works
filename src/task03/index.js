@@ -2,6 +2,9 @@ import "../assets/style.css";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import earthImage from "./earth.webp"
+import marsImage from "./mars.jpg"
+import planeGltf from "./fighter-aircraft.gltf"
 
 window.addEventListener("DOMContentLoaded", () => {
   // 時間の経過取得
@@ -19,7 +22,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // 地球の作成
   const loader = new THREE.TextureLoader();
-  const texture = loader.load("./earth.webp");
+  const texture = loader.load(earthImage);
   const sphereMaterial = new THREE.MeshLambertMaterial({
     color: 0x8dc3ff,
     map: texture,
@@ -30,7 +33,7 @@ window.addEventListener("DOMContentLoaded", () => {
   scene.add(sphereMesh);
 
   // 惑星の作成
-  const planetTexture = loader.load("./mars.jpg");
+  const planetTexture = loader.load(marsImage);
   const planetMaterial = new THREE.MeshLambertMaterial({
     color: 0xca925f,
     map: planetTexture,
@@ -67,7 +70,7 @@ window.addEventListener("DOMContentLoaded", () => {
   var fighterAircraftObjDirection;
 
   const gltfLoader = new GLTFLoader();
-  gltfLoader.load("fighter-aircraft.gltf", (obj) => {
+  gltfLoader.load(planeGltf, (obj) => {
     fighterAircraftObj = obj.scene;
     scene.add(fighterAircraftObj);
     fighterAircraftObj.position.set(0, 5.0, 0);
