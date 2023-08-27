@@ -13,6 +13,7 @@ export default defineConfig({
         index: resolve(__dirname, 'src/index.html'),
         task01: resolve(__dirname, 'src/task01/index.html'),
         task02: resolve(__dirname, 'src/task02/index.html'),
+        task03: resolve(__dirname, 'src/task03/index.html'),
         practice01: resolve(__dirname, 'src/practice01/index.html'),
       },
     },
