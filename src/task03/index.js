@@ -1,8 +1,7 @@
 import "../assets/style.css";
 import * as THREE from "three";
-import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import GUI from "lil-gui";
 
 window.addEventListener('DOMContentLoaded',() => {
   // 時間の経過取得
@@ -35,11 +34,12 @@ window.addEventListener('DOMContentLoaded',() => {
   // 飛行機の作成
   var fighterAircraftObj;
   var fighterAircraftObjDirection;
-  const objLoader = new OBJLoader();
-  objLoader.load(
-    'fighter-aircraft.obj',
+
+  const gltfLoader = new GLTFLoader();
+  gltfLoader.load(
+    'fighter-aircraft.gltf',
     (obj) => {
-      fighterAircraftObj = obj;
+      fighterAircraftObj = obj.scene;
       scene.add(fighterAircraftObj);
       fighterAircraftObj.position.set(0, 5.0, 0)
       // 進行方向を設定
@@ -88,12 +88,9 @@ window.addEventListener('DOMContentLoaded',() => {
     const previousDirection = fighterAircraftObjDirection.clone();
     // 前のフレームまでの距離を変数に保存
     const prevDistance = fighterAircraftObj.position.clone();
-
     // 飛行機の進行方向ベクトルに、向きベクトルを小さくスケールして加算する
     // 加算したことでベクトルの長さが変化するので、単位化してから飛行機の座標に加算する
     const newPos = prevDistance.add(previousDirection.multiplyScalar(1)).normalize().multiplyScalar(5);
-
-
     // (終点 - 視点) という計算を行うことで、２点間を結ぶベクトルを定義
     const subVector = new THREE.Vector3().subVectors(newPos, fighterAircraftObj.position);
     // 長さに依存せず、向きだけを考えたい場合はベクトルを単位化する
