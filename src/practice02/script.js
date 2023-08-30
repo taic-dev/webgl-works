@@ -35,6 +35,33 @@ window.addEventListener("DOMContentLoaded", () => {
   camera.position.set(15, 10, 15)
   camera.lookAt(new THREE.Vector3(0.0, 0.0, 0,0));
   scene.add(camera);
+
+  // マウスのカーソルに対して動くようにする
+  window.addEventListener('mousemove', (e) => {
+    const innerWidth = window.innerWidth
+    const innerHeight = window.innerHeight
+    
+    const clientX = e.clientX
+    const clientY = e.clientY
+
+    // 座標を変換
+    const x = (clientX / innerWidth) * 2 -1
+    const y = (clientY / innerHeight) * 2 -1
+
+    console.log(x, y)
+    handGltf.rotation.x += x * 0.001
+    handGltf.rotation.y += y * 0.001
+
+    camera.lookAt(new THREE.Vector3(x * 0.03, y * 0.03, 0,0));
+  })
+
+  // 画面のリサイズ
+  window.addEventListener('resize', () => {
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth / window.innerHeight);
+    // camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+  })
   
   // カメラ操作
   const controls = new OrbitControls(camera, renderer.domElement)
@@ -50,13 +77,16 @@ window.addEventListener("DOMContentLoaded", () => {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
   scene.add(ambientLight);
 
-  const axesHelper = new THREE.AxesHelper(25);
-  scene.add(axesHelper);
+  // 軸ヘルパー
+  // const axesHelper = new THREE.AxesHelper(25);
+  // scene.add(axesHelper);
 
   render();
 
   function render() {
     requestAnimationFrame(render);
+
+    if(!handGltf) return
     handGltf.rotation.y += 0.001
     renderer.render(scene, camera);
   }
