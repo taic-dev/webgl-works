@@ -85,8 +85,8 @@ window.addEventListener("DOMContentLoaded", () => {
   scene.add(ambientLight);
 
   // 軸ヘルパー
-  const axesHelper = new THREE.AxesHelper(25);
-  scene.add(axesHelper);
+  // const axesHelper = new THREE.AxesHelper(25);
+  // scene.add(axesHelper);
 
   render();
 
