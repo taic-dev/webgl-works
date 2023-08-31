@@ -28,21 +28,24 @@ html, body { font-family: 'PT Serif', serif; overflow-x: hidden; }
   height: calc(100vh - 70px);
 }
 
+.fv__title {
+  position: absolute;
+  left: 55%;
+  bottom: 0;
+  transform: translate(-50%, -50%);
+  font-family: 'PT Serif', serif;
+
+  width: 100%;
+  font-size: 35px;
+}
+
+.fv__title span {
+  font-size: 14px;
+}
+
 .webgl {
   position: relative;
   z-index: -1;
   width: 100%;
   height: calc(100vh - 70px);
-}
-
-h1 {
-  position: absolute;
-  left: 55%;
-  bottom: 20%;
-  transform: translate(-50%, -50%);
-  font-family: 'PT Serif', serif;
-
-  width: 100%;
-  font-size: 50px;
-  
 }
