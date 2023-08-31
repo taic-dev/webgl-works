@@ -5,6 +5,12 @@ import handGltfData from './img/hand.gltf'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 window.addEventListener("DOMContentLoaded", () => {
+  // マウス追尾
+  const stkr = document.querySelector('.stkr');
+  window.addEventListener('mousemove', (e) => {
+    stkr.style.transform = 'translate(' + e.clientX + 'px, ' + e.clientY + 'px)';
+  })
+
   // レンダー
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight - 100);

@@ -49,3 +49,19 @@ html, body { font-family: 'PT Serif', serif; overflow-x: hidden; }
   width: 100%;
   height: calc(100vh - 70px);
 }
+
+.stkr {
+  pointer-events: none;
+  position: fixed;
+  top: -20px;
+  left: -20px;
+  width: 40px;
+  height: 40px;
+  border: solid #999 1px;
+  background: transparent;
+  border-radius: 50%;
+
+  transition: transform 0.2s, top, 0.5s, left 0.5s, width .5s, height .5s, background-color .5s;
+  transition-timing-function: ease-out;
+  z-index: 999;
+}
