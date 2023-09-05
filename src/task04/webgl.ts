@@ -1,6 +1,7 @@
 import { gsap } from "gsap";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { MOVIE_LIST } from "./constants/artList";
 
 export class WebGL {
   [x: string]: any;
@@ -46,7 +47,7 @@ export class WebGL {
     return {
       width: 100,
       height: 100,
-      color: 0xCD5C5C
+      color: 0xffffff
     }
   }
 
@@ -65,6 +66,8 @@ export class WebGL {
     this.ambientLight;
     this.platformPlane
     this.plane;
+    this.planeArray = []
+    this.isClicked = false
     this.controls;
     this.axesHelper
 
@@ -78,13 +81,21 @@ export class WebGL {
       const v = new THREE.Vector2(x, -y);
 
       this.raycaster.setFromCamera(v, this.camera);
-      const intersects = this.raycaster.intersectObject(this.plane);
+      const intersects = this.raycaster.intersectObjects(this.planeArray);
       console.log(intersects)
 
       if(intersects.length > 0) {
         const intersect = intersects[0].object
-        gsap.to(intersect.rotation, { x: 6 })
-        gsap.to(intersect.position, { x: 3 })
+
+        if(!this.isClicked) {
+          gsap.to(intersect.rotation, { x: 6.25 })
+          gsap.to(intersect.position, { z: 3 })
+          this.isClicked = true
+        } else {
+          gsap.to(intersect.rotation, { x: 0 })
+          gsap.to(intersect.position, { z: 0 })
+          this.isClicked = false
+        }
       }
     })
   }
@@ -143,10 +154,17 @@ export class WebGL {
     this.scene.add(this.platformPlane)
 
     // plane
+    const loader = new THREE.TextureLoader();
     const planeGeometry = new THREE.PlaneGeometry(WebGL.PLANE_GEOMETERY_PARAM.width, WebGL.PLANE_GEOMETERY_PARAM.height)
-    const planeMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
-    this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    this.scene.add(this.plane);
+    MOVIE_LIST.forEach((movieData, index)=>{
+      const texture = loader.load(movieData.imgUrl);
+      const planeMaterial = new THREE.MeshPhongMaterial({ color: 0xffffffff, map: texture });
+      this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
+      this.planeArray.push(this.plane) 
+      this.plane.position.set(1, index, 0)
+      this.plane.movieData = movieData
+      this.scene.add(this.plane);
+    })
 
     // コントロール
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)

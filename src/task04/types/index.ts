@@ -1,6 +1,8 @@
-export type ArtList = {
+export type MovieList = {
   id: string,
-  artist: string,
+  title: string,
+  director: string,
   imgUrl: string,
   description: string,
+  link: string
 }
