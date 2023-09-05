@@ -1,3 +1,4 @@
+import { gsap } from "gsap";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
@@ -69,6 +70,23 @@ export class WebGL {
 
     // 再帰呼び出しのための this 固定
     this.render = this.render.bind(this);
+
+    this.raycaster = new THREE.Raycaster();
+    window.addEventListener('click', (event) => {
+      const x = event.clientX / window.innerWidth * 2.0 - 1.0
+      const y = event.clientY / window.innerHeight * 2.0 - 1.0
+      const v = new THREE.Vector2(x, -y);
+
+      this.raycaster.setFromCamera(v, this.camera);
+      const intersects = this.raycaster.intersectObject(this.plane);
+      console.log(intersects)
+
+      if(intersects.length > 0) {
+        const intersect = intersects[0].object
+        gsap.to(intersect.rotation, { x: 6 })
+        gsap.to(intersect.position, { x: 3 })
+      }
+    })
   }
 
   init() {
@@ -135,7 +153,7 @@ export class WebGL {
 
     // ヘルパー
     this.axesHelper = new THREE.AxesHelper(5.0)
-    this.scene.add(this.axesHelper)
+    this.scene.add(this.axesHelper)   
   }
 
   render() {
