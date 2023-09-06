@@ -88,15 +88,24 @@ export class WebGL {
         const intersect = intersects[0].object
 
         if(!this.isClicked) {
-          gsap.to(intersect.rotation, { x: 6.25, z: -0.1 })
+          gsap.to(intersect.rotation, { y: 6.25, z: -0.1 })
           gsap.to(intersect.position, { x: 0, y: 0, z: 3 })
           this.isClicked = true
         } else {
-          gsap.to(intersect.rotation, { x: 0, z: 0 })
-          gsap.to(intersect.position, { x: Math.random() * 2, y: Math.random() * 2, z: Math.random() * 2 })
+          gsap.to(intersect.rotation, { y: 0, z: 0 })
+          gsap.to(intersect.position, { x: Math.random() * 2, y: Math.random() * 2, z: 0 })
           this.isClicked = false
         }
       }
+    })
+
+    window.addEventListener('pointermove', (e) => {
+      const x = e.clientX / window.innerWidth * 2 - 1
+      const y = e.clientY / window.innerHeight * 2 - 1
+
+      this.camera.position.x += (x - this.camera.position.x) * 0.05
+      this.camera.position.y += (-y - this.camera.position.y) * 0.05
+      this.camera.lookAt(new THREE.Vector3(this.camera.position.x ,this.camera.position.y, 0))
     })
   }
 
@@ -161,7 +170,7 @@ export class WebGL {
       const planeMaterial = new THREE.MeshPhongMaterial({ color: 0xffffffff, map: texture });
       this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
       this.planeArray.push(this.plane) 
-      this.plane.position.set(Math.random() * 2, Math.random() * 2, Math.random() * 3)
+      this.plane.position.set(Math.random() * 3, Math.random() * 3, 0)
       this.plane.movieData = movieData
       this.scene.add(this.plane);
     })
