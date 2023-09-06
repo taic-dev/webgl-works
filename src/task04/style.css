@@ -1,4 +1,39 @@
 * { margin: 0; padding: 0; font-family: 'Secular One', sans-serif; }
 html, body { font-family: 'PT Serif', serif; overflow-x: hidden; }
-h1 { margin: 15px; }
+header { position: fixed; top: 0; left: 0; right: 0; padding: 15px; height: 40px; }
+main { position: relative; height: 100vh; }
 canvas { position: absolute; top: 0; left: 0; z-index: -1; }
+
+.main__wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50px;
+  transform: translateY(-50%);
+}
+
+.main__wrapper h2 {
+  position: relative;
+  font-size: 70px;
+  letter-spacing: 8px;
+}
+
+.main__wrapper h2::before {
+  position: absolute;
+  top: 50%;
+  left: -30px;
+  transform: translateY(-50%);
+  width: 25px;
+  height: 4px;
+  border-radius: 1px;
+  background-color: #000;
+  content: "";
+}
+
+.desc {
+  width: 650px;
+  margin-bottom: 10px;
+}
+
+.director {
+  margin-bottom: 10px;
+}

@@ -88,12 +88,12 @@ export class WebGL {
         const intersect = intersects[0].object
 
         if(!this.isClicked) {
-          gsap.to(intersect.rotation, { x: 6.25 })
-          gsap.to(intersect.position, { z: 3 })
+          gsap.to(intersect.rotation, { x: 6.25, z: -0.1 })
+          gsap.to(intersect.position, { x: 0, y: 0, z: 3 })
           this.isClicked = true
         } else {
-          gsap.to(intersect.rotation, { x: 0 })
-          gsap.to(intersect.position, { z: 0 })
+          gsap.to(intersect.rotation, { x: 0, z: 0 })
+          gsap.to(intersect.position, { x: Math.random() * 2, y: Math.random() * 2, z: Math.random() * 2 })
           this.isClicked = false
         }
       }
@@ -161,7 +161,7 @@ export class WebGL {
       const planeMaterial = new THREE.MeshPhongMaterial({ color: 0xffffffff, map: texture });
       this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
       this.planeArray.push(this.plane) 
-      this.plane.position.set(1, index, 0)
+      this.plane.position.set(Math.random() * 2, Math.random() * 2, Math.random() * 3)
       this.plane.movieData = movieData
       this.scene.add(this.plane);
     })
