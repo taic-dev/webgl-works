@@ -94,6 +94,7 @@ export class WebGL {
           
           // 中心を映す
           gsap.to(this.camera.position, { x: 0, y: 0 })
+          console.log(this.camera)
           this.camera.lookAt(new THREE.Vector3(0, 0, 0))
           this.isClicked = true;
         } else {

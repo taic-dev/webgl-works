@@ -37,3 +37,26 @@ canvas { position: absolute; top: 0; left: 0; z-index: -1; }
 .director {
   margin-bottom: 10px;
 }
+
+.hero {
+  position: absolute;
+  top: 50%;
+  right: 50px;
+  transform: translateY(-50%);
+}
+
+.hero h2 {
+  font-size: 60px;
+}
+
+.hero h2::before {
+  position: absolute;
+  top: 50%;
+  left: -30px;
+  transform: translateY(-50%);
+  width: 25px;
+  height: 4px;
+  border-radius: 1px;
+  background-color: #000;
+  content: "";
+}
