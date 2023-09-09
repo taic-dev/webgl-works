@@ -257,7 +257,7 @@ export class WebGL {
     });
 
     // コントロール
-    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     // ヘルパー
     // this.axesHelper = new THREE.AxesHelper(5.0);
