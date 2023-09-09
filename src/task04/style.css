@@ -1,8 +1,31 @@
-* { margin: 0; padding: 0; font-family: 'Secular One', sans-serif; }
-html, body { font-family: 'PT Serif', serif; overflow-x: hidden; }
-header { position: fixed; top: 0; left: 0; right: 0; padding: 15px; height: 40px; }
-main { position: relative; height: 100vh; }
-canvas { position: absolute; top: 0; left: 0; z-index: -1; }
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Secular One", sans-serif;
+}
+html,
+body {
+  font-family: "PT Serif", serif;
+  overflow-x: hidden;
+}
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 15px;
+  height: 40px;
+}
+main {
+  position: relative;
+  height: 100vh;
+}
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
 
 .main__wrapper {
   position: absolute;
@@ -11,30 +34,18 @@ canvas { position: absolute; top: 0; left: 0; z-index: -1; }
   transform: translateY(-50%);
 }
 
-.main__wrapper h2 {
+.main__title {
   position: relative;
   font-size: 70px;
   letter-spacing: 8px;
 }
 
-.main__wrapper h2::before {
-  position: absolute;
-  top: 50%;
-  left: -30px;
-  transform: translateY(-50%);
-  width: 25px;
-  height: 4px;
-  border-radius: 1px;
-  background-color: #000;
-  content: "";
-}
-
-.desc {
+.main__desc {
   width: 650px;
   margin-bottom: 10px;
 }
 
-.director {
+.main__director {
   margin-bottom: 10px;
 }
 
@@ -45,11 +56,11 @@ canvas { position: absolute; top: 0; left: 0; z-index: -1; }
   transform: translateY(-50%);
 }
 
-.hero h2 {
+.hero__title {
   font-size: 60px;
 }
 
-.hero h2::before {
+.hero__title::before {
   position: absolute;
   top: 50%;
   left: -30px;
@@ -59,4 +70,13 @@ canvas { position: absolute; top: 0; left: 0; z-index: -1; }
   border-radius: 1px;
   background-color: #000;
   content: "";
+}
+
+.main__title,
+.main__desc,
+.main__director,
+.main__wiki {
+  transform: translateX(-10);
+  opacity: 0;
+  visibility: hidden;
 }

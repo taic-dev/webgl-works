@@ -2,6 +2,7 @@ import { gsap } from "gsap";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { MOVIE_LIST } from "./constants/artList";
+import { fadeIn, fadeOut } from "./animation";
 
 export class WebGL {
   [x: string]: any;
@@ -72,11 +73,18 @@ export class WebGL {
     this.controls;
     this.axesHelper;
 
+    this.mainTitle = document.querySelector('.main__title');
+    this.mainDesc = document.querySelector('.main__desc');
+    this.mainDirector = document.querySelector('.main__director');
+    this.mainWiki = document.querySelector('.main__wiki');
+    this.mainWikiUrl = this.mainWiki?.firstElementChild
+
     // 再帰呼び出しのための this 固定
     this.render = this.render.bind(this);
 
     this.raycaster = new THREE.Raycaster();
     window.addEventListener("click", (event) => {
+      // if(this.isClicked) return
       const x = (event.clientX / window.innerWidth) * 2.0 - 1.0;
       const y = (event.clientY / window.innerHeight) * 2.0 - 1.0;
       const v = new THREE.Vector2(x, -y);
@@ -94,8 +102,17 @@ export class WebGL {
           
           // 中心を映す
           gsap.to(this.camera.position, { x: 0, y: 0 })
-          console.log(this.camera)
-          this.camera.lookAt(new THREE.Vector3(0, 0, 0))
+                    
+          this.mainTitle.innerHTML = intersects[0].object.movieData.title
+          this.mainDesc.innerHTML = intersects[0].object.movieData.description
+          this.mainDirector.innerHTML = intersects[0].object.movieData.director
+          this.mainWikiUrl?.setAttribute('href',intersects[0].object.movieData.link)
+
+          fadeIn(this.mainTitle, 0)
+          fadeIn(this.mainDesc, 0.1)
+          fadeIn(this.mainDirector, 0.2)
+          fadeIn(this.mainWiki, 0.3)
+
           this.isClicked = true;
         } else {
           gsap.to(intersect.rotation, { y: 0, z: 0 });
@@ -104,12 +121,19 @@ export class WebGL {
             y: Math.random() * 2,
             z: 0,
           });
+
+          fadeOut(this.mainTitle, 0)
+          fadeOut(this.mainDesc, 0.1)
+          fadeOut(this.mainDirector, 0.2)
+          fadeOut(this.mainWiki, 0.3)
+          
           this.isClicked = false;
         }
       }
     });
 
     window.addEventListener("pointermove", (event) => {
+      if(this.isClicked) return
       const x = (event.clientX / window.innerWidth) * 2.0 - 1.0;
       const y = (event.clientY / window.innerHeight) * 2.0 - 1.0;
       const v = new THREE.Vector2(x, -y);
