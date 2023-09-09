@@ -70,6 +70,7 @@ export class WebGL {
     this.controls;
     this.axesHelper;
 
+    this.mainWrapper = document.querySelector('.main__wrapper')
     this.mainTitle = document.querySelector('.main__title');
     this.mainDesc = document.querySelector('.main__desc');
     this.mainDirector = document.querySelector('.main__director');
@@ -109,11 +110,12 @@ export class WebGL {
           this.mainDesc.innerHTML = intersects[0].object.movieData.description
           this.mainDirector.innerHTML = intersects[0].object.movieData.director
           this.mainWikiUrl?.setAttribute('href',intersects[0].object.movieData.link)
-
-          fadeIn(this.mainTitle, 0)
-          fadeIn(this.mainDesc, 0.1)
-          fadeIn(this.mainDirector, 0.2)
-          fadeIn(this.mainWiki, 0.3)
+          
+          fadeIn(this.mainWrapper, 0)
+          fadeIn(this.mainTitle, 0.1)
+          fadeIn(this.mainDesc, 0.2)
+          fadeIn(this.mainDirector, 0.3)
+          fadeIn(this.mainWiki, 0.4)
           fadeOut(this.heroTitle, 0)
 
           this.isClicked = true;
@@ -131,6 +133,7 @@ export class WebGL {
             z: 0,
           });
 
+          fadeOut(this.mainWrapper, 0.4)
           fadeOut(this.mainTitle, 0)
           fadeOut(this.mainDesc, 0.1)
           fadeOut(this.mainDirector, 0.2)

@@ -30,23 +30,45 @@ canvas {
 .main__wrapper {
   position: absolute;
   top: 50%;
-  left: 50px;
+  left: 0;
   transform: translateY(-50%);
+  padding: 0 15px;
+  width: 45%;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: rgba(0,0,0,0.8);
+}
+
+.main__wrapper span {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  transform: translateY(-50%);
+  font-size: 50px;
+  cursor: pointer;
 }
 
 .main__title {
   position: relative;
   font-size: 70px;
   letter-spacing: 8px;
+  line-height: 1;
+  margin-bottom: 10px;
 }
 
 .main__desc {
-  width: 650px;
   margin-bottom: 10px;
 }
 
 .main__director {
   margin-bottom: 10px;
+}
+
+.main__wiki {
+  text-decoration: none;
 }
 
 .hero {
@@ -72,10 +94,12 @@ canvas {
   content: "";
 }
 
+.main__wrapper,
 .main__title,
 .main__desc,
 .main__director,
 .main__wiki {
+  color: #fff;
   transform: translateX(-10);
   opacity: 0;
   visibility: hidden;
