@@ -4,5 +4,9 @@ export type MovieList = {
   director: string,
   imgUrl: string,
   description: string,
-  link: string
+  link: string,
+  width: number,
+  height: number,
+  x: number,
+  y: number,
 }

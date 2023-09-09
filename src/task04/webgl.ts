@@ -30,9 +30,9 @@ export class WebGL {
   static get DIRECTIONAL_LIGHT_PARAM() {
     return {
       color: 0xffffff,
-      intensity: 1.0,
-      x: 0.0,
-      y: 5.0,
+      intensity: 0.5,
+      x: -5.0,
+      y: 1.0,
       z: 5.0,
     };
   }
@@ -40,7 +40,7 @@ export class WebGL {
   static get AMBIENT_LIGHT_PARAM() {
     return {
       color: 0xffffff,
-      intensity: 1.0,
+      intensity: 1,
     };
   }
 
@@ -52,13 +52,6 @@ export class WebGL {
     };
   }
 
-  static get PLANE_GEOMETERY_PARAM() {
-    return {
-      width: 1.5,
-      height: 1,
-    };
-  }
-
   constructor() {
     this.renderer;
     this.scene;
@@ -67,6 +60,10 @@ export class WebGL {
     this.ambientLight;
     this.platformPlane;
     this.plane;
+    this.planePointX;
+    this.planePointY;
+    this.planePositionX
+    this.planePositionY
     this.planeArray = [];
     this.planeUuid;
     this.isClicked = false;
@@ -78,27 +75,32 @@ export class WebGL {
     this.mainDirector = document.querySelector('.main__director');
     this.mainWiki = document.querySelector('.main__wiki');
     this.mainWikiUrl = this.mainWiki?.firstElementChild
+    this.heroTitle = document.querySelector('.hero__title');
 
     // 再帰呼び出しのための this 固定
     this.render = this.render.bind(this);
 
     this.raycaster = new THREE.Raycaster();
     window.addEventListener("click", (event) => {
-      // if(this.isClicked) return
       const x = (event.clientX / window.innerWidth) * 2.0 - 1.0;
       const y = (event.clientY / window.innerHeight) * 2.0 - 1.0;
       const v = new THREE.Vector2(x, -y);
 
       this.raycaster.setFromCamera(v, this.camera);
       const intersects = this.raycaster.intersectObjects(this.planeArray);
-      console.log(intersects);
 
       if (intersects.length > 0) {
         const intersect = intersects[0].object;
 
         if (!this.isClicked) {
+          this.planePositionX = intersects[0].object.position.x;
+          this.planePositionY = intersects[0].object.position.y;
+          this.planePointX = intersects[0].point.x;
+          this.planePointY = intersects[0].point.y;
+
+          // planeアニメーション
           gsap.to(intersect.rotation, { y: 6.25, z: -0.1 });
-          gsap.to(intersect.position, { x: 0, y: 0, z: 2.5 });
+          gsap.to(intersect.position, { x: 1, y: 0, z: 2.5 });
           
           // 中心を映す
           gsap.to(this.camera.position, { x: 0, y: 0 })
@@ -112,13 +114,20 @@ export class WebGL {
           fadeIn(this.mainDesc, 0.1)
           fadeIn(this.mainDirector, 0.2)
           fadeIn(this.mainWiki, 0.3)
+          fadeOut(this.heroTitle, 0)
 
           this.isClicked = true;
         } else {
           gsap.to(intersect.rotation, { y: 0, z: 0 });
-          gsap.to(intersect.position, {
-            x: Math.random() * 2,
-            y: Math.random() * 2,
+          gsap.to(intersects[0].object.position, {
+            x: this.planePositionX,
+            y: this.planePositionY,
+            z: 0,
+          });
+
+          gsap.to(intersects[0].point, {
+            x: this.planePointX,
+            y: this.planePointY,
             z: 0,
           });
 
@@ -126,6 +135,7 @@ export class WebGL {
           fadeOut(this.mainDesc, 0.1)
           fadeOut(this.mainDirector, 0.2)
           fadeOut(this.mainWiki, 0.3)
+          fadeIn(this.heroTitle, 0)
           
           this.isClicked = false;
         }
@@ -140,17 +150,12 @@ export class WebGL {
 
       this.camera.position.x += (x - this.camera.position.x) * 0.05;
       this.camera.position.y += (-y - this.camera.position.y) * 0.05;
-      // this.camera.lookAt(
-      //   new THREE.Vector3(this.camera.position.x, this.camera.position.y, 0)
-      // );
-
       this.raycaster.setFromCamera(v, this.camera);
       const intersects = this.raycaster.intersectObjects(this.planeArray);
 
       if(!this.isClicked) {
         if (intersects.length > 0) {
           const object = intersects[0].object;
-          console.log(object);
           if (object) {
             gsap.to(object.scale, { x: 1.3, y: 1.3, duration: 1, });
           }
@@ -231,11 +236,11 @@ export class WebGL {
 
     // plane
     const loader = new THREE.TextureLoader();
-    const planeGeometry = new THREE.PlaneGeometry(
-      WebGL.PLANE_GEOMETERY_PARAM.width,
-      WebGL.PLANE_GEOMETERY_PARAM.height
-    );
     MOVIE_LIST.forEach((movieData) => {
+      const planeGeometry = new THREE.PlaneGeometry(
+        movieData.width,
+        movieData.height
+      );
       const texture = loader.load(movieData.imgUrl);
       const planeMaterial = new THREE.MeshPhongMaterial({
         color: 0xffffffff,
@@ -243,7 +248,7 @@ export class WebGL {
       });
       this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
       this.planeArray.push(this.plane);
-      this.plane.position.set(Math.random() * 3, Math.random() * 3, 0);
+      this.plane.position.set(movieData.x * 1.5, movieData.y * 1.5, 0);
       this.plane.movieData = movieData;
       this.scene.add(this.plane);
     });
