@@ -23,6 +23,7 @@ export default defineConfig({
         task04: resolve(__dirname, 'src/task04/index.html'),
         practice01: resolve(__dirname, 'src/practice01/index.html'),
         practice02: resolve(__dirname, 'src/practice02/index.html'),
+        practice03: resolve(__dirname, 'src/practice03/index.html'),
       },
     },
     assetsInclude: ['*.gltf'],
