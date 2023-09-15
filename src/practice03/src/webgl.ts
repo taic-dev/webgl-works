@@ -1,12 +1,14 @@
-import { gsap } from "gsap";
+// import { gsap } from "gsap";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import HeightTexture from "../src/images/heightTexture2.png"
+import Mountainside from "../src/images/texture.png"
+import AlphaTexture from "../src/images/alphaTexure.png"
 
 export class WebGL {
   [x: string]: any;
   static get RENDERER_PARAM() {
     return {
-      clearColor: 0xffffff,
       width: window.innerWidth,
       height: window.innerHeight,
     };
@@ -18,7 +20,7 @@ export class WebGL {
       aspect: window.innerWidth / window.innerHeight,
       near: 1.0,
       far: 1000.0,
-      x: 0.0,
+      x: 2.0,
       y: 0.0,
       z: 5.0,
       lookAt: new THREE.Vector3(),
@@ -38,7 +40,7 @@ export class WebGL {
   static get AMBIENT_LIGHT_PARAM() {
     return {
       color: 0xffffff,
-      intensity: 1,
+      intensity: 0.9,
     };
   }
 
@@ -49,6 +51,7 @@ export class WebGL {
     this.directionalLight;
     this.ambientLight;
     this.plane;
+    this.pointLight
 
     this.controls;
     this.axesHelper;
@@ -58,24 +61,16 @@ export class WebGL {
     this.raycaster = new THREE.Raycaster();
 
     window.addEventListener("pointermove", (event) => {
-      const x = (event.clientX / window.innerWidth) * 2.0 - 1.0;
       const y = (event.clientY / window.innerHeight) * 2.0 - 1.0;
-      const v = new THREE.Vector2(x, -y);
-      const intersects = this.raycaster.intersectObjects(this.plane);
+      
+      this.plane.material.displacementScale = y 
 
-      if (intersects.length > 0) {
-        const object = intersects[0].object;
-        console.log(object);
-      }
     });
   }
 
   init() {
     // レンダラー
     this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    this.renderer.setClearColor(
-      new THREE.Color(WebGL.RENDERER_PARAM.clearColor)
-    );
     this.renderer.setSize(
       WebGL.RENDERER_PARAM.width,
       WebGL.RENDERER_PARAM.height
@@ -103,17 +98,17 @@ export class WebGL {
     this.camera.lookAt(WebGL.CAMERA_PARAM.lookAt);
 
     // ライト
-    this.directionalLight = new THREE.DirectionalLight(
-      WebGL.DIRECTIONAL_LIGHT_PARAM.color,
-      WebGL.DIRECTIONAL_LIGHT_PARAM.intensity
-    );
+    // this.directionalLight = new THREE.DirectionalLight(
+    //   WebGL.DIRECTIONAL_LIGHT_PARAM.color,
+    //   WebGL.DIRECTIONAL_LIGHT_PARAM.intensity
+    // );
 
-    this.directionalLight.position.set(
-      WebGL.DIRECTIONAL_LIGHT_PARAM.x,
-      WebGL.DIRECTIONAL_LIGHT_PARAM.y,
-      WebGL.DIRECTIONAL_LIGHT_PARAM.z
-    );
-    this.scene.add(this.directionalLight);
+    // this.directionalLight.position.set(
+    //   WebGL.DIRECTIONAL_LIGHT_PARAM.x,
+    //   WebGL.DIRECTIONAL_LIGHT_PARAM.y,
+    //   WebGL.DIRECTIONAL_LIGHT_PARAM.z
+    // );
+    // this.scene.add(this.directionalLight);
 
     this.ambientLight = new THREE.AmbientLight(
       WebGL.AMBIENT_LIGHT_PARAM.color,
@@ -121,27 +116,44 @@ export class WebGL {
     );
     this.scene.add(this.ambientLight);
 
+    // PointLight  
+    this.pointLight = new THREE.PointLight('#00b3ff', 2)
+    this.pointLight.x = 2
+    this.pointLight.y = 10 
+    this.pointLight.z = .4
+    this.scene.add(this.pointLight)
+
     // plane
-    // const loader = new THREE.TextureLoader();
-    const planeGeometry = new THREE.PlaneGeometry(1, 1);
-    const planeMaterial = new THREE.MeshPhongMaterial({
-      color: 0xfffff0f0f,
-      // map: texture,
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load(Mountainside)
+    const heightTexture = loader.load(HeightTexture)
+    const alphaTexture = loader.load(AlphaTexture)
+    const planeGeometry = new THREE.PlaneGeometry(3, 3, 64, 64);
+    const planeMaterial = new THREE.MeshStandardMaterial({
+      color: '#00b3ff',
+      map: texture,
+      displacementMap: heightTexture,
+      displacementScale: .6,
+      alphaMap: alphaTexture,
+      transparent: true,
+      depthTest: false,
     });
     this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
     this.plane.position.set(0, 0, 0);
+    this.plane.rotation.x = 181
     this.scene.add(this.plane);
 
     // コントロール
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     // ヘルパー
-    this.axesHelper = new THREE.AxesHelper(5.0);
-    this.scene.add(this.axesHelper);
+    // this.axesHelper = new THREE.AxesHelper(5.0);
+    // this.scene.add(this.axesHelper);
   }
 
   render() {
     requestAnimationFrame(this.render);
+    this.plane.rotation.z += 0.003
     this.renderer.render(this.scene, this.camera);
   }
 }

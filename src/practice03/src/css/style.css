@@ -2,12 +2,38 @@
   margin: 0;
   padding: 0;
   font-family: "Secular One", sans-serif;
+  color: #fff;
 }
-html,body { overflow-x: hidden; }
+html,
+body {
+  overflow-x: hidden;
+}
 canvas {
   position: absolute;
   top: 0;
   left: 0;
   z-index: -1;
+  background-color: rgb(27, 27, 31);
 }
-h1 { margin: 15px; font-size: 2rem; }
+.container {
+  position: absolute;
+  top: 40%;
+  left: 100px;
+  transform: translateY(-50%);
+}
+h1 {
+  font-size: 3rem;
+  margin: 15px;
+}
+p {
+  font-family: serif;
+  width: 600px;
+}
+button {
+  margin-top: 30px;
+  display: block;
+  line-height: 0;
+  padding: 20px;
+  background-color: #00b3ff;
+  border-radius: 5px;
+}
