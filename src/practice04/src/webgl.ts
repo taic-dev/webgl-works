@@ -2,6 +2,7 @@ import { gsap } from "gsap";
 import * as THREE from "three";
 import vertex from "../src/shader/vertex.glsl"
 import fragment from "../src/shader/fragment.glsl"
+import Mountain from "../src/images/texture.jpg"
 
 export class WebGL {
   [x: string]: any;
@@ -50,6 +51,7 @@ export class WebGL {
     this.directionalLight;
     this.ambientLight;
     this.plane;
+    this.uniforms
 
     this.controls;
     this.axesHelper;
@@ -57,18 +59,6 @@ export class WebGL {
     this.render = this.render.bind(this);
 
     this.raycaster = new THREE.Raycaster();
-
-    window.addEventListener("pointermove", (event) => {
-      const x = (event.clientX / window.innerWidth) * 2.0 - 1.0;
-      const y = (event.clientY / window.innerHeight) * 2.0 - 1.0;
-      const v = new THREE.Vector2(x, -y);
-      const intersects = this.raycaster.intersectObjects(this.plane);
-
-      if (intersects.length > 0) {
-        const object = intersects[0].object;
-        console.log(object);
-      }
-    });
   }
 
   init() {
@@ -123,19 +113,22 @@ export class WebGL {
 
     // plane
     const loader = new THREE.TextureLoader();
-    const texture = loader.load("https://source.unsplash.com/whOkVvf0_hU/")
+    const texture = loader.load(Mountain)
 
-    const uniforms = {
+    this.uniforms = {
       uTexture: { value: texture },
-      uImageAspect: { value: 1920 / 1280 },
-      uPlaneAspect: { value: 800 / 500 },
+      uImageAspect: { value: 1280 / 1980 },
+      uPlaneAspect: { value: 400 / 600 },
+      uTime: { value: 0 },
+      uMouseX: { value: 0 },
+      uMouseY: { value: 0 }
     }
 
-    const geo = new THREE.PlaneGeometry(800, 500, 100, 100)
+    const geo = new THREE.PlaneGeometry(400, 600, 100, 100)
     const mat = new THREE.ShaderMaterial({
-      uniforms,
+      uniforms: this.uniforms,
       vertexShader: vertex,
-      fragmentShader: fragment
+      fragmentShader: fragment,
     })
     this.plane = new THREE.Mesh(geo, mat);
     this.scene.add(this.plane);
@@ -143,6 +136,15 @@ export class WebGL {
     // ヘルパー
     this.axesHelper = new THREE.AxesHelper(5.0);
     this.scene.add(this.axesHelper);
+
+    window.addEventListener("pointermove", (event) => {
+      const x = (event.clientX / window.innerWidth) * 2.0 - 1.0;
+      const y = (event.clientY / window.innerHeight) * 2.0 - 1.0;
+
+      this.uniforms.uMouseX.value += x * 2
+      this.uniforms.uMouseY.value += -y * 2
+      this.uniforms.uTime.value++
+    });
   }
 
   render() {
