@@ -21,6 +21,7 @@ export default defineConfig({
         task02: resolve(__dirname, 'src/task02/index.html'),
         task03: resolve(__dirname, 'src/task03/index.html'),
         task04: resolve(__dirname, 'src/task04/index.html'),
+        task05: resolve(__dirname, 'src/task05/index.html'),
         practice01: resolve(__dirname, 'src/practice01/index.html'),
         practice02: resolve(__dirname, 'src/practice02/index.html'),
         practice03: resolve(__dirname, 'src/practice03/index.html'),
