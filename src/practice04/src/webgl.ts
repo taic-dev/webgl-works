@@ -133,8 +133,8 @@ export class WebGL {
     this.scene.add(this.plane);
 
     // ヘルパー
-    this.axesHelper = new THREE.AxesHelper(5.0);
-    this.scene.add(this.axesHelper);
+    // this.axesHelper = new THREE.AxesHelper(5.0);
+    // this.scene.add(this.axesHelper);
 
     window.addEventListener("pointermove", (event) => {
       const x = (event.clientX / window.innerWidth) * 2.0 - 1.0;
