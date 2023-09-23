@@ -52,6 +52,7 @@ export class WebGL {
     this.directionalLight;
     this.ambientLight;
     this.plane;
+    this.flag = false
 
     this.controls;
     this.axesHelper;
@@ -60,16 +61,44 @@ export class WebGL {
 
     this.raycaster = new THREE.Raycaster();
 
-    window.addEventListener("pointermove", (event) => {
+    window.addEventListener("click", (event) => {
       const x = (event.clientX / window.innerWidth) * 2.0 - 1.0;
       const y = (event.clientY / window.innerHeight) * 2.0 - 1.0;
       const v = new THREE.Vector2(x, -y);
-      const intersects = this.raycaster.intersectObjects(this.plane);
+      const intersects = this.raycaster.intersectObject(this.plane);
 
+      console.log(intersects)
       if (intersects.length > 0) {
         const object = intersects[0].object;
-        console.log(object);
-      }
+        let Hold = 0
+        if(!this.flag) {
+          this.flag = true;
+          gsap.to((object.material),{
+            onStart: function() {},
+            onUpdate: function() {
+              const  add = (1.0 * this.progress() - Hold) * (-1) ;
+              Hold = 1.0 * this.progress();
+              object.material.uniforms.uInfluence.value += add * 100;
+              object.material.uniforms.uStep.value += add;
+            },
+            onRepeat: function() {},
+            onComplete:function(){},
+          });
+        } else {
+          this.flag = false;
+          gsap.to((object.material),{ 
+            onStart: function() {},
+            onUpdate: function() {
+              const  add = (1.0 * this.progress() - Hold)  ;
+              Hold = 1.0 * this.progress();
+              object.material.uniforms.uInfluence.value += add * 10;
+              object.material.uniforms.uStep.value += add;
+            },
+            onRepeat: function() {},
+            onComplete:function(){},
+          });
+        }
+      } 
     });
   }
 
@@ -130,10 +159,10 @@ export class WebGL {
       uniforms : { 
         uPixelRation : {value:Math.min(window.devicePixelRatio, 2.0)},
         uResolution: {value: new THREE.Vector2(window.innerWidth, window.innerHeight)},
-        uTime: { value: 0.0},//animationに使用
-        uSize: { value: 0.01},//Partcleサイズ
-        uStep: { value: 1.00},//影響度
-        uInfluence: { value: 10.0},//影響度
+        uTime: { value: 0.0 },//animationに使用
+        uSize: { value: 0.01 },//Partcleサイズ
+        uStep: { value: 1.00 },//影響度
+        uInfluence: { value: 10.0 },//影響度
         udisplayment: {value:new THREE.TextureLoader().load(Texture)},//画像
       },
       vertexShader:Vertex,
@@ -155,9 +184,6 @@ export class WebGL {
 
   render() {
     requestAnimationFrame(this.render);
-    console.log(this.plane)
-    // this.plane.material.uniforms.uInfluence.value += 1 * 0.01;//to 10 =>0
-    // this.plane.material.uniforms.uStep.value += 0.01// to 1 => 0
     this.renderer.render(this.scene, this.camera);
   }
 }
