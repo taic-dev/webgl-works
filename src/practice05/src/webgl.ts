@@ -73,7 +73,7 @@ export class WebGL {
         let Hold = 0
         if(!this.flag) {
           this.flag = true;
-          gsap.to((object.material),{
+          gsap.to((object.material), 3.5,{
             onStart: function() {},
             onUpdate: function() {
               const  add = (1.0 * this.progress() - Hold) * (-1) ;
@@ -86,7 +86,7 @@ export class WebGL {
           });
         } else {
           this.flag = false;
-          gsap.to((object.material),{ 
+          gsap.to((object.material), 3.5,{ 
             onStart: function() {},
             onUpdate: function() {
               const  add = (1.0 * this.progress() - Hold)  ;
@@ -159,11 +159,11 @@ export class WebGL {
       uniforms : { 
         uPixelRation : {value:Math.min(window.devicePixelRatio, 2.0)},
         uResolution: {value: new THREE.Vector2(window.innerWidth, window.innerHeight)},
-        uTime: { value: 0.0 },//animationに使用
-        uSize: { value: 0.01 },//Partcleサイズ
-        uStep: { value: 1.00 },//影響度
-        uInfluence: { value: 10.0 },//影響度
-        udisplayment: {value:new THREE.TextureLoader().load(Texture)},//画像
+        uTime: { value: 0.0 },
+        uSize: { value: 0.01 },
+        uStep: { value: 1.00 },
+        uInfluence: { value: 10.0 },
+        udisplayment: {value:new THREE.TextureLoader().load(Texture)},
       },
       vertexShader:Vertex,
       fragmentShader: Fragment,
@@ -175,11 +175,11 @@ export class WebGL {
     this.scene.add(this.plane);
 
     // コントロール
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     // ヘルパー
-    this.axesHelper = new THREE.AxesHelper(5.0);
-    this.scene.add(this.axesHelper);
+    // this.axesHelper = new THREE.AxesHelper(5.0);
+    // this.scene.add(this.axesHelper);
   }
 
   render() {
