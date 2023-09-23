@@ -1,6 +1,6 @@
 import { gsap } from "gsap";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import Texture from "./images/texture.jpg";
 import Vertex from "./shader/vertex.glsl";
 import Fragment from "./shader/fragment.glsl";
@@ -61,10 +61,7 @@ export class WebGL {
 
     this.raycaster = new THREE.Raycaster();
 
-    window.addEventListener("click", (event) => {
-      const x = (event.clientX / window.innerWidth) * 2.0 - 1.0;
-      const y = (event.clientY / window.innerHeight) * 2.0 - 1.0;
-      const v = new THREE.Vector2(x, -y);
+    window.addEventListener("click", () => {
       const intersects = this.raycaster.intersectObject(this.plane);
 
       console.log(intersects)
