@@ -64,7 +64,6 @@ export class WebGL {
     window.addEventListener("click", () => {
       const intersects = this.raycaster.intersectObject(this.plane);
 
-      console.log(intersects)
       if (intersects.length > 0) {
         const object = intersects[0].object;
         let Hold = 0
