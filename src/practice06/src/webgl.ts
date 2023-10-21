@@ -1,8 +1,8 @@
-import { gsap } from "gsap";
+// import { gsap } from "gsap";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as THREE from "three";
 import vertex from "../src/shader/vertex.glsl"
 import fragment from "../src/shader/fragment.glsl"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import brush from "./images/burash.png";
 import ocean from "./images/ocean.png";
 
