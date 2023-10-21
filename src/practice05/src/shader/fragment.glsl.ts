@@ -6,9 +6,7 @@ varying vec2 vUv;
 
 void main()
 {
-
   vec4 color = texture2D(udisplayment, vUv);
-
   if (color.a < 0.05) {
 	 	discard;
 	}
