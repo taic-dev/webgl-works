@@ -1,5 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import vertex from "./shader/vertex.glsl";
+import fragment from "./shader/fragment.glsl";
 
 export class WebGL {
   [x: string]: any;
@@ -52,6 +54,7 @@ export class WebGL {
     this.material
     this.mesh
     this.plane
+    this.time
     
     this.controls;
     this.axesHelper
@@ -114,15 +117,20 @@ export class WebGL {
 
     // plane
     this.geometry = new THREE.PlaneGeometry(1,1);
-    this.material = new THREE.MeshPhongMaterial({
-      color: 0xfffff0f0f,
-    });
+    this.material = new THREE.ShaderMaterial({
+      uniforms: {
+        time: { value: 0.0 },
+        resolution: { value: new THREE.Vector4() }
+      },
+      vertexShader: vertex,
+      fragmentShader: fragment
+    })
 
     this.plane = new THREE.Mesh(this.geometry, this.material);
 
     this.plane.position.set(0, 0, 0);
     this.scene.add(this.plane);
-    
+
     // コントロール
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
@@ -134,5 +142,6 @@ export class WebGL {
   render() {
     requestAnimationFrame(this.render)
     this.renderer.render(this.scene, this.camera);
+    this.time++
   }
 }

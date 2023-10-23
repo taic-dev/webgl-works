@@ -2,6 +2,7 @@
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import gltf from 'vite-plugin-gltf';
+import rawLoader from 'vite-raw-plugin';
 
 export default defineConfig({
   root: "src",
@@ -9,6 +10,9 @@ export default defineConfig({
   plugins: [
     gltf({
       include: ["**/*.gltf",]
+    }),
+    rawLoader({
+      fileRegex: /\.glsl$/
     })
   ],
   build: {
@@ -28,7 +32,7 @@ export default defineConfig({
         practice04: resolve(__dirname, 'src/practice04/index.html'),
         practice05: resolve(__dirname, 'src/practice05/index.html'),
         practice06: resolve(__dirname, 'src/practice06/index.html'),
-        practice06: resolve(__dirname, 'src/practice07/index.html'),
+        practice07: resolve(__dirname, 'src/practice07/index.html'),
       },
     },
     assetsInclude: ['*.gltf'],
