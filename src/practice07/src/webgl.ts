@@ -7,7 +7,7 @@ export class WebGL {
   [x: string]: any;
   static get RENDERER_PARAM() {
     return {
-      clearColor: 0x000000,
+      clearColor: 0xfffffff,
       width: window.innerWidth,
       height: window.innerHeight,
     }
@@ -17,11 +17,11 @@ export class WebGL {
     return {
       fov: 50,
       aspect: window.innerWidth / window.innerHeight,
-      near: 1.0,
+      near: 0.1,
       far: 100.0,
       x: 0.0,
       y: 0.0,
-      z: 5.0,
+      z: 1.0,
       lookAt: new THREE.Vector3(),
     }
   }
@@ -54,7 +54,9 @@ export class WebGL {
     this.material
     this.mesh
     this.plane
-    this.time
+    this.time = 0
+
+    this.color = ["#c9c9c4", "c9c9c2", "#999999",]
     
     this.controls;
     this.axesHelper
@@ -116,12 +118,14 @@ export class WebGL {
     this.scene.add(this.ambientLight)
 
     // plane
-    this.geometry = new THREE.PlaneGeometry(1,1);
+    this.geometry = new THREE.PlaneGeometry(1,1,100,100);
     this.material = new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0.0 },
-        resolution: { value: new THREE.Vector4() }
+        resolution: { value: new THREE.Vector4() },
+        uColor: { value: this.color.map((v: string) => new THREE.Color(v)) }
       },
+      // wireframe: true,
       vertexShader: vertex,
       fragmentShader: fragment
     })
@@ -140,8 +144,9 @@ export class WebGL {
   }
 
   render() {
+    this.time += 0.0005
+    this.material.uniforms.time.value = this.time
     requestAnimationFrame(this.render)
     this.renderer.render(this.scene, this.camera);
-    this.time++
   }
 }
