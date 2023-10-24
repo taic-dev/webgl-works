@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import vertex from "./shader/vertex.glsl";
 import fragment from "./shader/fragment.glsl";
 
@@ -21,7 +20,7 @@ export class WebGL {
       far: 100.0,
       x: 0.0,
       y: 0.0,
-      z: 1.0,
+      z: 10.0,
       lookAt: new THREE.Vector3(),
     }
   }
@@ -62,6 +61,12 @@ export class WebGL {
     this.axesHelper
 
     this.render = this.render.bind(this)
+
+    window.addEventListener("resize",()=>{
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+    }, false);
   }
 
   init() {
@@ -118,7 +123,7 @@ export class WebGL {
     this.scene.add(this.ambientLight)
 
     // plane
-    this.geometry = new THREE.PlaneGeometry(1,1,100,100);
+    this.geometry = new THREE.PlaneGeometry(100,10,100,100);
     this.material = new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0.0 },
@@ -136,11 +141,11 @@ export class WebGL {
     this.scene.add(this.plane);
 
     // コントロール
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     // ヘルパー
-    this.axesHelper = new THREE.AxesHelper(5.0);
-    this.scene.add(this.axesHelper);
+    // this.axesHelper = new THREE.AxesHelper(5.0);
+    // this.scene.add(this.axesHelper);
   }
 
   render() {

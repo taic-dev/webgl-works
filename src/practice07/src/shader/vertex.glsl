@@ -89,7 +89,7 @@ void main() {
   vColor = uColor[2];
 
   for(int i = 0; i < 1; i++){
-    float noise = snoise(vec3(noiseCoord.x + time * 5., noiseCoord.y + time * 5. , time * 1.5));
+    float noise = snoise(vec3(noiseCoord.x + time * 5., noiseCoord.y + time * 5. , time * 5.5));
 
     vColor = mix(vColor, uColor[i], noise);
   }
