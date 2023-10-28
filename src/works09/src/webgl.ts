@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import vertex from "../src/shader/vertex.glsl"
-import fragment from "../src/shader/fragment.glsl"
+import vertex from "./shader/vertex.glsl"
+import fragment from "./shader/fragment.glsl"
 import Mountain from "../src/images/texture.jpg"
 
 export class WebGL {
