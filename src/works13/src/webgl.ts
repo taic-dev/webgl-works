@@ -54,7 +54,7 @@ export class WebGL {
     this.time = 0;
     this.effect1Number = 0.0;
     this.effect2Number = 0.0;
-    this.effect3Number = 0.0;
+    this.effect3Number = 0.01;
     this.guiValue;
     this.x;
     this.y;
