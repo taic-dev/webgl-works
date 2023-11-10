@@ -18,9 +18,11 @@
   "dependencies": {
     "@studio-freight/lenis": "^1.0.16",
     "@types/three": "^0.152.1",
+    "glsl-noise": "^0.0.0",
     "gsap": "^3.12.2",
     "lil-gui": "^0.18.2",
     "three": "^0.154.0",
+    "vite-plugin-glsl": "^1.1.2",
     "vite-raw-plugin": "^1.0.2"
   }
 }

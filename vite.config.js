@@ -13,7 +13,7 @@ export default defineConfig({
     }),
     rawLoader({
       fileRegex: /\.glsl$/
-    })
+    }),
   ],
   build: {
     outDir: './dist',
