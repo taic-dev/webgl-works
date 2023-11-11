@@ -1,26 +1,32 @@
 import { gsap } from "gsap";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import Texture1 from "./image/texture1.jpg";
+import Texture2 from "./image/texture2.jpg";
+import DisplacementMap from "./image/displacement.png";
+import vertex from "./shader/vertex.glsl";
+import fragment from "./shader/fragment.glsl";
 
 export class WebGL {
   [x: string]: any;
   static get RENDERER_PARAM() {
     return {
       clearColor: 0xffffff,
-      width: window.innerWidth,
-      height: window.innerHeight,
+      width: window.document.querySelector(".webgl")?.clientWidth,
+      height: window.document.querySelector(".webgl")?.clientHeight,
     };
   }
 
   static get CAMERA_PARAM() {
     return {
       fov: 50,
-      aspect: window.innerWidth / window.innerHeight,
+      aspect:
+        window.document.querySelector(".webgl")?.clientWidth /
+        window.document.querySelector(".webgl")?.clientHeight,
       near: 1.0,
-      far: 1000.0,
+      far: 100.0,
       x: 0.0,
       y: 0.0,
-      z: 5.0,
+      z: 1.0,
       lookAt: new THREE.Vector3(),
     };
   }
@@ -49,24 +55,28 @@ export class WebGL {
     this.directionalLight;
     this.ambientLight;
     this.plane;
+    this.uniforms;
+    this.canvas = window.document.querySelector(".webgl");
 
     this.controls;
     this.axesHelper;
     // 再帰呼び出しのための this 固定
     this.render = this.render.bind(this);
 
-    this.raycaster = new THREE.Raycaster();
+    this.canvas.addEventListener("mouseenter", () => {
+      gsap.fromTo(
+        this.uniforms.uOffset,
+        { value: 0 },
+        { value: 1, duration: 1.8, ease: "expo.out" }
+      )
+    });
 
-    window.addEventListener("pointermove", (event) => {
-      const x = (event.clientX / window.innerWidth) * 2.0 - 1.0;
-      const y = (event.clientY / window.innerHeight) * 2.0 - 1.0;
-      const v = new THREE.Vector2(x, -y);
-      const intersects = this.raycaster.intersectObjects(this.plane);
-
-      if (intersects.length > 0) {
-        const object = intersects[0].object;
-        console.log(object);
-      }
+    this.canvas.addEventListener("mouseleave", () => {
+      gsap.fromTo(
+        this.uniforms.uOffset,
+        { value: 1 },
+        { value: 0, duration: 1.8, ease: "expo.out" }
+      )
     });
   }
 
@@ -122,22 +132,35 @@ export class WebGL {
     this.scene.add(this.ambientLight);
 
     // plane
-    // const loader = new THREE.TextureLoader();
+
+    // Ocean Plane
+    const loader = new THREE.TextureLoader();
+
+    this.uniforms = {
+      uTime: { value: 0 },
+      uColor: { value: new THREE.Color(0.3, 0.2, 0.5) },
+      uOffset: { value: 0.0 },
+      uTexture1: { value: loader.load(Texture1) },
+      uTexture2: { value: loader.load(Texture2) },
+      uDisplacementTexture: { value: loader.load(DisplacementMap) },
+    };
+
     const planeGeometry = new THREE.PlaneGeometry(1, 1);
-    const planeMaterial = new THREE.MeshPhongMaterial({
-      color: 0xfffff0f0f,
-      // map: texture,
+    const planeMaterial = new THREE.ShaderMaterial({
+      uniforms: this.uniforms,
+      vertexShader: vertex,
+      fragmentShader: fragment,
     });
     this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
     this.plane.position.set(0, 0, 0);
     this.scene.add(this.plane);
 
     // コントロール
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     // ヘルパー
-    this.axesHelper = new THREE.AxesHelper(5.0);
-    this.scene.add(this.axesHelper);
+    // this.axesHelper = new THREE.AxesHelper(5.0);
+    // this.scene.add(this.axesHelper);
   }
 
   render() {
