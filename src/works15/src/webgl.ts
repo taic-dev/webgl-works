@@ -25,9 +25,7 @@ export class WebGL {
   static get CAMERA_PARAM() {
     return {
       fov: 50,
-      aspect:
-        window.document.querySelector(".webgl")?.clientWidth /
-        window.document.querySelector(".webgl")?.clientHeight,
+      aspect: 500 / 700,
       near: 1.0,
       far: 100.0,
       x: 0.0,
@@ -98,11 +96,11 @@ export class WebGL {
 
     Array.from(window.document.getElementsByName("effect")).map((effect) => {
       effect.addEventListener("click", () => {
-        this.DisplacementTexture = effect.getAttribute('value')
-        this.uniforms.uDisplacementTexture.value = loader.load(
+        this.DisplacementTexture = effect.getAttribute("value");
+        (this.uniforms.uDisplacementTexture.value = loader.load(
           this.DisplacementTextures[this.DisplacementTexture || "effect1"]
-        ),
-        console.log(this.uniforms.uDisplacementTexture);
+        )),
+          console.log(this.uniforms.uDisplacementTexture);
       });
     });
   }
