@@ -2,7 +2,13 @@ import { gsap } from "gsap";
 import * as THREE from "three";
 import Texture1 from "./image/texture1.jpg";
 import Texture2 from "./image/texture2.jpg";
-import DisplacementMap from "./image/displacement.png";
+import DisplacementMap1 from "./image/displacement1.png";
+import DisplacementMap2 from "./image/displacement2.png";
+import DisplacementMap3 from "./image/displacement3.png";
+import DisplacementMap4 from "./image/displacement4.png";
+import DisplacementMap5 from "./image/displacement5.png";
+import DisplacementMap6 from "./image/displacement6.png";
+import DisplacementMap7 from "./image/displacement7.png";
 import vertex from "./shader/vertex.glsl";
 import fragment from "./shader/fragment.glsl";
 
@@ -56,10 +62,19 @@ export class WebGL {
     this.ambientLight;
     this.plane;
     this.uniforms;
+    this.guiValue;
     this.canvas = window.document.querySelector(".webgl");
+    this.DisplacementTexture = "effect1";
+    this.DisplacementTextures = {
+      effect1: DisplacementMap1,
+      effect2: DisplacementMap2,
+      effect3: DisplacementMap3,
+      effect4: DisplacementMap4,
+      effect5: DisplacementMap5,
+      effect6: DisplacementMap6,
+      effect7: DisplacementMap7,
+    };
 
-    this.controls;
-    this.axesHelper;
     // 再帰呼び出しのための this 固定
     this.render = this.render.bind(this);
 
@@ -68,7 +83,7 @@ export class WebGL {
         this.uniforms.uOffset,
         { value: 0 },
         { value: 1, duration: 1.8, ease: "expo.out" }
-      )
+      );
     });
 
     this.canvas.addEventListener("mouseleave", () => {
@@ -76,7 +91,19 @@ export class WebGL {
         this.uniforms.uOffset,
         { value: 1 },
         { value: 0, duration: 1.8, ease: "expo.out" }
-      )
+      );
+    });
+
+    const loader = new THREE.TextureLoader();
+
+    Array.from(window.document.getElementsByName("effect")).map((effect) => {
+      effect.addEventListener("click", () => {
+        this.DisplacementTexture = effect.getAttribute('value')
+        this.uniforms.uDisplacementTexture.value = loader.load(
+          this.DisplacementTextures[this.DisplacementTexture || "effect1"]
+        ),
+        console.log(this.uniforms.uDisplacementTexture);
+      });
     });
   }
 
@@ -137,12 +164,14 @@ export class WebGL {
     const loader = new THREE.TextureLoader();
 
     this.uniforms = {
-      uTime: { value: 0 },
-      uColor: { value: new THREE.Color(0.3, 0.2, 0.5) },
       uOffset: { value: 0.0 },
       uTexture1: { value: loader.load(Texture1) },
       uTexture2: { value: loader.load(Texture2) },
-      uDisplacementTexture: { value: loader.load(DisplacementMap) },
+      uDisplacementTexture: {
+        value: loader.load(
+          this.DisplacementTextures[this.DisplacementTexture || "effect1"]
+        ),
+      },
     };
 
     const planeGeometry = new THREE.PlaneGeometry(1, 1);

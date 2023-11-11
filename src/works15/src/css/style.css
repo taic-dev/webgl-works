@@ -3,21 +3,27 @@
   padding: 0;
   font-family: "Secular One", sans-serif;
 }
-canvas {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 0;
-}
 h1 {
   font-size: 2rem;
   margin: 15px;
 }
 .webgl__wrapper {
-  width: 100%;
+  width: 100vw;
+  height: 100vh;
 }
 .webgl {
-  width: 350px;
-  height: 500px;
+  width: 500px;
+  height: 700px;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
 }
+.effect__wrapper label {
+  display: block;
+  margin-left: 15px;
+  margin-bottom: 15px;
+}
+
