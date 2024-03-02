@@ -40,8 +40,8 @@ export class Webgl {
     return planeGeometry;
   }
 
-  createMaterial(parameters: object) {
-    const material = new THREE.MeshBasicMaterial(parameters);
+  createShaderMaterial(parameters: object) {
+    const material = new THREE.ShaderMaterial(parameters);
     return material;
   }
 

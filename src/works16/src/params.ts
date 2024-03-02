@@ -1,3 +1,5 @@
+import Texture from "./image/texture.jpg";
+
 export const PARAMS = {
   CAMERA_PARAMS: {
     fov: 50,
@@ -19,10 +21,11 @@ export const PARAMS = {
     INTENSITY: 0.5,
   },
   PLANE_GEOMETRY: {
-    W: window.innerWidth,
-    Y: window.innerHeight
+    W: 2,
+    Y: 2
   },
   MATERIAL: {
-    COLOR: 0x0000FF
+    COLOR: 0xffffff,
+    TEXTURE: Texture
   }
 } as const
