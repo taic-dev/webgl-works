@@ -28,6 +28,7 @@ export class Slider {
 
     this.textureAspect;
     this.current = 0;
+    this.paused = 0;
 
     this.prevButton = document.getElementById("prev");
     this.nextButton = document.getElementById("next");
@@ -87,7 +88,7 @@ export class Slider {
         value: window.innerWidth / window.innerHeight,
       },
       uOffset: {
-        value: 1.0,
+        value: 0.0,
       },
     };
 
@@ -104,10 +105,6 @@ export class Slider {
       const index =
         (this.current - 1 + PARAMS.MATERIAL.TEXTURE.length) %
         PARAMS.MATERIAL.TEXTURE.length;
-      
-      console.log(this.current)
-      console.log(index);
-
       this.uniforms.uTexture2.value = loader.load(
         PARAMS.MATERIAL.TEXTURE[this.current]
       );
@@ -115,7 +112,7 @@ export class Slider {
       this.uniforms.uOffset.value = 1.0;
 
       gsap.to(this.uniforms.uOffset, {
-        duration: 1,
+        duration: 1.5,
         value: 0.0,
         ease: "power2.inOut",
         onStart: () => {
@@ -128,22 +125,25 @@ export class Slider {
           this.uniforms.uOffset.value = 0.0;
         },
       });
+
+      this.prevButton.disabled= false;
     });
 
     // Nextをクリック時
     this.nextButton.addEventListener("click", () => {
+
       const index =
         (this.current + 1 + PARAMS.MATERIAL.TEXTURE.length) %
         PARAMS.MATERIAL.TEXTURE.length;
 
-        this.uniforms.uTexture2.value = loader.load(
-          PARAMS.MATERIAL.TEXTURE[this.current]
-        );
+      this.uniforms.uTexture2.value = loader.load(
+        PARAMS.MATERIAL.TEXTURE[this.current]
+      );
 
       this.uniforms.uOffset.value = 1.0;
 
       gsap.to(this.uniforms.uOffset, {
-        duration: 1,
+        duration: 1.5,
         value: 0.0,
         ease: "power2.inOut",
         onStart: () => {
@@ -173,7 +173,6 @@ export class Slider {
   }
 
   render() {
-    // this.uniforms.uOffset.value -= 0.001
     requestAnimationFrame(this.render);
     this.renderer.render(this.scene, this.camera);
   }

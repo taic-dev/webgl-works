@@ -24,7 +24,7 @@ void main() {
   );
 
   // texture1
-  float displacementForce1 = displacementTexture.r * (1.0 - uOffset) * displacementCoef;
+  float displacementForce1 = displacementTexture.r * uOffset * displacementCoef;
   vec2 uvDisplaced1 = vec2(textureUv.x + displacementForce1, textureUv.y + displacementForce1);
   vec4 displacedTexture1 = texture2D(uTexture1, uvDisplaced1);
 
@@ -33,6 +33,5 @@ void main() {
   vec2 uvDisplaced2 = vec2(textureUv.x + displacementForce2, textureUv.y + displacementForce2);
   vec4 displacedTexture2 = texture2D(uTexture2, uvDisplaced2);
 
-  // gl_FragColor = (displacedTexture1 * (1. - uOffset) + displacedTexture2 * uOffset);
   gl_FragColor = mix(displacedTexture1, displacedTexture2, uOffset);
 }
