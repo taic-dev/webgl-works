@@ -33,7 +33,6 @@ export class Slider {
     this.prevButton = document.getElementById("prev");
     this.nextButton = document.getElementById("next");
 
-    // 再帰呼び出しのための this 固定
     this.render = this.render.bind(this);
   }
 
