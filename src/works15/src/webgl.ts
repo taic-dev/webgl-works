@@ -99,8 +99,7 @@ export class WebGL {
         this.DisplacementTexture = effect.getAttribute("value");
         (this.uniforms.uDisplacementTexture.value = loader.load(
           this.DisplacementTextures[this.DisplacementTexture || "effect1"]
-        )),
-          console.log(this.uniforms.uDisplacementTexture);
+        ))
       });
     });
   }

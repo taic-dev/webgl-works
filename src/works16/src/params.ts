@@ -1,4 +1,7 @@
-import Texture from "./image/texture.jpg";
+import Texture1 from "./image/texture1.jpg";
+import Texture2 from "./image/texture2.jpg";
+import Texture3 from "./image/texture3.jpg";
+import DisplacementTexture from './image/displacement1.png'
 
 export const PARAMS = {
   CAMERA_PARAMS: {
@@ -26,6 +29,8 @@ export const PARAMS = {
   },
   MATERIAL: {
     COLOR: 0xffffff,
-    TEXTURE: Texture
+    TEXTURE: [Texture1, Texture2, Texture3],
+    TEXTURE_ASPECT: 6000 / 4000,
+    DISPLACEMENT_TEXTURE: DisplacementTexture
   }
 } as const
