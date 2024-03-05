@@ -8,8 +8,14 @@ export class Webgl {
 
   constructor() {
     this.renderer;
-    this.perspectiveCamera;
     this.scene;
+    this.camera;
+    this.ambientLight;
+    this.directionalLight;
+    this.geometry;
+    this.material;
+
+    this.render = this.render.bind(this);
   }
 
   init() {
@@ -20,14 +26,14 @@ export class Webgl {
 
     this.scene = new THREE.Scene();
 
-    this.perspectiveCamera = new THREE.PerspectiveCamera(
+    this.camera = new THREE.PerspectiveCamera(
       PARAMS.CAMERA.FOV,
       PARAMS.CAMERA.ASPECT,
       PARAMS.CAMERA.NEAR,
       PARAMS.CAMERA.FAR
     );
 
-    this.perspectiveCamera.position.set(
+    this.camera.position.set(
       PARAMS.CAMERA.POSITION.X,
       PARAMS.CAMERA.POSITION.Y,
       PARAMS.CAMERA.POSITION.Z

@@ -1,4 +1,4 @@
-import Texture1 from "../../image/texture1.jpg";
+import Texture1 from "../image/texture1.jpg";
 
 export const PARAMS = {
   WINDOW: {
@@ -9,7 +9,7 @@ export const PARAMS = {
     FOV: 45,
     ASPECT: window.innerWidth / window.innerHeight,
     NEAR: 1,
-    FAR: 2000,
+    FAR: 100,
     POSITION: {
       X: 0.0,
       Y: 0.0,
@@ -31,6 +31,6 @@ export const PARAMS = {
   },
   IMAGE: {
     VALUE: [Texture1],
-    ASPECT: 1920 / 1280,
+    ASPECT: 3495 / 2280,
   }
 } as const
