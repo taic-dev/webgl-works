@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { PARAMS } from "./params";
-import vertexShader from "../shader/vertexShader.glsl"
-import fragmentShader from "../shader/fragmentShader.glsl"
+import vertexShader from "../shader/vertexShader.glsl";
+import fragmentShader from "../shader/fragmentShader.glsl";
 
 export class Webgl {
   [x: string]: any;
@@ -14,6 +14,7 @@ export class Webgl {
     this.directionalLight;
     this.geometry;
     this.material;
+    this.uniforms;
 
     this.render = this.render.bind(this);
   }
@@ -37,7 +38,7 @@ export class Webgl {
       PARAMS.CAMERA.POSITION.X,
       PARAMS.CAMERA.POSITION.Y,
       PARAMS.CAMERA.POSITION.Z
-    )
+    );
 
     this.ambientLight = new THREE.AmbientLight(
       PARAMS.AMBIENT_LIGHT.COLOR,
@@ -46,8 +47,8 @@ export class Webgl {
 
     this.directionalLight = new THREE.DirectionalLight(
       PARAMS.DIRECTIONAL_LIGHT.COLOR,
-      PARAMS.DIRECTIONAL_LIGHT.INTENSITY,
-    )
+      PARAMS.DIRECTIONAL_LIGHT.INTENSITY
+    );
 
     this.scene.add(this.ambientLight);
     this.scene.add(this.directionalLight);
@@ -55,29 +56,31 @@ export class Webgl {
     this.geometry = new THREE.PlaneGeometry(
       PARAMS.PLANE_GEOMETRY.X,
       PARAMS.PLANE_GEOMETRY.Y
-    )
+    );
 
     const loader = new THREE.TextureLoader();
     const texture = loader.load(PARAMS.IMAGE.VALUE[0]);
 
-    const uniforms = {
-      uTexture: {value: texture},
+    this.uniforms = {
+      uTime: { value: 0 },
+      uTexture: { value: texture },
       uImageAspect: { value: 1920 / 1280 },
-      uPlaneAspect: { value: PARAMS.PLANE_GEOMETRY.ASPECT }
-    }
+      uPlaneAspect: { value: PARAMS.PLANE_GEOMETRY.ASPECT },
+    };
 
     this.material = new THREE.ShaderMaterial({
-      uniforms,
+      uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
-    })
+    });
 
-    this.mesh = new THREE.Mesh(this.geometry, this.material)
-    this.scene.add(this.mesh)
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.scene.add(this.mesh);
   }
 
   render() {
+    this.uniforms.uTime.value++;
+    this.renderer.render(this.scene, this.camera);
     requestAnimationFrame(this.render);
-    this.renderer.render(this.scene, this.camera)
   }
 }
