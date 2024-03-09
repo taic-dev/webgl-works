@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { PARAMS } from "./params";
+import { ImagePlane } from "./imagePlane";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 
@@ -15,6 +16,10 @@ export class Webgl {
     this.geometry;
     this.material;
     this.uniforms;
+
+    this.createMesh;
+    this.imageArray;
+    this.imagePlaneArray = []
 
     this.render = this.render.bind(this);
   }
@@ -44,31 +49,33 @@ export class Webgl {
 
     this.scene = new THREE.Scene();
 
-    this.geometry = new THREE.PlaneGeometry(
-      PARAMS.PLANE_GEOMETRY.X,
-      PARAMS.PLANE_GEOMETRY.Y,
-      PARAMS.PLANE_GEOMETRY.W_SEGMENTS,
-      PARAMS.PLANE_GEOMETRY.Y_SEGMENTS,
-    );
+    this.createMesh = (img: HTMLImageElement) => {
+      this.geometry = new THREE.PlaneGeometry(
+        1,
+        1,
+        PARAMS.PLANE_GEOMETRY.W_SEGMENTS,
+        PARAMS.PLANE_GEOMETRY.Y_SEGMENTS
+      );
 
-    const loader = new THREE.TextureLoader();
-    const texture = loader.load(PARAMS.IMAGE.VALUE[0]);
+      const loader = new THREE.TextureLoader();
+      const texture = loader.load(img.src);
 
-    this.uniforms = {
-      uTime: { value: 0 },
-      uTexture: { value: texture },
-      uImageAspect: { value: PARAMS.IMAGE.ASPECT },
-      uPlaneAspect: { value: PARAMS.PLANE_GEOMETRY.ASPECT },
+      this.uniforms = {
+        uTime: { value: 0 },
+        uTexture: { value: texture },
+        uImageAspect: { value: img.naturalWidth / img.naturalHeight },
+        uPlaneAspect: { value: img.clientWidth / img.clientHeight },
+      };
+
+      this.material = new THREE.ShaderMaterial({
+        uniforms: this.uniforms,
+        vertexShader,
+        fragmentShader,
+      });
+
+      this.mesh = new THREE.Mesh(this.geometry, this.material);
+      return this.mesh;
     };
-
-    this.material = new THREE.ShaderMaterial({
-      uniforms: this.uniforms,
-      vertexShader,
-      fragmentShader,
-    });
-
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.scene.add(this.mesh);
 
     window.addEventListener("resize", () => {
       // rendererを更新
@@ -78,7 +85,23 @@ export class Webgl {
   }
 
   render() {
-    this.uniforms.uTime.value++;
+    window.addEventListener('load', () => {
+      this.imageArray = [...document.querySelectorAll('img')];
+      for(const img of this.imageArray) {
+        const mesh = this.createMesh(img)
+        this.scene.add(mesh);
+  
+        const imagePlane = new ImagePlane(mesh, img);
+        imagePlane.setParams();
+  
+        this.imagePlaneArray.push(imagePlane);
+      }
+    })
+
+    for (const plane of this.imagePlaneArray) {
+      plane.update();
+    } 
+    
     this.renderer.render(this.scene, this.camera);
     requestAnimationFrame(this.render);
   }
