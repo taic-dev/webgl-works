@@ -21,11 +21,10 @@ export class Webgl {
 
   init() {
     this.renderer = new THREE.WebGLRenderer({ alpha: true });
+    this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(PARAMS.WINDOW.WIDTH, PARAMS.WINDOW.HEIGHT);
     const wrapper = document.querySelector(".webgl");
     wrapper?.appendChild(this.renderer.domElement);
-
-    this.scene = new THREE.Scene();
 
     this.camera = new THREE.PerspectiveCamera(
       PARAMS.CAMERA.FOV,
@@ -34,28 +33,22 @@ export class Webgl {
       PARAMS.CAMERA.FAR
     );
 
+    const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
+    const dist = PARAMS.WINDOW.HEIGHT / 2 / Math.tan(fovRad);
+
     this.camera.position.set(
       PARAMS.CAMERA.POSITION.X,
       PARAMS.CAMERA.POSITION.Y,
-      PARAMS.CAMERA.POSITION.Z
+      dist
     );
 
-    this.ambientLight = new THREE.AmbientLight(
-      PARAMS.AMBIENT_LIGHT.COLOR,
-      PARAMS.AMBIENT_LIGHT.INTENSITY
-    );
-
-    this.directionalLight = new THREE.DirectionalLight(
-      PARAMS.DIRECTIONAL_LIGHT.COLOR,
-      PARAMS.DIRECTIONAL_LIGHT.INTENSITY
-    );
-
-    this.scene.add(this.ambientLight);
-    this.scene.add(this.directionalLight);
+    this.scene = new THREE.Scene();
 
     this.geometry = new THREE.PlaneGeometry(
       PARAMS.PLANE_GEOMETRY.X,
-      PARAMS.PLANE_GEOMETRY.Y
+      PARAMS.PLANE_GEOMETRY.Y,
+      PARAMS.PLANE_GEOMETRY.W_SEGMENTS,
+      PARAMS.PLANE_GEOMETRY.Y_SEGMENTS,
     );
 
     const loader = new THREE.TextureLoader();
@@ -64,7 +57,7 @@ export class Webgl {
     this.uniforms = {
       uTime: { value: 0 },
       uTexture: { value: texture },
-      uImageAspect: { value: 1920 / 1280 },
+      uImageAspect: { value: PARAMS.IMAGE.ASPECT },
       uPlaneAspect: { value: PARAMS.PLANE_GEOMETRY.ASPECT },
     };
 
@@ -76,6 +69,12 @@ export class Webgl {
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.mesh);
+
+    window.addEventListener("resize", () => {
+      // rendererを更新
+      this.renderer.setPixelRatio(window.devicePixelRatio);
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+    });
   }
 
   render() {
