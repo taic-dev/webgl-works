@@ -7,14 +7,17 @@ body {
   overflow-x: hidden;
   width: 100%;
   height: 100vh;
+  overscroll-behavior: none;
 }
 canvas {
   position: absolute;
   top: 0;
   left: 0;
   z-index: -1;
+  background-color: #333;
 }
 h1 {
+  position: fixed;
   margin: 15px;
   font-size: 2rem;
   font-family: "Secular One", sans-serif;
@@ -23,10 +26,16 @@ h1 {
 }
 .container {
   max-width: 1000px;
-  margin: 0 auto;
+  margin: 100px auto;
 }
 .image-item {
-  width: 100%;
+  width: 50%;
+  height: auto;
+}
+.image-item:nth-child(odd) {
+  margin: 0 0 0 auto;
+}
+.image-item:not(:last-child) {
   margin-bottom: 100px;
 }
 .image-item img {

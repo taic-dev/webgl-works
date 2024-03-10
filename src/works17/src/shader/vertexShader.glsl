@@ -7,11 +7,15 @@ void main() {
   vUv = uv;
   vec3 pos = position;
 
-  float offset = 0.01;
-  float freq = 0.05;
-  float amp = 10.0;
+  // 横方向
+  float amp = 0.03;
+  float freq = 0.01 * uTime;
 
-  pos.x = pos.x + sin(pos.y * offset + uTime * freq * PI) * amp;
+  // 縦方向
+  float tension = -0.001 * uTime;
+
+  pos.x = pos.x + sin(pos.y * PI  * freq) * amp;
+  pos.y = pos.y + (cos(pos.x * PI) * tension);
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 }

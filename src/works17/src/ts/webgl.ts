@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import { PARAMS } from "./params";
-import { ImagePlane } from "./imagePlane";
+import displacement1 from "../image/displacement1.png"
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
+import { lerp } from "./utils";
 
 export class Webgl {
   [x: string]: any;
@@ -16,12 +17,62 @@ export class Webgl {
     this.geometry;
     this.material;
     this.uniforms;
+    this.refImage;
+    this.mesh;
 
-    this.createMesh;
-    this.imageArray;
-    this.imagePlaneArray = []
+    this.targetScrollY = 0
+    this.currentScrollY = 0;
+    this.scrollOffset = 0;
+
+    this.imageArray = [...document.querySelectorAll("img")];
+    this.imagePlaneArray = [];
 
     this.render = this.render.bind(this);
+  }
+
+  createMesh(img: HTMLImageElement) {
+    this.geometry = new THREE.PlaneGeometry(
+      1,
+      1,
+      PARAMS.PLANE_GEOMETRY.W_SEGMENTS,
+      PARAMS.PLANE_GEOMETRY.Y_SEGMENTS
+    );
+
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load(img.src);
+    const displacement = loader.load(displacement1);
+
+    this.uniforms = {
+      uTime: { value: 0 },
+      uTexture: { value: texture },
+      uDisplacement: { value: displacement },
+      uImageAspect: { value: img.naturalWidth / img.naturalHeight },
+      uPlaneAspect: { value: img.clientWidth / img.clientHeight },
+    };
+
+    this.material = new THREE.ShaderMaterial({
+      uniforms: this.uniforms,
+      vertexShader,
+      fragmentShader,
+    });
+
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    return this.mesh;
+  }
+
+  setImagePlaneParams(img: HTMLImageElement, mesh: THREE.Mesh) {
+    const rect = img.getBoundingClientRect();
+    mesh.scale.x = rect.width;
+    mesh.scale.y = rect.height;
+
+    const x = rect.left - PARAMS.WINDOW.WIDTH / 2 + rect.width / 2;
+    const y = -rect.top + PARAMS.WINDOW.HEIGHT / 2 - rect.height / 2;
+    mesh.position.set(x, y, mesh.position.z);
+  }
+
+  updateImagePlaneParams(img: HTMLImageElement, mesh: any) {
+    this.setImagePlaneParams(img, mesh);
+    mesh.material.uniforms.uTime.value = this.scrollOffset;
   }
 
   init() {
@@ -85,23 +136,24 @@ export class Webgl {
   }
 
   render() {
-    window.addEventListener('load', () => {
-      this.imageArray = [...document.querySelectorAll('img')];
-      for(const img of this.imageArray) {
-        const mesh = this.createMesh(img)
+    window.addEventListener("load", () => {
+      for (const img of this.imageArray) {
+        const mesh = this.createMesh(img);
         this.scene.add(mesh);
-  
-        const imagePlane = new ImagePlane(mesh, img);
-        imagePlane.setParams();
-  
-        this.imagePlaneArray.push(imagePlane);
+        this.setImagePlaneParams(img, mesh);
+
+        this.imagePlaneArray.push({ img, mesh });
       }
-    })
+    });
+
+    this.targetScrollY = document.getElementById('root')?.scrollTop
+    this.currentScrollY = lerp(this.currentScrollY, this.targetScrollY, 0.1);
+    this.scrollOffset = this.targetScrollY - this.currentScrollY;
 
     for (const plane of this.imagePlaneArray) {
-      plane.update();
-    } 
-    
+      this.updateImagePlaneParams(plane.img, plane.mesh);
+    }
+
     this.renderer.render(this.scene, this.camera);
     requestAnimationFrame(this.render);
   }
