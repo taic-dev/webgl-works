@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { PARAMS } from "./params";
-import displacement1 from "../image/displacement1.png"
+import displacement1 from "../image/displacement1.png";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 import { lerp } from "./utils";
@@ -20,7 +20,7 @@ export class Webgl {
     this.refImage;
     this.mesh;
 
-    this.targetScrollY = 0
+    this.targetScrollY = 0;
     this.currentScrollY = 0;
     this.scrollOffset = 0;
 
@@ -127,12 +127,6 @@ export class Webgl {
       this.mesh = new THREE.Mesh(this.geometry, this.material);
       return this.mesh;
     };
-
-    window.addEventListener("resize", () => {
-      // rendererを更新
-      this.renderer.setPixelRatio(window.devicePixelRatio);
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
-    });
   }
 
   render() {
@@ -146,7 +140,7 @@ export class Webgl {
       }
     });
 
-    this.targetScrollY = document.getElementById('root')?.scrollTop
+    this.targetScrollY = document.getElementById("root")?.scrollTop;
     this.currentScrollY = lerp(this.currentScrollY, this.targetScrollY, 0.1);
     this.scrollOffset = this.targetScrollY - this.currentScrollY;
 
