@@ -1,4 +1,4 @@
-import Texture1 from "../image/texture1.jpg";
+import Texture1 from "../image/texture1.png";
 
 export const PARAMS = {
   WINDOW: {
@@ -6,10 +6,10 @@ export const PARAMS = {
     HEIGHT: window.innerHeight,
   },
   CAMERA: {
-    FOV: 45,
+    FOV: 60,
     ASPECT: window.innerWidth / window.innerHeight,
     NEAR: 1,
-    FAR: 100,
+    FAR: 1000,
     POSITION: {
       X: 0.0,
       Y: 0.0,
@@ -25,8 +25,10 @@ export const PARAMS = {
     INTENSITY: 0.5,
   },
   PLANE_GEOMETRY: {
-    X: 1,
-    Y: 1,
+    X: 800,
+    Y: 500,
+    W_SEGMENTS: 100,
+    Y_SEGMENTS: 100,
     ASPECT: 800 / 500
   },
   IMAGE: {
