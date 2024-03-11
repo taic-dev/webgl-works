@@ -1,0 +1,78 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+  height: 100vh;
+  overscroll-behavior: none;
+}
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  background-color: #333;
+}
+h1 {
+  position: fixed;
+  margin: 15px;
+  font-size: 2rem;
+  font-family: "Secular One", sans-serif;
+  color: #fff;
+  mix-blend-mode: difference;
+}
+.container {
+  max-width: 1200px;
+  margin: 100px auto;
+}
+.inner {
+  display: flex;
+  gap: 100px;
+}
+.title {
+  margin-bottom: 20px;
+}
+.title h2 {
+  font-size: 3rem;
+  font-weight: bold;
+  font-family: "Secular One", sans-serif;
+}
+.gallery-content {
+  width: 40%;
+}
+.gallery-list {
+  position: relative;
+  height: 100%;
+}
+.gallery-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+}
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.work-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.work-item a {
+  display: block;
+  padding: 30px 15px;
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: "Secular One", sans-serif;
+  border-bottom: solid 1px;
+}
+.work-content {
+  width: 60%;
+}
