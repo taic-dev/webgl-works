@@ -6,7 +6,6 @@ import rawLoader from 'vite-raw-plugin';
 
 export default defineConfig({
   root: "src",
-  // base: '/webgl-school-task/',
   plugins: [
     gltf({
       include: ["**/*.gltf",]
@@ -38,6 +37,7 @@ export default defineConfig({
         works15: resolve(__dirname, 'src/works15/index.html'),
         works16: resolve(__dirname, 'src/works16/index.html'),
         works17: resolve(__dirname, 'src/works17/index.html'),
+        works18: resolve(__dirname, 'src/works18/index.html'),
       },
     },
     assetsInclude: ['*.gltf'],
