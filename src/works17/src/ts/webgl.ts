@@ -99,34 +99,6 @@ export class Webgl {
     );
 
     this.scene = new THREE.Scene();
-
-    this.createMesh = (img: HTMLImageElement) => {
-      this.geometry = new THREE.PlaneGeometry(
-        1,
-        1,
-        PARAMS.PLANE_GEOMETRY.W_SEGMENTS,
-        PARAMS.PLANE_GEOMETRY.Y_SEGMENTS
-      );
-
-      const loader = new THREE.TextureLoader();
-      const texture = loader.load(img.src);
-
-      this.uniforms = {
-        uTime: { value: 0 },
-        uTexture: { value: texture },
-        uImageAspect: { value: img.naturalWidth / img.naturalHeight },
-        uPlaneAspect: { value: img.clientWidth / img.clientHeight },
-      };
-
-      this.material = new THREE.ShaderMaterial({
-        uniforms: this.uniforms,
-        vertexShader,
-        fragmentShader,
-      });
-
-      this.mesh = new THREE.Mesh(this.geometry, this.material);
-      return this.mesh;
-    };
   }
 
   render() {
