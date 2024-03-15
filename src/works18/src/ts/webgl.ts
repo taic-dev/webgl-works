@@ -1,5 +1,7 @@
 import * as THREE from "three";
+import { gsap } from "gsap";
 import { PARAMS } from "./params";
+import displacement from "../image/displacement.png";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 
@@ -14,7 +16,8 @@ export class Webgl {
     this.material;
 
     this.imgArray = document.querySelectorAll(".gallery-item img");
-    this.planeArray = []
+    this.planeArray = [];
+    this.workButtonArray = document.querySelectorAll(".work-item");
 
     this.render = this.render.bind(this);
   }
@@ -28,12 +31,14 @@ export class Webgl {
     );
 
     const loader = new THREE.TextureLoader();
-    const texture = loader.load(img.src);
 
     this.uniforms = {
-      uTexture: { value: texture },
+      uTexture1: { value: loader.load(this.imgArray[0].src) },
+      uTexture2: { value: loader.load(this.imgArray[1].src) },
+      uDisplacementTexture: { value: loader.load(displacement) },
       uImageAspect: { value: img.naturalWidth / img.naturalHeight },
       uPlaneAspect: { value: img.clientWidth / img.clientHeight },
+      uOffset: { value: 0.0 },
     };
 
     this.material = new THREE.ShaderMaterial({
@@ -47,21 +52,18 @@ export class Webgl {
   }
 
   setImagePlane(img: HTMLImageElement, mesh: THREE.Mesh) {
-    const rect = img.getBoundingClientRect()
+    const rect = img.getBoundingClientRect();
     mesh.scale.x = rect.width;
     mesh.scale.y = rect.height;
 
     const x = rect.left - PARAMS.WINDOW.W / 2 + rect.width / 2;
     const y = -rect.top + PARAMS.WINDOW.H / 2 - rect.height / 2;
 
-    console.log(x, y)
-    
     mesh.position.set(x, y, mesh.position.z);
   }
 
   updateImagePlane(img: HTMLImageElement, mesh: THREE.Mesh) {
     this.setImagePlane(img, mesh);
-
   }
 
   init() {
@@ -89,6 +91,32 @@ export class Webgl {
     );
 
     this.scene = new THREE.Scene();
+
+    const loader = new THREE.TextureLoader();
+
+    this.workButtonArray.forEach((workButton: HTMLElement) => {
+      workButton.addEventListener("click", () => {
+        const index = workButton.id as unknown as number - 1;
+        this.uniforms.uTexture2.value = loader.load(PARAMS.IMAGE.VALUE[index]);
+
+        this.uniforms.uOffset.value = 1.0;
+
+        gsap.to(this.uniforms.uOffset, {
+          duration: 1.5,
+          value: 0.0,
+          ease: "power2.inOut",
+          onStart: () => {
+            this.uniforms.uTexture1.value = loader.load(
+              PARAMS.IMAGE.VALUE[index]
+            );
+          },
+          onComplete: () => {
+            this.current = index;
+            this.uniforms.uOffset.value = 0.0
+          }
+        });
+      });
+    });
   }
 
   render() {
@@ -98,11 +126,11 @@ export class Webgl {
         this.scene.add(mesh);
         this.setImagePlane(img, mesh);
 
-        this.planeArray.push({img, mesh})
+        this.planeArray.push({ img, mesh });
       }
     });
 
-    for(const plane of this.planeArray) {
+    for (const plane of this.planeArray) {
       this.updateImagePlane(plane.img, plane.mesh);
     }
 

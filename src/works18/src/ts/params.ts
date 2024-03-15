@@ -1,3 +1,9 @@
+import Texture1 from '../image/texture1.jpg';
+import Texture2 from '../image/texture2.jpg';
+import Texture3 from '../image/texture3.jpg';
+import Texture4 from '../image/texture4.jpg';
+import Texture5 from '../image/texture5.jpg';
+
 export const PARAMS = {
   WINDOW: {
     W: window.innerWidth,
@@ -23,7 +29,7 @@ export const PARAMS = {
     ASPECT: 800 / 500
   },
   IMAGE: {
-    VALUE: [],
+    VALUE: [Texture1, Texture2, Texture3, Texture4, Texture5],
     ASPECT: 3495 / 2280,
   }
 
