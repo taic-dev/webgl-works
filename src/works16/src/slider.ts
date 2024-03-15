@@ -158,6 +158,8 @@ export class Slider {
           this.uniforms.uOffset.value = 0.0;
         },
       });
+      
+      this.prevButton.disabled= false;
     });
 
     // resize 処理
