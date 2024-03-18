@@ -15,9 +15,12 @@ export class Webgl {
     this.geometry;
     this.material;
 
+    this.isAnimation = true;
     this.imgArray = document.querySelectorAll(".gallery-item img");
+    this.textureArray = [];
     this.planeArray = [];
     this.workButtonArray = document.querySelectorAll(".work-item");
+    this.current = 0;
 
     this.render = this.render.bind(this);
   }
@@ -33,8 +36,8 @@ export class Webgl {
     const loader = new THREE.TextureLoader();
 
     this.uniforms = {
-      uTexture1: { value: loader.load(this.imgArray[0].src) },
-      uTexture2: { value: loader.load(this.imgArray[1].src) },
+      uTexture1: { value: this.textureArray[0] },
+      uTexture2: { value:this.textureArray[1] },
       uDisplacementTexture: { value: loader.load(displacement) },
       uImageAspect: { value: img.naturalWidth / img.naturalHeight },
       uPlaneAspect: { value: img.clientWidth / img.clientHeight },
@@ -91,14 +94,18 @@ export class Webgl {
     );
 
     this.scene = new THREE.Scene();
-
     const loader = new THREE.TextureLoader();
+
+    for (const img of this.imgArray) {
+      this.textureArray.push(loader.load(img.src));
+    }
 
     this.workButtonArray.forEach((workButton: HTMLElement) => {
       workButton.addEventListener("click", () => {
-        const index = workButton.id as unknown as number - 1;
-        this.uniforms.uTexture2.value = loader.load(PARAMS.IMAGE.VALUE[index]);
-
+        if (!this.isAnimation) return;
+        this.isAnimation = false;
+        const index = (workButton.id as unknown as number) - 1;
+        this.uniforms.uTexture2.value = this.textureArray[this.current];
         this.uniforms.uOffset.value = 1.0;
 
         gsap.to(this.uniforms.uOffset, {
@@ -106,15 +113,17 @@ export class Webgl {
           value: 0.0,
           ease: "power2.inOut",
           onStart: () => {
-            this.uniforms.uTexture1.value = loader.load(
-              PARAMS.IMAGE.VALUE[index]
-            );
+            this.uniforms.uTexture1.value = this.textureArray[index];
           },
           onComplete: () => {
             this.current = index;
-            this.uniforms.uOffset.value = 0.0
-          }
+            this.uniforms.uOffset.value = 0.0;
+          },
         });
+
+        setTimeout(() => {
+          this.isAnimation = true;
+        }, 1800);
       });
     });
   }
@@ -125,7 +134,6 @@ export class Webgl {
         const mesh = this.createMesh(img);
         this.scene.add(mesh);
         this.setImagePlane(img, mesh);
-
         this.planeArray.push({ img, mesh });
       }
     });
