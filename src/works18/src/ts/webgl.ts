@@ -29,7 +29,7 @@ export class Webgl {
     this.geometry = new THREE.PlaneGeometry(
       PARAMS.PLANE_GEOMETRY.X,
       PARAMS.PLANE_GEOMETRY.Y,
-      PARAMS.PLANE_GEOMETRY.W_SEGMENTS,
+      PARAMS.PLANE_GEOMETRY.X_SEGMENTS,
       PARAMS.PLANE_GEOMETRY.Y_SEGMENTS
     );
 
@@ -67,6 +67,25 @@ export class Webgl {
 
   updateImagePlane(img: HTMLImageElement, mesh: THREE.Mesh) {
     this.setImagePlane(img, mesh);
+
+    // ジオメトリの頂点座標情報
+    const position = mesh.geometry.attributes.position;
+    for (let i = 0; i < position.count; i++) {
+      // 各頂点のXYZ座標
+      const x = position.getX(i);
+      const y = position.getY(i);
+      const z = position.getZ(i);
+
+      // 高さを計算（PlaneGeometryの場合はZ座標）
+      const nextZ = Math.sin(x * 10. + y * 10. + Date.now() * 0.002) * 30;
+
+      position.setX(i, x);
+      position.setY(i, y);
+      position.setZ(i, !this.isAnimation ? nextZ : 0);
+    }
+
+    // 頂点の更新が必要なことを伝える
+    position.needsUpdate = true;
   }
 
   init() {
@@ -96,8 +115,8 @@ export class Webgl {
     this.scene = new THREE.Scene();
     const loader = new THREE.TextureLoader();
 
-    for (const img of this.imgArray) {
-      this.textureArray.push(loader.load(img.src));
+    for (const img of PARAMS.IMAGE.VALUE) {
+      this.textureArray.push(loader.load(img));
     }
 
     this.workButtonArray.forEach((workButton: HTMLElement) => {

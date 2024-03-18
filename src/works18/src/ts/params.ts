@@ -24,13 +24,16 @@ export const PARAMS = {
   PLANE_GEOMETRY: {
     X: 1,
     Y: 1,
-    W_SEGMENTS: 100,
+    X_SEGMENTS: 100,
     Y_SEGMENTS: 100,
     ASPECT: 800 / 500
   },
   IMAGE: {
     VALUE: [Texture1, Texture2, Texture3, Texture4, Texture5],
     ASPECT: 3495 / 2280,
+  },
+  POSITION: {
+    
   }
 
 }
