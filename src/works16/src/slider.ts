@@ -30,6 +30,8 @@ export class Slider {
     this.current = 0;
     this.paused = 0;
 
+    this.textureArray = [];
+    this.isAnimation = true;
     this.prevButton = document.getElementById("prev");
     this.nextButton = document.getElementById("next");
 
@@ -70,12 +72,16 @@ export class Slider {
 
     const loader = new THREE.TextureLoader();
 
+    for (const img of PARAMS.MATERIAL.TEXTURE) {
+      this.textureArray.push(loader.load(img));
+    }
+
     this.uniforms = {
       uTexture1: {
-        value: loader.load(PARAMS.MATERIAL.TEXTURE[0]),
+        value: this.textureArray[0],
       },
       uTexture2: {
-        value: loader.load(PARAMS.MATERIAL.TEXTURE[1]),
+        value: this.textureArray[1],
       },
       uTextureAspect: {
         value: PARAMS.MATERIAL.TEXTURE_ASPECT,
@@ -101,12 +107,15 @@ export class Slider {
 
     // Prevをクリック時
     this.prevButton.addEventListener("click", () => {
+
+      if(!this.isAnimation) return
+      
+      this.isAnimation = false
+
       const index =
         (this.current - 1 + PARAMS.MATERIAL.TEXTURE.length) %
         PARAMS.MATERIAL.TEXTURE.length;
-      this.uniforms.uTexture2.value = loader.load(
-        PARAMS.MATERIAL.TEXTURE[this.current]
-      );
+      this.uniforms.uTexture2.value = this.textureArray[this.current];
 
       this.uniforms.uOffset.value = 1.0;
 
@@ -115,9 +124,7 @@ export class Slider {
         value: 0.0,
         ease: "power2.inOut",
         onStart: () => {
-          this.uniforms.uTexture1.value = loader.load(
-            PARAMS.MATERIAL.TEXTURE[index]
-          );
+          this.uniforms.uTexture1.value = this.textureArray[index];
         },
         onComplete: () => {
           this.current = index;
@@ -125,19 +132,23 @@ export class Slider {
         },
       });
 
-      this.prevButton.disabled= false;
+      setTimeout(() => {
+        this.isAnimation = true
+      }, 1500);
     });
 
     // Nextをクリック時
     this.nextButton.addEventListener("click", () => {
 
+      if(!this.isAnimation) return
+
+      this.isAnimation = false
+
       const index =
         (this.current + 1 + PARAMS.MATERIAL.TEXTURE.length) %
         PARAMS.MATERIAL.TEXTURE.length;
 
-      this.uniforms.uTexture2.value = loader.load(
-        PARAMS.MATERIAL.TEXTURE[this.current]
-      );
+      this.uniforms.uTexture2.value = this.textureArray[this.current];
 
       this.uniforms.uOffset.value = 1.0;
 
@@ -146,20 +157,18 @@ export class Slider {
         value: 0.0,
         ease: "power2.inOut",
         onStart: () => {
-          this.uniforms.uTexture1.value = loader.load(
-            PARAMS.MATERIAL.TEXTURE[index]
-          );
+          this.uniforms.uTexture1.value = this.textureArray[index];
         },
         onComplete: () => {
           this.current = index;
-          this.uniforms.uTexture1.value = loader.load(
-            PARAMS.MATERIAL.TEXTURE[index]
-          );
+          this.uniforms.uTexture1.value = this.textureArray[index];
           this.uniforms.uOffset.value = 0.0;
         },
       });
-      
-      this.prevButton.disabled= false;
+
+      setTimeout(() => {
+        this.isAnimation = true
+      }, 1500);
     });
 
     // resize 処理

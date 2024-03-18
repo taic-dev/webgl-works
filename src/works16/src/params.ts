@@ -33,4 +33,4 @@ export const PARAMS = {
     TEXTURE_ASPECT: 6000 / 4000,
     DISPLACEMENT_TEXTURE: DisplacementTexture
   }
-} as const
+}
