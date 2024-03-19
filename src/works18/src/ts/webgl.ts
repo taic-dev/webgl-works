@@ -21,6 +21,7 @@ export class Webgl {
     this.planeArray = [];
     this.workButtonArray = document.querySelectorAll(".work-item");
     this.current = 0;
+    this.positionZ = 50
 
     this.render = this.render.bind(this);
   }
@@ -77,11 +78,12 @@ export class Webgl {
       const z = position.getZ(i);
 
       // 高さを計算（PlaneGeometryの場合はZ座標）
-      const nextZ = Math.sin(x * 10. + y * 10. + Date.now() * 0.002) * 30;
+      const nextZ = Math.sin(x * 5. + y * 5. + Date.now() * 0.002) * this.positionZ;
 
       position.setX(i, x);
       position.setY(i, y);
       position.setZ(i, !this.isAnimation ? nextZ : 0);
+      // position.setZ(i, nextZ);
     }
 
     // 頂点の更新が必要なことを伝える
@@ -133,10 +135,12 @@ export class Webgl {
           ease: "power2.inOut",
           onStart: () => {
             this.uniforms.uTexture1.value = this.textureArray[index];
+            this.positionZ = 50.
           },
           onComplete: () => {
             this.current = index;
             this.uniforms.uOffset.value = 0.0;
+            this.positionZ = 0.0
           },
         });
 
