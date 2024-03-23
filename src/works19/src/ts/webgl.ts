@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { gsap } from "gsap";
 import { PARAMS } from "./params";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
@@ -15,6 +16,7 @@ export class Webgl {
     this.material;
     this.uniforms;
     this.mesh;
+    this.clock = new THREE.Clock();
 
     this.targetScrollY = 0;
     this.currentScrollY = 0;
@@ -69,7 +71,7 @@ export class Webgl {
       uTexture: { value: texture },
       uImageAspect: { value: img.naturalWidth / img.naturalHeight },
       uPlaneAspect: { value: img.clientWidth / img.clientHeight },
-      uProgress: { value: 1 }
+      uProgress: { value: 0 },
     };
 
     this.material = new THREE.ShaderMaterial({
@@ -90,19 +92,31 @@ export class Webgl {
     const x = rect.left - PARAMS.WINDOW.W / 2 + rect.width / 2;
     const y = -rect.top + PARAMS.WINDOW.H / 2 - rect.height / 2;
 
-    mesh.position.set(x, y, mesh.position.z)
+    mesh.position.set(x, y, mesh.position.z);
+  }
+
+  animation(mesh: any) {
+    gsap.to(mesh.material.uniforms.uProgress, {
+      value: 1.0,
+      duration: 2,
+      ease: "power2.inOut",
+      delay: 0.5,
+    });
+
+    mesh.material.uniforms.uProgress.value = Math.abs(
+      Math.sin(this.clock.getElapsedTime())
+    );
   }
 
   updateImagePlane(img: HTMLImageElement, mesh: any) {
     this.setImagePlane(img, mesh);
-    // mesh.material.uniforms.uProgress.value = this.uProgress
   }
 
   onResize() {
     this.camera.aspect = PARAMS.WINDOW.W / PARAMS.WINDOW.H;
     this.camera.updateProjectMatrix();
     this.renderer.setSize(PARAMS.WINDOW.W, PARAMS.WINDOW.H);
-    this.renderer.setPixelRatio(Math.min(PARAMS.WINDOW.DEVICE_PIXEL_RATIO, 2))
+    this.renderer.setPixelRatio(Math.min(PARAMS.WINDOW.DEVICE_PIXEL_RATIO, 2));
   }
 
   render() {
@@ -112,12 +126,9 @@ export class Webgl {
         this.scene.add(mesh);
         this.setImagePlane(img, mesh);
         this.planeArray.push({ img, mesh });
+        this.animation(mesh);
       }
     });
-
-    this.targetScrollY = document.getElementById("root")?.scrollTop;
-    this.currentScrollY = lerp(this.currentScrollY, this.targetScrollY, 0.1);
-    this.scrollOffset = this.targetScrollY - this.currentScrollY;
 
     for (const plane of this.planeArray) {
       this.updateImagePlane(plane.img, plane.mesh);
