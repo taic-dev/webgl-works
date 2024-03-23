@@ -1,9 +1,8 @@
 import * as THREE from "three";
-import { gsap } from "gsap";
+import { gsap, ScrollTrigger } from "gsap/all";
 import { PARAMS } from "./params";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
-import { lerp } from "./utils";
 
 export class Webgl {
   [x: string]: any;
@@ -17,10 +16,6 @@ export class Webgl {
     this.uniforms;
     this.mesh;
     this.clock = new THREE.Clock();
-
-    this.targetScrollY = 0;
-    this.currentScrollY = 0;
-    this.scrollOffset = 0;
 
     this.render = this.render.bind(this);
     this.imgArray = document.querySelectorAll(".image-wrapper img");
@@ -95,17 +90,35 @@ export class Webgl {
     mesh.position.set(x, y, mesh.position.z);
   }
 
-  animation(mesh: any) {
+  _noiseAnimation(img:HTMLImageElement, mesh: any) {
+    gsap.registerPlugin(ScrollTrigger);
     gsap.to(mesh.material.uniforms.uProgress, {
       value: 1.0,
-      duration: 2,
-      ease: "power2.inOut",
-      delay: 0.5,
+      duration: 1.5,
+      ease: "power3.inOut",
+      scrollTrigger: {
+        trigger: img,
+        start: "bottom bottom",
+      }
     });
-
+    
     mesh.material.uniforms.uProgress.value = Math.abs(
       Math.sin(this.clock.getElapsedTime())
     );
+  }
+
+  _waveAnimation(mesh: any) {
+    const position = mesh.geometry.attributes.position;
+    for (let i = 0; i < position.count; i++) {
+
+      const x = position.getX(i);
+      const y = position.getY(i);
+      const nextZ = Math.sin(x * 1 + y * 5 + Date.now() * 0.003) * 50;
+
+      position.setZ(i, nextZ);
+    }
+
+    position.needsUpdate = true;
   }
 
   updateImagePlane(img: HTMLImageElement, mesh: any) {
@@ -126,12 +139,13 @@ export class Webgl {
         this.scene.add(mesh);
         this.setImagePlane(img, mesh);
         this.planeArray.push({ img, mesh });
-        this.animation(mesh);
+        this._noiseAnimation(img, mesh);
       }
     });
 
     for (const plane of this.planeArray) {
       this.updateImagePlane(plane.img, plane.mesh);
+      this._waveAnimation(plane.mesh);
     }
 
     this.renderer.render(this.scene, this.camera);
