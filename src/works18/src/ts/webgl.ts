@@ -75,7 +75,6 @@ export class Webgl {
       // 各頂点のXYZ座標
       const x = position.getX(i);
       const y = position.getY(i);
-      const z = position.getZ(i);
 
       // 高さを計算（PlaneGeometryの場合はZ座標）
       const nextZ = Math.sin(x * 5. + y * 5. + Date.now() * 0.002) * this.positionZ;
