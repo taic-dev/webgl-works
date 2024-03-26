@@ -14,6 +14,7 @@ export class Webgl {
     this.scene;
     this.geometry;
     this.material;
+    this.mesh;
 
     this.isAnimation = true;
     this.imgArray = document.querySelectorAll(".gallery-item img");
@@ -21,7 +22,9 @@ export class Webgl {
     this.planeArray = [];
     this.workButtonArray = document.querySelectorAll(".work-item");
     this.current = 0;
-    this.positionZ = 50
+    this.clock = new THREE.Clock();
+
+    this.tl = gsap.timeline();
 
     this.render = this.render.bind(this);
   }
@@ -38,17 +41,20 @@ export class Webgl {
 
     this.uniforms = {
       uTexture1: { value: this.textureArray[0] },
-      uTexture2: { value:this.textureArray[1] },
+      uTexture2: { value: this.textureArray[1] },
       uDisplacementTexture: { value: loader.load(displacement) },
       uImageAspect: { value: img.naturalWidth / img.naturalHeight },
       uPlaneAspect: { value: img.clientWidth / img.clientHeight },
       uOffset: { value: 0.0 },
+      uTime: { value: 0.0 },
+      uNoiseAmp: { value: 0.0 },
     };
 
     this.material = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
+      side: THREE.DoubleSide,
     });
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
@@ -66,27 +72,9 @@ export class Webgl {
     mesh.position.set(x, y, mesh.position.z);
   }
 
-  updateImagePlane(img: HTMLImageElement, mesh: THREE.Mesh) {
+  updateImagePlane(img: HTMLImageElement, mesh: any) {
     this.setImagePlane(img, mesh);
-
-    // ジオメトリの頂点座標情報
-    const position = mesh.geometry.attributes.position;
-    for (let i = 0; i < position.count; i++) {
-      // 各頂点のXYZ座標
-      const x = position.getX(i);
-      const y = position.getY(i);
-
-      // 高さを計算（PlaneGeometryの場合はZ座標）
-      const nextZ = Math.sin(x * 5. + y * 5. + Date.now() * 0.002) * this.positionZ;
-
-      position.setX(i, x);
-      position.setY(i, y);
-      position.setZ(i, !this.isAnimation ? nextZ : 0);
-      // position.setZ(i, nextZ);
-    }
-
-    // 頂点の更新が必要なことを伝える
-    position.needsUpdate = true;
+    mesh.material.uniforms.uTime.value = this.clock.getElapsedTime() * 0.3;
   }
 
   init() {
@@ -120,6 +108,11 @@ export class Webgl {
       this.textureArray.push(loader.load(img));
     }
 
+    this.mesh = this.createMesh(this.imgArray[0]);
+    this.scene.add(this.mesh);
+    this.setImagePlane(this.imgArray[0], this.mesh);
+    this.planeArray.push({ img: this.imgArray[0], mesh: this.mesh });
+
     this.workButtonArray.forEach((workButton: HTMLElement) => {
       workButton.addEventListener("click", () => {
         if (!this.isAnimation) return;
@@ -134,32 +127,33 @@ export class Webgl {
           ease: "power2.inOut",
           onStart: () => {
             this.uniforms.uTexture1.value = this.textureArray[index];
-            this.positionZ = 50.
           },
           onComplete: () => {
             this.current = index;
             this.uniforms.uOffset.value = 0.0;
-            this.positionZ = 0.0
           },
         });
 
+        this.tl
+          .to(this.uniforms.uNoiseAmp, {
+            duration: 0.7,
+            value: 150.0,
+            ease: "power3.inOut",
+          })
+          .to(this.uniforms.uNoiseAmp, {
+            duration: 0.7,
+            value: 0.0,
+            ease: "power3.inOut",
+          });
+
         setTimeout(() => {
           this.isAnimation = true;
-        }, 1800);
+        }, 1500);
       });
     });
   }
 
   render() {
-    window.addEventListener("load", () => {
-      for (const img of this.imgArray) {
-        const mesh = this.createMesh(img);
-        this.scene.add(mesh);
-        this.setImagePlane(img, mesh);
-        this.planeArray.push({ img, mesh });
-      }
-    });
-
     for (const plane of this.planeArray) {
       this.updateImagePlane(plane.img, plane.mesh);
     }
