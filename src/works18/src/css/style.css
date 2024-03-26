@@ -8,24 +8,24 @@ body {
   width: 100%;
   height: 100vh;
   overscroll-behavior: none;
+  background-color: #f88691;
 }
 canvas {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: -1;
+  z-index: 0;
 }
 h1 {
   position: fixed;
   margin: 15px;
   font-size: 2rem;
   font-family: "Secular One", sans-serif;
-  color: #000;
-  mix-blend-mode: difference;
+  color: #111;
 }
 .container {
   max-width: 1200px;
-  margin: 100px auto;
+  margin: 150px auto;
 }
 .inner {
   display: flex;
@@ -33,6 +33,7 @@ h1 {
 }
 .title {
   margin-bottom: 20px;
+  color: #111;
 }
 .title h2 {
   font-size: 3rem;
@@ -65,13 +66,49 @@ h1 {
   display: flex;
   flex-direction: column;
 }
+.work-list li {
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+}
+.work-list li::after {
+  position: absolute;
+  top: 100%;
+  z-index: 1;
+  content: "";
+
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+
+  transition: 0.5s;
+}
+.work-list li:hover::after {
+  top: 0;
+  transition: 0.5s;
+}
+
+.work-list li:hover {
+  transition: 0.5s;
+}
+.work-list li:hover a {
+  padding: 30px;
+  transition: 0.5s ease-out;
+}
 .work-item a {
-  display: block;
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 30px 15px;
   font-size: 2rem;
   font-weight: bold;
   font-family: "Secular One", sans-serif;
   border-bottom: solid 1px;
+  color: #111;
+  transition: 0.5s;
 }
 .work-content {
   width: 60%;
