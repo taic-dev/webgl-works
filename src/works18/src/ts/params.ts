@@ -14,7 +14,7 @@ export const PARAMS = {
     FOV: 60,
     ASPECT: window.innerWidth / window.innerHeight,
     NEAR: 1,
-    FAR: 1000,
+    FAR: 5000,
     POSITION: {
       X: 0.0,
       Y: 0.0,
