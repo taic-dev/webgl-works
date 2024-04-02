@@ -1,23 +1,23 @@
-import * as THREE from 'three'
-import { PARAMS } from './params';
+import * as THREE from "three";
+import { PARAMS } from "./params";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 
 export class Webgl {
-  [x: string]: any
+  [x: string]: any;
 
   constructor() {
-    this.renderer
-    this.camera
-    this.geometry
-    this.material
+    this.renderer;
+    this.camera;
+    this.geometry;
+    this.material;
     this.scene = new THREE.Scene();
 
     this.render = this.render.bind(this);
   }
 
   _setRenderer(element: HTMLElement | null) {
-    if(!element) return 
+    if (!element) return;
     this.renderer = new THREE.WebGLRenderer({ alpha: true });
     this.renderer.setSize(PARAMS.WINDOW.W, PARAMS.WINDOW.H);
     this.renderer.setPixelRatio(PARAMS.WINDOW.PIXEL_RATIO);
@@ -32,13 +32,13 @@ export class Webgl {
       PARAMS.CAMERA.FAR
     );
     const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
-    const dist  = PARAMS.WINDOW.H / 2 / Math.tan(fovRad);
+    const dist = PARAMS.WINDOW.H / 2 / Math.tan(fovRad);
 
     this.camera.position.set(
       PARAMS.CAMERA.POSITION.X,
       PARAMS.CAMERA.POSITION.Y,
-      dist,
-    )
+      dist
+    );
   }
 
   _setMesh() {
@@ -57,17 +57,19 @@ export class Webgl {
       uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
-    }); 
+    });
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.scene.add(this.mesh)
+    this.scene.add(this.mesh);
   }
 
   _onResize() {
-    this.camera.aspect = PARAMS.WINDOW.W / PARAMS.WINDOW.H;
-    this.camera.updateProjectMatrix();
-    this.renderer.setSize(PARAMS.WINDOW.W, PARAMS.WINDOW.H);
-    this.renderer.setPixelRatio(Math.min(PARAMS.WINDOW.PIXEL_RATIO, 2));
+    setTimeout(() => {
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+      this.mesh.scale.set(window.innerWidth, window.innerHeight);
+    }, 500);
   }
 
   init() {
