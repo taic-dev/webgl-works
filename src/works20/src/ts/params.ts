@@ -21,4 +21,7 @@ export const PARAMS = {
     X_SEGMENTS: 1,
     Y_SEGMENTS: 1,
   },
+  GUI: {
+    
+  }
 };
