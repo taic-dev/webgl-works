@@ -20,8 +20,5 @@ export const PARAMS = {
     Y: window.innerHeight,
     X_SEGMENTS: 1,
     Y_SEGMENTS: 1,
-  },
-  GUI: {
-    
   }
 };

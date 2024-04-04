@@ -13,6 +13,7 @@ export class Webgl {
     this.geometry;
     this.material;
     this.scene = new THREE.Scene();
+    this.clock = new THREE.Clock();
 
     this.r = { r: 0 };
     this.g = { g: 0 };
@@ -55,10 +56,12 @@ export class Webgl {
     );
 
     this.uniforms = {
-      uPlaneAspect: { value: PARAMS.WINDOW.W / PARAMS.WINDOW.H },
       uR: { value: this.r.r },
       uG: { value: this.g.g },
       uB: { value: this.b.b },
+      uTime: { value: 0 },
+      uPlaneAspect: { value: PARAMS.WINDOW.W / PARAMS.WINDOW.H },
+      uResolution: { value: { x: window.innerWidth, y: window.innerHeight } }
     };
 
     this.material = new THREE.ShaderMaterial({
@@ -77,6 +80,7 @@ export class Webgl {
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
       this.mesh.scale.set(window.innerWidth, window.innerHeight);
+      this.material.uniforms.uResolution.value = { x: window.innerWidth, y: window.innerHeight }
     }, 500);
   }
 
@@ -95,8 +99,9 @@ export class Webgl {
     this.renderer.render(this.scene, this.camera);
     requestAnimationFrame(this.render);
 
-    this.material.uniforms.uR.value = this.r.r
-    this.material.uniforms.uG.value = this.g.g
-    this.material.uniforms.uB.value = this.b.b
+    this.material.uniforms.uR.value = Math.abs(Math.sin(this.r.r += this.clock.elapsedTime * 0.01))
+    this.material.uniforms.uG.value = Math.abs(Math.sin(this.g.g += this.clock.elapsedTime * 0.01))
+    this.material.uniforms.uB.value = Math.abs(Math.sin(this.b.b += this.clock.elapsedTime * 0.01))
+    this.material.uniforms.uTime.value += Math.abs(Math.sin(0.01));
   }
 }
