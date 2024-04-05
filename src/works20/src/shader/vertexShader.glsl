@@ -1,4 +1,5 @@
 varying vec2 vUv;
+varying vec2 pos;
 
 void main() {
   vUv = uv;
