@@ -12,8 +12,8 @@ export const PARAMS = {
     NEAR: 1,
     FAR: 1000,
     POSITION: {
-      X: 1,
-      Y: 1,
+      X: 0,
+      Y: 0,
       Z: 1,
     }
   },

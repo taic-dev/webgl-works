@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { PARAMS } from "./params";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
@@ -39,8 +40,11 @@ export class Webgl {
     this.camera.position.set(
       PARAMS.CAMERA.POSITION.X,
       PARAMS.CAMERA.POSITION.Y,
-      dist
+      // dist
+      200
     );
+
+    this.camera.lookAt(0, 0, 0);
   }
 
   _setMesh() {
@@ -51,13 +55,13 @@ export class Webgl {
       PARAMS.PLANE_GEOMETRY.Y_SEGMENTS
     );
 
-    this.uniforms = {
-      uPlaneAspect: { value: PARAMS.WINDOW.W / PARAMS.WINDOW.H },
-      uTexture: { value: new THREE.TextureLoader().load(PARAMS.TEXTURE) },
-    };
+    // this.uniforms = {
+    //   uPlaneAspect: { value: PARAMS.WINDOW.W / PARAMS.WINDOW.H },
+    //   uTexture: { value: new THREE.TextureLoader().load(PARAMS.TEXTURE) },
+    // };
 
     this.material = new THREE.ShaderMaterial({
-      uniforms: this.uniforms,
+      // uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
     });
@@ -66,10 +70,66 @@ export class Webgl {
     this.scene.add(this.mesh);
   }
 
+  _setParticle() {
+    const geometry = new THREE.BufferGeometry();
+
+    const multiplier = 18;
+    const nbColumns = 16 * multiplier;
+    const nbLines = 9 * multiplier;
+
+    const vertices: number[] = [];
+
+    for(let i = 0; i < nbColumns; i++) {
+      for (let j = 0; j < nbLines; j++) {
+        const points = [i, j, 0];
+        vertices.push(...points);
+      }
+    }
+
+    const vertices32 = new Float32Array(vertices);
+
+    geometry.setAttribute("position", new THREE.BufferAttribute(vertices32, 3));
+    geometry.center()
+
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load(PARAMS.TEXTURE);
+
+    this.uniforms = {
+      uPointSize: { value: 8. },
+      uTexture: { value: texture },
+      uNbColumns: { value: nbColumns },
+      uNbLines: { value: nbLines },
+    }
+
+    const material = new THREE.ShaderMaterial({
+      uniforms: this.uniforms,
+      vertexShader,
+      fragmentShader,
+    });
+    const mesh = new THREE.Points(geometry, material);
+    this.scene.add(mesh);
+  }
+
+  _setControls() {
+    const controls = new OrbitControls(this.camera, this.renderer.domElement);
+    controls.enableDamping = true;
+  }
+
+  _setAxesHelper() {
+    const axesHelper = new THREE.AxesHelper(10);
+    this.scene.add(axesHelper);
+  }
+
   init() {
-    this._setRenderer(document?.querySelector(".webgl"));
+    const element = document?.querySelector(".webgl")
+    this._setRenderer(element);
     this._setCamera();
-    this._setMesh();
+    // this._setMesh();
+
+    this._setControls();
+    this._setAxesHelper();
+
+    this._setParticle();
   }
 
   render() {
