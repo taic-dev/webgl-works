@@ -3,6 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { PARAMS } from "./params";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
+import { gsap } from "gsap";
 
 export class Webgl {
   [x: string]: any;
@@ -47,29 +48,6 @@ export class Webgl {
     this.camera.lookAt(0, 0, 0);
   }
 
-  _setMesh() {
-    this.geometry = new THREE.PlaneGeometry(
-      PARAMS.PLANE_GEOMETRY.X,
-      PARAMS.PLANE_GEOMETRY.Y,
-      PARAMS.PLANE_GEOMETRY.X_SEGMENTS,
-      PARAMS.PLANE_GEOMETRY.Y_SEGMENTS
-    );
-
-    // this.uniforms = {
-    //   uPlaneAspect: { value: PARAMS.WINDOW.W / PARAMS.WINDOW.H },
-    //   uTexture: { value: new THREE.TextureLoader().load(PARAMS.TEXTURE) },
-    // };
-
-    this.material = new THREE.ShaderMaterial({
-      // uniforms: this.uniforms,
-      vertexShader,
-      fragmentShader,
-    });
-
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.scene.add(this.mesh);
-  }
-
   _setParticle() {
     const geometry = new THREE.BufferGeometry();
 
@@ -78,36 +56,67 @@ export class Webgl {
     const nbLines = 9 * multiplier;
 
     const vertices: number[] = [];
+    const rand: number[] = [];
 
-    for(let i = 0; i < nbColumns; i++) {
+    for (let i = 0; i < nbColumns; i++) {
       for (let j = 0; j < nbLines; j++) {
         const points = [i, j, 0];
         vertices.push(...points);
+        rand.push((Math.random() - 1.0) * 2.0, (Math.random() - 1.0) * 2.0);
       }
     }
 
     const vertices32 = new Float32Array(vertices);
+    const rands = new Float32Array(rand);
 
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices32, 3));
-    geometry.center()
+    geometry.setAttribute("rands", new THREE.BufferAttribute(rands, 2));
+    geometry.center();
 
     const loader = new THREE.TextureLoader();
     const texture = loader.load(PARAMS.TEXTURE);
 
     this.uniforms = {
-      uPointSize: { value: 8. },
+      uPointSize: { value: 1. },
+      uRatio: { value: 0 },
       uTexture: { value: texture },
       uNbColumns: { value: nbColumns },
       uNbLines: { value: nbLines },
-    }
+    };
 
-    const material = new THREE.ShaderMaterial({
+    this.material = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
+      depthTest: false,
+      depthWrite: false,
     });
-    const mesh = new THREE.Points(geometry, material);
+
+    const mesh = new THREE.Points(geometry, this.material);
     this.scene.add(mesh);
+  }
+
+  _setAnimation() {
+    gsap.to(this.material.uniforms.uRatio, {
+      value: 3.0,
+      duration: 2.,
+      ease: 'power2.inOut',
+      repeat: 1,
+      yoyo: true,
+    })
+  }
+
+  _setAutoPlay() {
+    this._setAnimation();
+
+    gsap.to({},{
+      ease: 'none',
+      duration: 4.2,
+      repeat: -1.0,
+      onRepeat: () => {
+        this._setAnimation();
+      }
+    })
   }
 
   _setControls() {
@@ -121,19 +130,21 @@ export class Webgl {
   }
 
   init() {
-    const element = document?.querySelector(".webgl")
+    const element = document?.querySelector(".webgl");
     this._setRenderer(element);
     this._setCamera();
-    // this._setMesh();
 
     this._setControls();
     this._setAxesHelper();
 
     this._setParticle();
+    this._setAutoPlay();
   }
 
   render() {
     this.renderer.render(this.scene, this.camera);
+
+    // this.material.uniforms.uTime.value = Math.sin(randFloat(1, 10))
     requestAnimationFrame(this.render);
   }
 
