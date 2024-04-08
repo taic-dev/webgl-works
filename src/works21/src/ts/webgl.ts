@@ -42,7 +42,7 @@ export class Webgl {
       PARAMS.CAMERA.POSITION.X,
       PARAMS.CAMERA.POSITION.Y,
       // dist
-      200
+      100
     );
 
     this.camera.lookAt(0, 0, 0);
@@ -90,6 +90,7 @@ export class Webgl {
       fragmentShader,
       depthTest: false,
       depthWrite: false,
+      transparent: true
     });
 
     const mesh = new THREE.Points(geometry, this.material);
@@ -135,7 +136,6 @@ export class Webgl {
     this._setCamera();
 
     this._setControls();
-    this._setAxesHelper();
 
     this._setParticle();
     this._setAutoPlay();
