@@ -79,6 +79,7 @@ export class Webgl {
     this.uniforms = {
       uPointSize: { value: 1. },
       uRatio: { value: 0 },
+      uTime: { value: 0 },
       uTexture: { value: texture },
       uNbColumns: { value: nbColumns },
       uNbLines: { value: nbLines },
@@ -99,8 +100,8 @@ export class Webgl {
 
   _setAnimation() {
     gsap.to(this.material.uniforms.uRatio, {
-      value: 3.0,
-      duration: 2.,
+      value: 1.0,
+      duration: 2.5,
       ease: 'power2.inOut',
       repeat: 1,
       yoyo: true,
@@ -112,7 +113,7 @@ export class Webgl {
 
     gsap.to({},{
       ease: 'none',
-      duration: 4.2,
+      duration: 6.0,
       repeat: -1.0,
       onRepeat: () => {
         this._setAnimation();
@@ -143,8 +144,7 @@ export class Webgl {
 
   render() {
     this.renderer.render(this.scene, this.camera);
-
-    // this.material.uniforms.uTime.value = Math.sin(randFloat(1, 10))
+    this.material.uniforms.uTime.value++
     requestAnimationFrame(this.render);
   }
 
