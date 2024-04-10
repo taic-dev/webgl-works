@@ -1,6 +1,9 @@
+attribute vec3 rand;
+
 uniform float uPointSize;
 uniform float uRatio;
 uniform float uTime;
+uniform float uAnimation;
 varying vec2 vTexCoords;
 
 //	Simplex 3D Noise 
@@ -79,14 +82,25 @@ float snoise(vec3 v){
 }
 
 void main() {
-  vec3 vertexDirection = vec3(normalize(position.xy), 0.0);
-  vec3 noise = position * snoise(vec3(vertexDirection)) * 5.0 * uRatio * abs((uTime));
-  vec3 diffuse = vertexDirection * 5.0 * uRatio;
-  vec3 finalPosition = position + noise + diffuse;
+  float radiusRange = 10.;
+  float radiusRandX = radiusRange * sin(uTime * rand.x + rand.y * 5.0);
+  float radiusRandY = radiusRange * cos(uTime * rand.x + rand.y * 5.0);
+  float radiusRandAll = radiusRandX + radiusRandY;
+  float finalRadius = 3.0 + radiusRandAll;
 
+  float moveRange = 0.5;
+  float moveRandX = moveRange * sin(uTime * rand.x + rand.y * 5.0) * uAnimation;
+  float moveRandY = moveRange * cos(uTime * rand.x + rand.y * 5.0);
+
+  vec3 finalPosition = position + vec3(moveRandX, moveRandY, 0);
+
+  // vec3 vertexDirection = vec3(normalize(position.xy), 0.0);
+  // vec3 noise = position * snoise(vec3(vertexDirection)) * 5.0 * uRatio;
+  // vec3 diffuse = vertexDirection * 5.0 * uRatio;
+  // vec3 finalPosition = position + noise + diffuse + normalize(abs(uTime));
+
+  gl_PointSize = finalRadius;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(finalPosition, 1.0 );
-
-  gl_PointSize = uPointSize * 2.;
-
+  
   vTexCoords = position.xy;
 }

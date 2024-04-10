@@ -41,8 +41,7 @@ export class Webgl {
     this.camera.position.set(
       PARAMS.CAMERA.POSITION.X,
       PARAMS.CAMERA.POSITION.Y,
-      // dist
-      100
+      PARAMS.CAMERA.POSITION.Z
     );
 
     this.camera.lookAt(0, 0, 0);
@@ -67,19 +66,20 @@ export class Webgl {
     }
 
     const vertices32 = new Float32Array(vertices);
-    const rands = new Float32Array(rand);
+    const rands = new THREE.BufferAttribute(new Float32Array(rand), 2);
 
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices32, 3));
-    geometry.setAttribute("rands", new THREE.BufferAttribute(rands, 2));
+    geometry.setAttribute("rand", rands);
     geometry.center();
 
     const loader = new THREE.TextureLoader();
     const texture = loader.load(PARAMS.TEXTURE);
 
     this.uniforms = {
-      uPointSize: { value: 1. },
+      uPointSize: { value: 3 },
       uRatio: { value: 0 },
       uTime: { value: 0 },
+      uAnimation: { value: -500.0 },
       uTexture: { value: texture },
       uNbColumns: { value: nbColumns },
       uNbLines: { value: nbLines },
@@ -91,7 +91,7 @@ export class Webgl {
       fragmentShader,
       depthTest: false,
       depthWrite: false,
-      transparent: true
+      transparent: true,
     });
 
     const mesh = new THREE.Points(geometry, this.material);
@@ -102,23 +102,32 @@ export class Webgl {
     gsap.to(this.material.uniforms.uRatio, {
       value: 1.0,
       duration: 2.5,
-      ease: 'power2.inOut',
+      ease: "power2.inOut",
       repeat: 1,
       yoyo: true,
-    })
+    });
+
+    gsap.to(this.material.uniforms.uAnimation, {
+      value: -10,
+      duration: 3.5,
+      ease: "power2.inOut",
+    });
   }
 
   _setAutoPlay() {
     this._setAnimation();
 
-    gsap.to({},{
-      ease: 'none',
-      duration: 6.0,
-      repeat: -1.0,
-      onRepeat: () => {
-        this._setAnimation();
+    gsap.to(
+      {},
+      {
+        ease: "none",
+        duration: 6.0,
+        repeat: -1.0,
+        onRepeat: () => {
+          this._setAnimation();
+        },
       }
-    })
+    );
   }
 
   _setControls() {
@@ -144,7 +153,7 @@ export class Webgl {
 
   render() {
     this.renderer.render(this.scene, this.camera);
-    this.material.uniforms.uTime.value++
+    this.material.uniforms.uTime.value += 0.05;
     requestAnimationFrame(this.render);
   }
 

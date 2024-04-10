@@ -1,4 +1,4 @@
-import texture from '../img/texture.jpg'
+import texture from "../img/texture3.jpg";
 
 export const PARAMS = {
   WINDOW: {
@@ -14,8 +14,8 @@ export const PARAMS = {
     POSITION: {
       X: 0,
       Y: 0,
-      Z: 1,
-    }
+      Z: 150,
+    },
   },
   PLANE_GEOMETRY: {
     X: window.innerWidth,
@@ -23,5 +23,5 @@ export const PARAMS = {
     X_SEGMENTS: 1,
     Y_SEGMENTS: 1,
   },
-  TEXTURE: texture
-}
+  TEXTURE: texture,
+};
