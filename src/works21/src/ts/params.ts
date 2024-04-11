@@ -1,4 +1,6 @@
-import texture from "../img/texture3.jpg";
+import texture1 from "../img/texture1.jpg";
+import texture2 from "../img/texture2.jpg";
+import texture3 from "../img/texture3.jpg";
 
 export const PARAMS = {
   WINDOW: {
@@ -14,7 +16,7 @@ export const PARAMS = {
     POSITION: {
       X: 0,
       Y: 0,
-      Z: 150,
+      Z: 180,
     },
   },
   PLANE_GEOMETRY: {
@@ -23,5 +25,5 @@ export const PARAMS = {
     X_SEGMENTS: 1,
     Y_SEGMENTS: 1,
   },
-  TEXTURE: texture,
+  TEXTURE: [ texture1, texture2, texture3 ],
 };

@@ -1,6 +1,7 @@
 varying vec2 vUv;
 uniform float uPlaneAspect;
-uniform sampler2D uTexture;
+uniform sampler2D uTexture1;
+uniform sampler2D uTexture2;
 varying vec2 vTexCoords;
 uniform float uNbColumns;
 uniform float uNbLines;
@@ -22,9 +23,10 @@ void main() {
   uv = vec2(texOffsetU, texOffsetV);
   uv += vec2(0.5);
 
-  vec4 texture = texture2D(uTexture, uv);
+  vec4 texture1 = texture2D(uTexture1, uv);
+  vec4 texture2 = texture2D(uTexture2, uv);
 
-  gl_FragColor = texture;
+  gl_FragColor = mix(texture1, texture2, 0.1);
 
   gl_FragColor.a *= circle(gl_PointCoord, 0.1);
 }

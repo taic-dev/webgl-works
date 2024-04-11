@@ -17,6 +17,7 @@ export class Webgl {
     this.uniforms;
     this.scene = new THREE.Scene();
 
+    this.texture = [];
     this.render = this.render.bind(this);
   }
 
@@ -35,8 +36,8 @@ export class Webgl {
       PARAMS.CAMERA.NEAR,
       PARAMS.CAMERA.FAR
     );
-    const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
-    const dist = PARAMS.WINDOW.H / 2 / Math.tan(fovRad);
+    // const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
+    // const dist = PARAMS.WINDOW.H / 2 / Math.tan(fovRad);
 
     this.camera.position.set(
       PARAMS.CAMERA.POSITION.X,
@@ -73,14 +74,19 @@ export class Webgl {
     geometry.center();
 
     const loader = new THREE.TextureLoader();
-    const texture = loader.load(PARAMS.TEXTURE);
+
+    for (let i = 0; i < PARAMS.TEXTURE.length; i++) {
+      this.texture.push(loader.load(PARAMS.TEXTURE[i]));
+    }
 
     this.uniforms = {
       uPointSize: { value: 3 },
       uRatio: { value: 0 },
       uTime: { value: 0 },
-      uAnimation: { value: -500.0 },
-      uTexture: { value: texture },
+      // uAnimation: { value: 500.0 },
+      uSliderAnimation: { value: 500.0 },
+      uTexture1: { value: this.texture[0] },
+      uTexture2: { value: this.texture[1] },
       uNbColumns: { value: nbColumns },
       uNbLines: { value: nbLines },
     };
@@ -99,18 +105,10 @@ export class Webgl {
   }
 
   _setAnimation() {
-    gsap.to(this.material.uniforms.uRatio, {
-      value: 1.0,
+    gsap.to(this.material.uniforms.uSliderAnimation, {
+      value: 0,
       duration: 2.5,
-      ease: "power2.inOut",
-      repeat: 1,
-      yoyo: true,
-    });
-
-    gsap.to(this.material.uniforms.uAnimation, {
-      value: -10,
-      duration: 3.5,
-      ease: "power2.inOut",
+      ease: "power1.inOut",
     });
   }
 
@@ -128,6 +126,29 @@ export class Webgl {
         },
       }
     );
+  }
+
+  _setSlider() {
+    const prev = document.querySelector(".prev");
+    const next = document.querySelector(".next");
+
+    prev?.addEventListener("click", () => {
+      const tl = gsap.timeline();
+
+      tl.to(this.uniforms.uSliderAnimation, {
+        value: -500.0,
+        duration: 3.5,
+        ease: "power2.inOut",
+      })
+      .to(this.uniforms.uTexture2, {
+        value: this.texture[1],
+      })
+      .to(this.uniforms.uSliderAnimation, {
+        value: 0.0,
+      });
+    });
+
+    next?.addEventListener("click", () => {});
   }
 
   _setControls() {
@@ -149,6 +170,8 @@ export class Webgl {
 
     this._setParticle();
     this._setAutoPlay();
+
+    this._setSlider();
   }
 
   render() {
