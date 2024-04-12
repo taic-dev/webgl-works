@@ -18,6 +18,9 @@ export class Webgl {
     this.scene = new THREE.Scene();
 
     this.texture = [];
+    this.textureLength = PARAMS.TEXTURE.length;
+    this.current = 0;
+
     this.render = this.render.bind(this);
   }
 
@@ -83,8 +86,8 @@ export class Webgl {
       uPointSize: { value: 3 },
       uRatio: { value: 0 },
       uTime: { value: 0 },
-      // uAnimation: { value: 500.0 },
       uSliderAnimation: { value: 500.0 },
+      progress: { value: 0.0 },
       uTexture1: { value: this.texture[0] },
       uTexture2: { value: this.texture[1] },
       uNbColumns: { value: nbColumns },
@@ -133,22 +136,44 @@ export class Webgl {
     const next = document.querySelector(".next");
 
     prev?.addEventListener("click", () => {
-      const tl = gsap.timeline();
+      const index =
+        (this.current - 1 + PARAMS.TEXTURE.length) % PARAMS.TEXTURE.length;
+      this.uniforms.uTexture2.value = this.texture[this.current];
 
-      tl.to(this.uniforms.uSliderAnimation, {
-        value: -500.0,
-        duration: 3.5,
-        ease: "power2.inOut",
-      })
-      .to(this.uniforms.uTexture2, {
-        value: this.texture[1],
-      })
-      .to(this.uniforms.uSliderAnimation, {
-        value: 0.0,
+      gsap.to(this.uniforms.uSliderAnimation, {
+        value: -100.0,
+        duration: 1.5,
+        onStart: () => {
+          this.uniforms.uSliderAnimation.value = 0.0;
+          this.uniforms.isAnimation.value = true;
+        },
+        onComplete: () => {
+          this.current = index;
+          this.uniforms.uTexture1.value = this.texture[index];
+          this.uniforms.isAnimation.value = false;
+        },
       });
     });
 
-    next?.addEventListener("click", () => {});
+    next?.addEventListener("click", () => {
+      const index =
+        (this.current + 1 + PARAMS.TEXTURE.length) % PARAMS.TEXTURE.length;
+      this.uniforms.uTexture2.value = this.texture[this.current];
+
+      gsap.to(this.uniforms.uSliderAnimation, {
+        value: 100.0,
+        duration: 1.5,
+        onStart: () => {
+          this.uniforms.uSliderAnimation.value = 0.0;
+          this.uniforms.isAnimation.value = true;
+        },
+        onComplete: () => {
+          this.current = index;
+          this.uniforms.uTexture1.value = this.texture[index];
+          this.uniforms.isAnimation.value = false;
+        },
+      });
+    });
   }
 
   _setControls() {

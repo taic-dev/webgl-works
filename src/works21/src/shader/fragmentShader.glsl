@@ -23,6 +23,8 @@ void main() {
   uv = vec2(texOffsetU, texOffsetV);
   uv += vec2(0.5);
 
+  vec4 white = vec4(1.0, 1.0, 1.0, 1.0);
+
   vec4 texture1 = texture2D(uTexture1, uv);
   vec4 texture2 = texture2D(uTexture2, uv);
 

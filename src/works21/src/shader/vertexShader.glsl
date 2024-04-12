@@ -13,9 +13,9 @@ void main() {
   float radiusRandAll = radiusRandX + radiusRandY;
   float finalRadius = 3.0 + radiusRandAll;
 
-  float moveRange = 0.5;
+  float moveRange = uSliderAnimation;
   float moveRandX = moveRange * sin(uTime * rand.x + rand.y * 5.0);
-  float moveRandY = moveRange * cos(uTime * rand.x + rand.y * 5.0) * uSliderAnimation;
+  float moveRandY = moveRange * cos(uTime * rand.x + rand.y * 5.0);
 
   vec3 finalPosition = position + vec3(moveRandX, moveRandY, 0);
 
