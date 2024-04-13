@@ -2,6 +2,7 @@ varying vec2 vUv;
 uniform float uPlaneAspect;
 uniform sampler2D uTexture1;
 uniform sampler2D uTexture2;
+uniform float progress;
 varying vec2 vTexCoords;
 uniform float uNbColumns;
 uniform float uNbLines;
@@ -25,8 +26,8 @@ void main() {
 
   vec4 white = vec4(1.0, 1.0, 1.0, 1.0);
 
-  vec4 texture1 = texture2D(uTexture1, uv);
-  vec4 texture2 = texture2D(uTexture2, uv);
+  vec4 texture1 = texture2D(uTexture1, uv * progress);
+  vec4 texture2 = texture2D(uTexture2, uv * progress);
 
   gl_FragColor = mix(texture1, texture2, 0.1);
 

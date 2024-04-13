@@ -87,7 +87,7 @@ export class Webgl {
       uRatio: { value: 0 },
       uTime: { value: 0 },
       uSliderAnimation: { value: 500.0 },
-      progress: { value: 0.0 },
+      progress: { value: 1.0 },
       uTexture1: { value: this.texture[0] },
       uTexture2: { value: this.texture[1] },
       uNbColumns: { value: nbColumns },
@@ -134,6 +134,7 @@ export class Webgl {
   _setSlider() {
     const prev = document.querySelector(".prev");
     const next = document.querySelector(".next");
+    // const tl = gsap.timeline();
 
     prev?.addEventListener("click", () => {
       const index =
@@ -145,14 +146,22 @@ export class Webgl {
         duration: 1.5,
         onStart: () => {
           this.uniforms.uSliderAnimation.value = 0.0;
-          this.uniforms.isAnimation.value = true;
+          this.uniforms.progress.value = 1.0;
         },
         onComplete: () => {
           this.current = index;
           this.uniforms.uTexture1.value = this.texture[index];
-          this.uniforms.isAnimation.value = false;
+          this.uniforms.progress.value = 1.0;
         },
       });
+
+      // tl.to(this.uniforms.progress, {
+      //   value: 1.0
+      // }).to(this.uniforms.progress, {
+      //   value: 0.0
+      // }).to(this.uniforms.progress, {
+      //   value: 1.0
+      // })
     });
 
     next?.addEventListener("click", () => {
@@ -165,12 +174,12 @@ export class Webgl {
         duration: 1.5,
         onStart: () => {
           this.uniforms.uSliderAnimation.value = 0.0;
-          this.uniforms.isAnimation.value = true;
+          this.uniforms.progress.value = 1.0;
         },
         onComplete: () => {
           this.current = index;
           this.uniforms.uTexture1.value = this.texture[index];
-          this.uniforms.isAnimation.value = false;
+          this.uniforms.progress.value = 1.0;
         },
       });
     });

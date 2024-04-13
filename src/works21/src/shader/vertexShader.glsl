@@ -7,7 +7,7 @@ uniform float uSliderAnimation;
 varying vec2 vTexCoords;
 
 void main() {
-  float radiusRange = 10.;
+  float radiusRange = 5.;
   float radiusRandX = radiusRange * sin(uTime * rand.x + rand.y * 5.0);
   float radiusRandY = radiusRange * cos(uTime * rand.x + rand.y * 5.0);
   float radiusRandAll = radiusRandX + radiusRandY;
