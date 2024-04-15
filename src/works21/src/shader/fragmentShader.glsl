@@ -29,7 +29,7 @@ void main() {
   vec4 texture1 = texture2D(uTexture1, uv * progress);
   vec4 texture2 = texture2D(uTexture2, uv * progress);
 
-  gl_FragColor = mix(texture1, texture2, 0.1);
+  gl_FragColor = mix(texture1, texture2, smoothstep(0.,1.,0.1));
 
   gl_FragColor.a *= circle(gl_PointCoord, 0.1);
 }

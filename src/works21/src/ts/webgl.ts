@@ -110,7 +110,7 @@ export class Webgl {
   _setAnimation() {
     gsap.to(this.material.uniforms.uSliderAnimation, {
       value: 0,
-      duration: 2.5,
+      duration: 1.5,
       ease: "power1.inOut",
     });
   }
@@ -122,7 +122,7 @@ export class Webgl {
       {},
       {
         ease: "none",
-        duration: 6.0,
+        duration: 1.5,
         repeat: -1.0,
         onRepeat: () => {
           this._setAnimation();
@@ -134,7 +134,6 @@ export class Webgl {
   _setSlider() {
     const prev = document.querySelector(".prev");
     const next = document.querySelector(".next");
-    // const tl = gsap.timeline();
 
     prev?.addEventListener("click", () => {
       const index =
@@ -154,14 +153,6 @@ export class Webgl {
           this.uniforms.progress.value = 1.0;
         },
       });
-
-      // tl.to(this.uniforms.progress, {
-      //   value: 1.0
-      // }).to(this.uniforms.progress, {
-      //   value: 0.0
-      // }).to(this.uniforms.progress, {
-      //   value: 1.0
-      // })
     });
 
     next?.addEventListener("click", () => {
