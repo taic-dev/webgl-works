@@ -7,9 +7,9 @@ uniform float uTime;
 uniform vec2 uResolution;
 
 void main() {
-  vec2 uv = (gl_FragCoord.xy * 2.0 - uResolution) / min(uResolution.x, uResolution.y);
+  vec2 uv = (gl_FragCoord.xy - uResolution) / min(uResolution.x, uResolution.y);
   
-  float ring = 0.02 / abs(0.5 - length(uv));
+  float ring = 0.02 / abs(0. - length(uv));
 
   gl_FragColor = vec4(vec3(ring), 1.0);
 }
