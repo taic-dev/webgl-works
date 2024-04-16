@@ -1,11 +1,11 @@
 import { Webgl } from "./webgl"
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
   const webgl = new Webgl();
   webgl.init();
   webgl.render();
 
   window.addEventListener('resize', () => {
-    webgl._onResize();
+    webgl.onResize();
   })
 })
