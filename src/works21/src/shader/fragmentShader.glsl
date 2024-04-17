@@ -1,15 +1,9 @@
 varying vec2 vUv;
 uniform float uPlaneAspect;
-uniform float uR;
-uniform float uG;
-uniform float uB;
 uniform float uTime;
 uniform vec2 uResolution;
 
 void main() {
-  vec2 uv = (gl_FragCoord.xy * 2.0 - uResolution) / min(uResolution.x, uResolution.y);
-  
-  float ring = 0.02 / abs(0. - length(uv));
-
-  gl_FragColor = vec4(vec3(ring), 1.0);
+  vec2 p = (vUv * 2.0 - 1.0);
+  gl_FragColor = vec4(vec3(0.2078, 0.8627, 0.1216),1.0);
 }

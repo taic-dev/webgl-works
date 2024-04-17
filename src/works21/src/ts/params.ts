@@ -12,12 +12,12 @@ export const PARAMS = {
     POSITION: {
       X: 0,
       Y: 0,
-      Z: 0,
+      Z: 3,
     },
   },
   PLANE_GEOMETRY: {
-    X: window.innerWidth,
-    Y: window.innerHeight,
+    X: 1,
+    Y: 1,
     X_SEGMENTS: 1,
     Y_SEGMENTS: 1,
   }

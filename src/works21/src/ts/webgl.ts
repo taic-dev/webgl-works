@@ -3,6 +3,7 @@ import { PARAMS } from "./params";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 import { Controller } from "./controller";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 export class Webgl {
   [x: string]: any;
@@ -14,10 +15,6 @@ export class Webgl {
     this.material;
     this.scene = new THREE.Scene();
     this.clock = new THREE.Clock();
-
-    this.r = { r: 0 };
-    this.g = { g: 0 };
-    this.b = { b: 0 };
 
     this.render = this.render.bind(this);
   }
@@ -37,13 +34,13 @@ export class Webgl {
       PARAMS.CAMERA.NEAR,
       PARAMS.CAMERA.FAR
     );
-    const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
-    const dist = PARAMS.WINDOW.H / 2 / Math.tan(fovRad);
+    // const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
+    // const dist = PARAMS.WINDOW.H / 2 / Math.tan(fovRad);
 
     this.camera.position.set(
       PARAMS.CAMERA.POSITION.X,
       PARAMS.CAMERA.POSITION.Y,
-      dist
+      PARAMS.CAMERA.POSITION.Z,
     );
   }
 
@@ -56,12 +53,9 @@ export class Webgl {
     );
 
     this.uniforms = {
-      uR: { value: this.r.r },
-      uG: { value: this.g.g },
-      uB: { value: this.b.b },
       uTime: { value: 0 },
       uPlaneAspect: { value: PARAMS.WINDOW.W / PARAMS.WINDOW.H },
-      uResolution: { value: { x: window.innerWidth, y: window.innerHeight } }
+      uResolution: { value: { x: window.innerWidth, y: window.innerHeight } },
     };
 
     this.material = new THREE.ShaderMaterial({
@@ -74,13 +68,24 @@ export class Webgl {
     this.scene.add(this.mesh);
   }
 
+  _setControl() {
+    const controls = new OrbitControls(this.camera, this.renderer.domElement);
+    controls.enableDamping = true;
+
+    const axesHelper = new THREE.AxesHelper(300);
+    this.scene.add(axesHelper);
+  }
+
   _onResize() {
     setTimeout(() => {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
       this.mesh.scale.set(window.innerWidth, window.innerHeight);
-      this.material.uniforms.uResolution.value = { x: window.innerWidth, y: window.innerHeight }
+      this.material.uniforms.uResolution.value = {
+        x: window.innerWidth,
+        y: window.innerHeight,
+      };
     }, 500);
   }
 
@@ -88,20 +93,12 @@ export class Webgl {
     this._setRenderer(document?.querySelector(".webgl"));
     this._setCamera();
     this._setMesh();
-
-    const controller = new Controller();
-    controller._setGUI({ name: "r", obj: this.r, range: [0, 1, 0.01] });
-    controller._setGUI({ name: "g", obj: this.g, range: [0, 1, 0.01] });
-    controller._setGUI({ name: "b", obj: this.b, range: [0, 1, 0.01] });
+    this._setControl();
   }
 
   render() {
     this.renderer.render(this.scene, this.camera);
     requestAnimationFrame(this.render);
-
-    this.material.uniforms.uR.value = Math.abs(Math.sin(this.r.r += this.clock.elapsedTime * 0.01))
-    this.material.uniforms.uG.value = Math.abs(Math.sin(this.g.g += this.clock.elapsedTime * 0.01))
-    this.material.uniforms.uB.value = Math.abs(Math.sin(this.b.b += this.clock.elapsedTime * 0.01))
     this.material.uniforms.uTime.value += Math.abs(Math.sin(0.01));
   }
 }
