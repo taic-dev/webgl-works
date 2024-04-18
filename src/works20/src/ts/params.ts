@@ -1,6 +1,7 @@
-import texture1 from "../img/texture1.jpg";
-import texture2 from "../img/texture2.jpg";
-import texture3 from "../img/texture3.jpg";
+import texture1 from "../img/texture1.png";
+import texture2 from "../img/texture2.png";
+import texture3 from "../img/texture3.png";
+import texture4 from "../img/texture4.png";
 
 export const PARAMS = {
   WINDOW: {
@@ -25,5 +26,5 @@ export const PARAMS = {
     X_SEGMENTS: 1,
     Y_SEGMENTS: 1,
   },
-  TEXTURE: [ texture1, texture2, texture3 ],
+  TEXTURE: [ texture1, texture2, texture3, texture4 ],
 };

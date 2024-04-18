@@ -20,6 +20,7 @@ export class Webgl {
     this.texture = [];
     this.textureLength = PARAMS.TEXTURE.length;
     this.current = 0;
+    this.animating = false
 
     this.render = this.render.bind(this);
   }
@@ -39,8 +40,6 @@ export class Webgl {
       PARAMS.CAMERA.NEAR,
       PARAMS.CAMERA.FAR
     );
-    // const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
-    // const dist = PARAMS.WINDOW.H / 2 / Math.tan(fovRad);
 
     this.camera.position.set(
       PARAMS.CAMERA.POSITION.X,
@@ -90,6 +89,12 @@ export class Webgl {
       progress: { value: 0.0 },
       uTexture1: { value: this.texture[0] },
       uTexture2: { value: this.texture[1] },
+      uTexture3: { value: this.texture[2] },
+      uTexture4: { value: this.texture[3] },
+      uProgress1: { value: 1 },
+      uProgress2: { value: 0 },
+      uProgress3: { value: 0 },
+      uProgress4: { value: 0 },
       uNbColumns: { value: nbColumns },
       uNbLines: { value: nbLines },
     };
@@ -132,48 +137,66 @@ export class Webgl {
   }
 
   _setSlider() {
+    this.progress = [
+      this.uniforms.uProgress1,
+      this.uniforms.uProgress2,
+      this.uniforms.uProgress3,
+      this.uniforms.uProgress4,
+    ];
+
     const prev = document.querySelector(".prev");
     const next = document.querySelector(".next");
 
     prev?.addEventListener("click", () => {
+      if(this.animating) return;
+      this.animating = true;
+
       const index =
         (this.current - 1 + PARAMS.TEXTURE.length) % PARAMS.TEXTURE.length;
-      this.uniforms.uTexture2.value = this.texture[this.current];
-      this.uniforms.progress.value = 0.0;
 
-      gsap.to(this.uniforms.uSliderAnimation, {
-        value: -100.0,
-        duration: 1.5,
-        onStart: () => {
-          this.uniforms.uSliderAnimation.value = 0.0;
-        },
-        onComplete: () => {
-          this.current = index;
-          this.uniforms.uTexture1.value = this.texture[index];
-          this.uniforms.progress.value = 1.0;
-        },
-      });
+      this._sliderAnimation(1000, index)
     });
 
     next?.addEventListener("click", () => {
+      if(this.animating) return;
+      this.animating = true;
+
       const index =
         (this.current + 1 + PARAMS.TEXTURE.length) % PARAMS.TEXTURE.length;
-      this.uniforms.uTexture2.value = this.texture[this.current];
-      this.uniforms.progress.value = 0.0;
 
-      gsap.to(this.uniforms.uSliderAnimation, {
-        value: 100.0,
-        duration: 1.5,
-        onStart: () => {
-          this.uniforms.uSliderAnimation.value = 0.0;
-        },
-        onComplete: () => {
-          this.current = index;
-          this.uniforms.uTexture1.value = this.texture[index];
-          this.uniforms.progress.value = 1.0;
-        },
-      });
+      this._sliderAnimation(-1000, index)
     });
+  }
+
+  _sliderAnimation(animationValue: number, index: number) {
+    const tl = gsap.timeline();
+    tl.to(this.material.uniforms.uSliderAnimation, {
+      value: animationValue,
+      duration: 2.5,
+    })
+      .to(
+        this.progress[index],
+        {
+          value: 1,
+          duration: 1.5,
+        },
+        "=-1.5"
+      )
+      .to(
+        this.progress[this.current],
+        {
+          value: 0,
+          duration: 1.5,
+        },
+        "<"
+      )
+      .to(this.material.uniforms.uSliderAnimation, {
+        value: 0,
+        duration: 0,
+      });
+
+    this.current = index;
+    this.animating = false;
   }
 
   _setControls() {

@@ -1,4 +1,4 @@
-attribute vec3 rand;
+attribute vec2 rand;
 
 uniform float uPointSize;
 uniform float uTime;
@@ -7,7 +7,7 @@ uniform float uSliderAnimation;
 varying vec2 vTexCoords;
 
 void main() {
-  float radiusRange = 2.;
+  float radiusRange = 3.5;
   float radiusRandX = radiusRange * sin(uTime * rand.x + rand.y * 5.0);
   float radiusRandY = radiusRange * cos(uTime * rand.x + rand.y * 5.0);
   float radiusRandAll = radiusRandX + radiusRandY;

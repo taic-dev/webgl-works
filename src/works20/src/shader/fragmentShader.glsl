@@ -1,9 +1,17 @@
 varying vec2 vUv;
+varying vec2 vTexCoords;
+
 uniform float uPlaneAspect;
 uniform sampler2D uTexture1;
 uniform sampler2D uTexture2;
-uniform float progress;
-varying vec2 vTexCoords;
+uniform sampler2D uTexture3;
+uniform sampler2D uTexture4;
+
+uniform float uProgress1;
+uniform float uProgress2;
+uniform float uProgress3;
+uniform float uProgress4;
+
 uniform float uNbColumns;
 uniform float uNbLines;
 
@@ -28,10 +36,16 @@ void main() {
 
   vec4 texture1 = texture2D(uTexture1, uv);
   vec4 texture2 = texture2D(uTexture2, uv);
+  vec4 texture3 = texture2D(uTexture3, uv);
+  vec4 texture4 = texture2D(uTexture4, uv);
 
-  vec4 final = mix(texture1, texture2, smoothstep(0., 1., fract(progress)));
+  vec4 finalColor = (texture1 * uProgress1) + (texture2 * uProgress2) + (texture3 * uProgress3) + (texture4 * uProgress4);
 
-  gl_FragColor = final;
+  if(finalColor.r < 0.2 && finalColor.g < 0.2 && finalColor.b < 0.2){
+    discard;
+  };
+
+  gl_FragColor = finalColor;
 
   gl_FragColor.a *= circle(gl_PointCoord, 0.1);
 }
