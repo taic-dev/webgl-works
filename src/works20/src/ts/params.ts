@@ -17,7 +17,7 @@ export const PARAMS = {
     POSITION: {
       X: 0,
       Y: 0,
-      Z: 180,
+      Z: 300,
     },
   },
   PLANE_GEOMETRY: {

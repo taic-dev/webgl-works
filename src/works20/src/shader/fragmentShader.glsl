@@ -1,5 +1,6 @@
 varying vec2 vUv;
 varying vec2 vTexCoords;
+varying vec4 finalColor;
 
 uniform float uPlaneAspect;
 uniform sampler2D uTexture1;
