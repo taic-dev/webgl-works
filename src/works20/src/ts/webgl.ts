@@ -19,6 +19,8 @@ export class Webgl {
 
     this.texture = [];
     this.textureLength = PARAMS.TEXTURE.length;
+    this.pointer = new THREE.Vector2();
+    this.raycaster = new THREE.Raycaster();
     this.current = 0;
     this.animating = false
 
@@ -95,6 +97,7 @@ export class Webgl {
       uProgress2: { value: 0 },
       uProgress3: { value: 0 },
       uProgress4: { value: 0 },
+      uMousePosition: { value: this.pointer },
       uNbColumns: { value: nbColumns },
       uNbLines: { value: nbLines },
     };
@@ -199,6 +202,10 @@ export class Webgl {
     this.animating = false;
   }
 
+  _mouseAnimation() {
+    
+  }
+
   _setControls() {
     const controls = new OrbitControls(this.camera, this.renderer.domElement);
     controls.enableDamping = true;
@@ -223,9 +230,19 @@ export class Webgl {
   }
 
   render() {
+    this.raycaster.setFromCamera(this.pointer, this.camera);
+    const intersects = this.raycaster.intersectObjects(this.scene.children);
+
+    console.log(intersects)
+
     this.renderer.render(this.scene, this.camera);
     this.material.uniforms.uTime.value += 0.05;
     requestAnimationFrame(this.render);
+  }
+
+  onPointerMove(event: MouseEvent) {
+    this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
   }
 
   onResize() {
@@ -233,7 +250,6 @@ export class Webgl {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
-      this.mesh.scale.set(window.innerWidth, window.innerHeight);
     }, 500);
   }
 }

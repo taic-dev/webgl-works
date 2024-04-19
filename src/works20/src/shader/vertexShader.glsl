@@ -4,10 +4,11 @@ uniform float uPointSize;
 uniform float uTime;
 uniform float uAnimation;
 uniform float uSliderAnimation;
+uniform vec2 uMousePosition;
 varying vec2 vTexCoords;
 
 void main() {
-  float radiusRange = 5.5;
+  float radiusRange = 10.5;
   float radiusRandX = radiusRange * sin(uTime * rand.x + rand.y * 5.0);
   float radiusRandY = radiusRange * cos(uTime * rand.x + rand.y * 5.0);
   float radiusRandAll = radiusRandX + radiusRandY;
@@ -16,7 +17,7 @@ void main() {
   float moveRange = 1.5;
   float moveRandZ = moveRange * tan(uTime * rand.x + rand.y) * uSliderAnimation;
 
-  vec3 finalPosition = position + vec3(position.x, position.y, moveRandZ);
+  vec3 finalPosition = position + vec3(position.x + uMousePosition.x * 5., position.y  + uMousePosition.y * 5., moveRandZ);
 
   gl_PointSize = finalRadius;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(finalPosition, 1.0 );
