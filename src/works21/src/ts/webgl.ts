@@ -2,7 +2,6 @@ import * as THREE from "three";
 import { PARAMS } from "./params";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
-import { Controller } from "./controller";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 export class Webgl {
@@ -15,6 +14,7 @@ export class Webgl {
     this.material;
     this.scene = new THREE.Scene();
     this.clock = new THREE.Clock();
+    this.textureArray = [];
 
     this.render = this.render.bind(this);
   }
@@ -40,7 +40,7 @@ export class Webgl {
     this.camera.position.set(
       PARAMS.CAMERA.POSITION.X,
       PARAMS.CAMERA.POSITION.Y,
-      PARAMS.CAMERA.POSITION.Z,
+      PARAMS.CAMERA.POSITION.Z
     );
   }
 
@@ -54,18 +54,28 @@ export class Webgl {
 
     this.uniforms = {
       uTime: { value: 0 },
-      uPlaneAspect: { value: PARAMS.WINDOW.W / PARAMS.WINDOW.H },
+      uPlaneAspect: { value: 1 },
+      uImageAspect: { value: 4000 / 6000 },
       uResolution: { value: { x: window.innerWidth, y: window.innerHeight } },
+      uTexture1: { value: this.textureArray[0] },
     };
 
     this.material = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
+      side: THREE.DoubleSide,
     });
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.mesh);
+  }
+
+  _loadTexture() {
+    const loader = new THREE.TextureLoader();
+    for (const img of PARAMS.TEXTURE) {
+      this.textureArray.push(loader.load(img));
+    }
   }
 
   _setControl() {
@@ -92,6 +102,7 @@ export class Webgl {
   init() {
     this._setRenderer(document?.querySelector(".webgl"));
     this._setCamera();
+    this._loadTexture();
     this._setMesh();
     this._setControl();
   }

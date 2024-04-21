@@ -1,3 +1,5 @@
+import texture1 from '../img/texture.jpg'
+
 export const PARAMS = {
   WINDOW: {
     W: window.innerWidth,
@@ -20,5 +22,6 @@ export const PARAMS = {
     Y: 1,
     X_SEGMENTS: 1,
     Y_SEGMENTS: 1,
-  }
+  },
+  TEXTURE: [ texture1, ]
 };
