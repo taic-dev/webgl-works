@@ -8,4 +8,8 @@ window.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', () => {
     webgl._onResize();
   })
+
+  window.addEventListener('pointermove', (e: MouseEvent) => {
+    webgl._onPointerMove(e);
+  })
 })

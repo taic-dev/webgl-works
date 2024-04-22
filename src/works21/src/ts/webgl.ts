@@ -15,7 +15,11 @@ export class Webgl {
     this.scene = new THREE.Scene();
     this.clock = new THREE.Clock();
     this.textureArray = [];
+    this.pointer = new THREE.Vector2();
 
+    this.list = [...document.querySelectorAll('.item')];
+    this.movieList = [...document.querySelectorAll('.item img')];
+    this.index = 0
     this.render = this.render.bind(this);
   }
 
@@ -57,7 +61,8 @@ export class Webgl {
       uPlaneAspect: { value: 1 },
       uImageAspect: { value: 4000 / 6000 },
       uResolution: { value: { x: window.innerWidth, y: window.innerHeight } },
-      uTexture1: { value: this.textureArray[0] },
+      uTexture: { value: this.textureArray[this.index] },
+      uMousePointer: { value: this.pointer },
     };
 
     this.material = new THREE.ShaderMaterial({
@@ -73,9 +78,22 @@ export class Webgl {
 
   _loadTexture() {
     const loader = new THREE.TextureLoader();
-    for (const img of PARAMS.TEXTURE) {
-      this.textureArray.push(loader.load(img));
+    for (const img of this.movieList) {
+      this.textureArray.push(loader.load(img.src));
     }
+  }
+
+  _mouseEvent() {
+    this.list.forEach((element: HTMLElement) => {
+      element.addEventListener('mouseover', () => {
+        this.index = Number(element.getAttribute('data-list-no')) - 1;
+      })
+    });
+  }
+
+  _onPointerMove(event: MouseEvent) {
+    this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.pointer.y = (event.clientY / window.innerHeight) * 2 + 1;
   }
 
   _setControl() {
@@ -103,6 +121,7 @@ export class Webgl {
     this._setCamera();
     this._loadTexture();
     this._setMesh();
+    this._mouseEvent();
     this._setControl();
   }
 
@@ -110,5 +129,7 @@ export class Webgl {
     this.renderer.render(this.scene, this.camera);
     requestAnimationFrame(this.render);
     this.material.uniforms.uTime.value += Math.abs(Math.sin(0.01));
+
+    this.material.uniforms.uTexture.value = this.textureArray[this.index];
   }
 }
