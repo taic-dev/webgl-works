@@ -40,7 +40,7 @@ export class Webgl {
     this.camera.position.set(
       PARAMS.CAMERA.POSITION.X,
       PARAMS.CAMERA.POSITION.Y,
-      PARAMS.CAMERA.POSITION.Z
+      PARAMS.CAMERA.POSITION.Z,
     );
   }
 
@@ -91,7 +91,6 @@ export class Webgl {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
-      this.mesh.scale.set(window.innerWidth, window.innerHeight);
       this.material.uniforms.uResolution.value = {
         x: window.innerWidth,
         y: window.innerHeight,

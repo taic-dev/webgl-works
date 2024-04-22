@@ -233,8 +233,6 @@ export class Webgl {
     this.raycaster.setFromCamera(this.pointer, this.camera);
     const intersects = this.raycaster.intersectObjects(this.scene.children);
 
-    console.log(intersects)
-
     this.renderer.render(this.scene, this.camera);
     this.material.uniforms.uTime.value += 0.05;
     requestAnimationFrame(this.render);

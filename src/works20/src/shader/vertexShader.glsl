@@ -16,8 +16,9 @@ void main() {
 
   float moveRange = 1.5;
   float moveRandZ = moveRange * tan(uTime * rand.x + rand.y) * uSliderAnimation;
+  float moveRamdX = position.x + uMousePosition.x * 5.;
 
-  vec3 finalPosition = position + vec3(position.x + uMousePosition.x * 5., position.y  + uMousePosition.y * 5., moveRandZ);
+  vec3 finalPosition = position + vec3(moveRamdX, position.y  + uMousePosition.y * 5., moveRandZ);
 
   gl_PointSize = finalRadius;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(finalPosition, 1.0 );

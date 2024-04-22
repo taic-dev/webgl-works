@@ -1,4 +1,4 @@
-import texture1 from '../img/texture.jpg'
+import texture1 from '../img/texture1.jpg'
 
 export const PARAMS = {
   WINDOW: {
