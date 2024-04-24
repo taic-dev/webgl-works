@@ -5,6 +5,8 @@ uniform vec2 uResolution;
 uniform sampler2D uTexture;
 uniform float uTime;
 uniform vec2 uMousePointer;
+uniform vec2 uOffset;
+uniform float uAlpha;
 
 void main() {
 
@@ -19,11 +21,14 @@ void main() {
     (vUv.y - 0.5) * ratio.y + 0.5
   );
 
-  float r = texture2D(uTexture, fixedUv + sin(uMousePointer.x) ).r;
-  float g = texture2D(uTexture, fixedUv).g ; 
-  float b = texture2D(uTexture, fixedUv).b ;
+  float r = texture2D(uTexture, fixedUv + sin(uOffset * 0.00005) ).r;
+  // float g = texture2D(uTexture, fixedUv + sin(uOffset * 0.00005) ).g ; 
+  // float b = texture2D(uTexture, fixedUv + sin(uOffset * 0.00005) ).b ;
 
-  vec3 rgb = vec3(r, g, b);
+  float g = texture2D(uTexture, fixedUv ).g ; 
+  float b = texture2D(uTexture, fixedUv ).b ;
 
-  gl_FragColor = vec4(rgb, 1.0);
+  vec4 rgb = vec4(r, g, b, uAlpha) * uAlpha;
+
+  gl_FragColor = vec4(rgb);
 }
