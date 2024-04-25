@@ -140,6 +140,11 @@ export class Webgl {
         x: window.innerWidth,
         y: window.innerHeight,
       };
+      this.mesh.position.set(
+        (this.offset.x - PARAMS.WINDOW.W / 2),
+        (-this.offset.y + PARAMS.WINDOW.H / 2),
+        1
+      );
     }, 500);
   }
 
@@ -149,7 +154,6 @@ export class Webgl {
     this._loadTexture();
     this._setMesh();
     this._mouseEvent();
-    this._setControl();
   }
 
   render() {

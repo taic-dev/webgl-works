@@ -2,6 +2,10 @@
   margin: 0;
   padding: 0;
 }
+@font-face {
+  font-family: "Nagoda";
+  src: url(../fonts/Nagoda.ttf);
+}
 html,
 body {
   overflow-x: hidden;
@@ -31,22 +35,35 @@ main {
   z-index: 1;
 }
 .wrapper {
-   padding-top: 150px;
+  padding-top: 150px;
 }
 .title {
-  font-size: 40px;
+  font-size: 50px;
   margin-left: 20px;
   margin-bottom: 20px;
   font-weight: 600;
+  font-family: "Nagoda", sans-serif;
 }
 .list {
   cursor: pointer;
 }
 
 .item {
+  position: relative;
   padding: 80px 30px;
-  border-bottom: solid 1px #f5f5f5;
+  border-bottom: dashed 1px #f5f5f5;
   mix-blend-mode: difference;
+}
+
+.item-text {
+  /* position: absolute; */
+
+}
+
+.item-text > p {
+  font-size: 35px;
+  font-weight: 600;
+  font-family: "Nagoda", sans-serif;
 }
 
 .item-text > span {
