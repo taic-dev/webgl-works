@@ -73,3 +73,7 @@ main {
 .item > img {
   display: none;
 }
+
+.item > video {
+  display: none;
+}

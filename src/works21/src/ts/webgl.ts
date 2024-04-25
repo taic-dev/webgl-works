@@ -24,7 +24,7 @@ export class Webgl {
     this.hovered = false;
 
     this.list = [...document.querySelectorAll(".item")];
-    this.movieList = [...document.querySelectorAll(".item img")];
+    this.movieList = [...document.querySelectorAll(".item video")];
     this.index = 0;
     this.render = this.render.bind(this);
   }
@@ -59,7 +59,7 @@ export class Webgl {
     this.uniforms = {
       uTime: { value: 0 },
       uPlaneAspect: { value: 1 },
-      uImageAspect: { value: 4000 / 6000 },
+      uImageAspect: { value: 1 },
       uResolution: { value: { x: window.innerWidth, y: window.innerHeight } },
       uTexture: { value: this.textureArray[this.index] },
       uMousePointer: { value: this.pointer },
@@ -76,14 +76,15 @@ export class Webgl {
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.mesh);
-    this.mesh.scale.set(250, 350, 1);
+    this.mesh.scale.set(350, 250, 1);
     this.mesh.position.set(PARAMS.WINDOW.W / 2, PARAMS.WINDOW.H / 2);
   }
 
   _loadTexture() {
-    const loader = new THREE.TextureLoader();
-    for (const img of this.movieList) {
-      this.textureArray.push(loader.load(img.src));
+    for (const movie of this.movieList) {
+      movie.play();
+      const movieTexture = new THREE.VideoTexture(movie)
+      this.textureArray.push(movieTexture);
     }
   }
 
@@ -162,8 +163,8 @@ export class Webgl {
     this.offset.y = lerp(this.offset.y, this.targetY, 0.1);
     
     this.uniforms.uOffset.value.set(
-      (this.targetX - this.offset.x) * 0.0025,
-      -(this.targetY - this.offset.y) * 0.0025
+      (this.targetX - this.offset.x) * 0.001,
+      -(this.targetY - this.offset.y) * 0.001
     );
     this.mesh.position.set(
       (this.offset.x - PARAMS.WINDOW.W / 2),
