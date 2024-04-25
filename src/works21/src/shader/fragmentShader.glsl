@@ -7,6 +7,7 @@ uniform float uTime;
 uniform vec2 uMousePointer;
 uniform vec2 uOffset;
 uniform float uAlpha;
+uniform sampler2D uDisplacement;
 
 void main() {
 
@@ -21,9 +22,9 @@ void main() {
     (vUv.y - 0.5) * ratio.y + 0.5
   );
 
-  float r = texture2D(uTexture, fixedUv + sin(uOffset * 0.00005) ).r;
-  float g = texture2D(uTexture, fixedUv + sin(uOffset * 0.00005) ).g ; 
-  float b = texture2D(uTexture, fixedUv + sin(uOffset * 0.00005) ).b ;
+  float r = texture2D(uTexture, fixedUv + sin(uOffset) ).r;
+  float g = texture2D(uTexture, fixedUv + sin(uOffset * 0.5) ).g ; 
+  float b = texture2D(uTexture, fixedUv + sin(uOffset) ).b ;
 
   vec4 rgb = vec4(r, g, b, uAlpha) * uAlpha;
 
