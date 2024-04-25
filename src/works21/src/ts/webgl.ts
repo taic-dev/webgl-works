@@ -55,13 +55,7 @@ export class Webgl {
   }
 
   _setMesh() {
-    this.geometry = new THREE.PlaneGeometry(
-      400,
-      400,
-      PARAMS.PLANE_GEOMETRY.X_SEGMENTS,
-      PARAMS.PLANE_GEOMETRY.Y_SEGMENTS
-    );
-
+    this.geometry = new THREE.PlaneGeometry(1, 1, 20, 20);
     this.uniforms = {
       uTime: { value: 0 },
       uPlaneAspect: { value: 1 },
@@ -82,6 +76,7 @@ export class Webgl {
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.mesh);
+    this.mesh.scale.set(250, 350, 1);
     this.mesh.position.set(PARAMS.WINDOW.W / 2, PARAMS.WINDOW.H / 2);
   }
 
@@ -102,8 +97,6 @@ export class Webgl {
           duration: 1.5,
           ease: "power2.inOut",
         });
-
-        this.hovered = true;
       });
 
       element.addEventListener("mouseleave", () => {
@@ -112,8 +105,6 @@ export class Webgl {
           duration: 0.5,
           ease: "power2.inOut",
         });
-
-        this.hovered = false;
       });
 
       this.mesh.position.set(
@@ -122,7 +113,6 @@ export class Webgl {
         1
       );
     });
-
   }
 
   _onPointerMove(event: MouseEvent) {
@@ -166,20 +156,19 @@ export class Webgl {
     this.renderer.render(this.scene, this.camera);
     this.offset.x = lerp(this.offset.x, this.targetX, 0.1);
     this.offset.y = lerp(this.offset.y, this.targetY, 0.1);
+    
     this.uniforms.uOffset.value.set(
-      (this.targetX - this.offset.x) * 10,
-      -(this.targetY - this.offset.y) * 10
+      (this.targetX - this.offset.x) * 0.0025,
+      -(this.targetY - this.offset.y) * 0.0025
     );
     this.mesh.position.set(
-      this.offset.x - PARAMS.WINDOW.W / 2,
-      -this.offset.y + PARAMS.WINDOW.H / 2,
+      (this.offset.x - PARAMS.WINDOW.W / 2),
+      (-this.offset.y + PARAMS.WINDOW.H / 2),
       1
     );
 
     requestAnimationFrame(this.render);
     this.material.uniforms.uTime.value += Math.abs(Math.sin(0.01));
     this.material.uniforms.uTexture.value = this.textureArray[this.index];
-    this.hovered || (this.material.uniforms.uAlpha.value = 0)
-    console.log(this.hovered)
   }
 }

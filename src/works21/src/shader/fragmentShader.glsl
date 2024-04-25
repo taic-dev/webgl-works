@@ -22,11 +22,8 @@ void main() {
   );
 
   float r = texture2D(uTexture, fixedUv + sin(uOffset * 0.00005) ).r;
-  // float g = texture2D(uTexture, fixedUv + sin(uOffset * 0.00005) ).g ; 
-  // float b = texture2D(uTexture, fixedUv + sin(uOffset * 0.00005) ).b ;
-
-  float g = texture2D(uTexture, fixedUv ).g ; 
-  float b = texture2D(uTexture, fixedUv ).b ;
+  float g = texture2D(uTexture, fixedUv + sin(uOffset * 0.00005) ).g ; 
+  float b = texture2D(uTexture, fixedUv + sin(uOffset * 0.00005) ).b ;
 
   vec4 rgb = vec4(r, g, b, uAlpha) * uAlpha;
 
