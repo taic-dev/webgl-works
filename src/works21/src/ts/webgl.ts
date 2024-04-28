@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { PARAMS } from "./params";
+import { MODAL, PARAMS } from "./constants";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -27,6 +27,9 @@ export class Webgl {
     this.list = [...document.querySelectorAll(".item")];
     this.movieList = [...document.querySelectorAll(".item video")];
     this.modal = document.querySelector(".modal");
+    this.modalTitle = document.querySelector(".modal-title p");
+    this.modalDirector = document.querySelector(".modal-title span");
+    this.modalDesc = document.querySelector(".modal-desc p");
     this.modalImage = document.querySelector(".modal-image");
     this.modalClose = document.querySelector(".modal-button");
     this.wrapper = document.querySelector(".wrapper");
@@ -81,7 +84,7 @@ export class Webgl {
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.mesh);
-    this.mesh.scale.set(350, 250, 1);
+    this.mesh.scale.set(PARAMS.PLANE_GEOMETRY.X, PARAMS.PLANE_GEOMETRY.Y);
     this.mesh.position.set(PARAMS.WINDOW.W / 2, PARAMS.WINDOW.H / 2);
   }
 
@@ -127,6 +130,10 @@ export class Webgl {
     this.list.forEach((element: HTMLElement) => {
       element.addEventListener("click", () => {
         this.isClick = true;
+        this.modalTitle.innerHTML = MODAL[this.index].TITLE;
+        this.modalDirector.innerHTML = MODAL[this.index].DIRECTOR;
+        this.modalDesc.innerHTML = MODAL[this.index].DESC;
+
         const { width, height, top, left } =
           this.modalImage.getBoundingClientRect();
 
@@ -164,8 +171,8 @@ export class Webgl {
       });
 
       gsap.to(this.mesh.scale, {
-        x: 350,
-        y: 250,
+        x: PARAMS.PLANE_GEOMETRY.X,
+        y: PARAMS.PLANE_GEOMETRY.Y,
         duration: 1,
         ease: "power2.inOut",
       });
