@@ -16,7 +16,7 @@ body {
   background-color: #3657BD;
 }
 canvas {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 1;
@@ -35,7 +35,9 @@ main {
 }
 .wrapper {
   padding-top: 150px;
+  transition: 0.5s;
 }
+
 .title {
   font-size: 60px;
   margin-left: 20px;
@@ -54,18 +56,13 @@ main {
   mix-blend-mode: difference;
 }
 
-.item-text {
-  /* position: absolute; */
-
-}
-
-.item-text > p {
+.movie-title > p {
   font-size: 35px;
   font-weight: 600;
   font-family: "Nagoda", sans-serif;
 }
 
-.item-text > span {
+.movie-title > span {
   font-size: 12px;
 }
 
@@ -75,4 +72,79 @@ main {
 
 .item > video {
   display: none;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+
+  width: 100%;
+  height: 100%;
+  padding: 3rem;
+
+  opacity: 0;
+  visibility: hidden;
+  user-select: none;
+  transition: 0.5s;
+  overflow-y: scroll;
+}
+
+.modal-wrapper {
+  max-width: 800px;
+  width: 100%;
+  margin: auto;
+}
+
+.modal-image {
+  width: 100%;
+  margin: auto;
+  aspect-ratio: 350 / 250;
+}
+
+.modal-text {
+  user-select: none;
+}
+
+.modal-title {
+  margin-top: 30px;
+}
+
+.modal-desc {
+  margin-top: 30px;
+}
+
+.modal-desc p {
+  line-height: 1.5;
+}
+
+.modal-button {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.modal-button button {
+  text-align: center;
+  width: 150px;
+  padding: 15px;
+  background-color: #333;
+  color: #fff;
+  border-radius: 25px;
+  font-family: "Nagoda", sans-serif;
+}
+
+.is-show {
+  opacity: 1;
+  visibility: visible;
+  user-select: all;
+  transition: 0.5s 1s;
+}
+
+.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  user-select: none;
+  transition: 0.5s;
 }

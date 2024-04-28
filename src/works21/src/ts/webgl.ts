@@ -22,9 +22,14 @@ export class Webgl {
     this.targetX = 0;
     this.targetY = 0;
     this.hovered = false;
+    this.isClick = false;
 
     this.list = [...document.querySelectorAll(".item")];
     this.movieList = [...document.querySelectorAll(".item video")];
+    this.modal = document.querySelector(".modal");
+    this.modalImage = document.querySelector(".modal-image");
+    this.modalClose = document.querySelector(".modal-button");
+    this.wrapper = document.querySelector(".wrapper");
     this.index = 0;
     this.render = this.render.bind(this);
   }
@@ -83,7 +88,7 @@ export class Webgl {
   _loadTexture() {
     for (const movie of this.movieList) {
       movie.play();
-      const movieTexture = new THREE.VideoTexture(movie)
+      const movieTexture = new THREE.VideoTexture(movie);
       this.textureArray.push(movieTexture);
     }
   }
@@ -95,17 +100,19 @@ export class Webgl {
 
         gsap.to(this.material.uniforms.uAlpha, {
           value: 1,
-          duration: 1.5,
+          duration: 1,
           ease: "power2.inOut",
         });
       });
 
       element.addEventListener("mouseleave", () => {
-        gsap.to(this.material.uniforms.uAlpha, {
-          value: 0,
-          duration: 0.5,
-          ease: "power2.inOut",
-        });
+        if (!this.isClick) {
+          gsap.to(this.material.uniforms.uAlpha, {
+            value: 0,
+            duration: 0.5,
+            ease: "power2.inOut",
+          });
+        }
       });
 
       this.mesh.position.set(
@@ -113,6 +120,61 @@ export class Webgl {
         -this.offset.y + PARAMS.WINDOW.H / 2,
         1
       );
+    });
+  }
+
+  _onClickEvent() {
+    this.list.forEach((element: HTMLElement) => {
+      element.addEventListener("click", () => {
+        this.isClick = true;
+        const { width, height, top, left } =
+          this.modalImage.getBoundingClientRect();
+
+        const x = left - PARAMS.WINDOW.W / 2 + width / 2;
+        const y = -top + PARAMS.WINDOW.H / 2 - height / 2;
+
+        gsap.to(this.mesh.position, {
+          x,
+          y,
+          duration: 1,
+          ease: "power2.inOut",
+        });
+
+        gsap.to(this.mesh.scale, {
+          x: width,
+          y: height,
+          duration: 1,
+          ease: "power2.inOut",
+        });
+
+        this.wrapper.classList.toggle("is-hidden");
+        this.modal.classList.toggle("is-show");
+      });
+    });
+
+    this.modalClose.addEventListener("click", () => {
+      this.isClick = false;
+      this.isModal = false;
+
+      gsap.to(this.mesh.position, {
+        x: this.offset.x - PARAMS.WINDOW.W / 2,
+        y: -this.offset.y + PARAMS.WINDOW.H / 2,
+        duration: 1,
+        ease: "power2.inOut",
+      });
+
+      gsap.to(this.mesh.scale, {
+        x: 350,
+        y: 250,
+        duration: 1,
+        ease: "power2.inOut",
+      });
+
+      this.wrapper.classList.toggle("is-hidden");
+      this.modal.classList.toggle("is-show");
+      setTimeout(() => {
+        this.modal.scroll({ top: 0 });
+      }, 1000);
     });
   }
 
@@ -142,8 +204,8 @@ export class Webgl {
         y: window.innerHeight,
       };
       this.mesh.position.set(
-        (this.offset.x - PARAMS.WINDOW.W / 2),
-        (-this.offset.y + PARAMS.WINDOW.H / 2),
+        this.offset.x - PARAMS.WINDOW.W / 2,
+        -this.offset.y + PARAMS.WINDOW.H / 2,
         1
       );
     }, 500);
@@ -155,25 +217,37 @@ export class Webgl {
     this._loadTexture();
     this._setMesh();
     this._mouseEvent();
+    this._onClickEvent();
   }
 
   render() {
     this.renderer.render(this.scene, this.camera);
     this.offset.x = lerp(this.offset.x, this.targetX, 0.1);
     this.offset.y = lerp(this.offset.y, this.targetY, 0.1);
-    
+
     this.uniforms.uOffset.value.set(
       (this.targetX - this.offset.x) * 0.001,
       -(this.targetY - this.offset.y) * 0.001
-    );
-    this.mesh.position.set(
-      (this.offset.x - PARAMS.WINDOW.W / 2),
-      (-this.offset.y + PARAMS.WINDOW.H / 2),
-      1
     );
 
     requestAnimationFrame(this.render);
     this.material.uniforms.uTime.value += Math.abs(Math.sin(0.01));
     this.material.uniforms.uTexture.value = this.textureArray[this.index];
+
+    if (this.isClick) {
+      setTimeout(() => {
+        const { width, height, top, left } =
+          this.modalImage.getBoundingClientRect();
+        const x = left - PARAMS.WINDOW.W / 2 + width / 2;
+        const y = -top + PARAMS.WINDOW.H / 2 - height / 2;
+        this.mesh.position.set(x, y);
+      }, 1000);
+    } else {
+      this.mesh.position.set(
+        this.offset.x - PARAMS.WINDOW.W / 2,
+        -this.offset.y + PARAMS.WINDOW.H / 2,
+        1
+      );
+    }
   }
 }
