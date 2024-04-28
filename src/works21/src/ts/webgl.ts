@@ -73,6 +73,7 @@ export class Webgl {
       uMousePointer: { value: this.pointer },
       uOffset: { value: new THREE.Vector2(0.0, 0.0) },
       uAlpha: { value: 0 },
+      uIsClick: { value: this.isClick },
     };
 
     this.material = new THREE.ShaderMaterial({
@@ -127,6 +128,8 @@ export class Webgl {
   }
 
   _onClickEvent() {
+    const tl = gsap.timeline();
+
     this.list.forEach((element: HTMLElement) => {
       element.addEventListener("click", () => {
         this.isClick = true;
@@ -154,19 +157,29 @@ export class Webgl {
           ease: "power2.inOut",
         });
 
+        tl.to(this.offset, {
+          x: Math.random() * 0.1,
+          y: Math.random() * 0.1,
+          duration: 0.5,
+          ease: "power1.inOut",
+        }).to(this.offset, {
+          x: 0,
+          y: 0,
+          duration: 0.1,
+          ease: "power3.inOut",
+        });
+
         this.wrapper.classList.toggle("is-hidden");
         this.modal.classList.toggle("is-show");
       });
     });
 
     this.modalClose.addEventListener("click", () => {
-      this.isClick = false;
       this.isModal = false;
 
-      gsap.to(this.mesh.position, {
-        x: this.offset.x - PARAMS.WINDOW.W / 2,
-        y: -this.offset.y + PARAMS.WINDOW.H / 2,
-        duration: 1,
+      gsap.to(this.material.uniforms.uAlpha, {
+        value: 0,
+        duration: 0.5,
         ease: "power2.inOut",
       });
 
@@ -177,9 +190,12 @@ export class Webgl {
         ease: "power2.inOut",
       });
 
-      this.wrapper.classList.toggle("is-hidden");
       this.modal.classList.toggle("is-show");
       setTimeout(() => {
+        this.isClick = false;
+      }, 500)
+      setTimeout(() => {
+        this.wrapper.classList.toggle("is-hidden");
         this.modal.scroll({ top: 0 });
       }, 1000);
     });
