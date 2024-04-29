@@ -1,1 +1,1 @@
-# webgl-school-task
+# webgl-works
