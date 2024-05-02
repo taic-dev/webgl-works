@@ -1,9 +1,8 @@
 import * as THREE from "three";
 import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import vertexShader from "../shader/vertexShader.glsl";
-import fragmentShader from "../shader/fragmetShader.glsl";
+import vertexShader from "../shader/vertexShader.glsl"
+import fragmentShader from "../shader/fragmentShader.glsl";
 import { PARAMS } from "./constants";
 
 export class Webgl {
@@ -45,16 +44,33 @@ export class Webgl {
   }
 
   _setMesh() {
-    this.geometry = new THREE.TorusKnotGeometry(4, 1.3, 100, 16);
-    const torusKnot = new THREE.Mesh(this.geometry);
-    this.sampler = new MeshSurfaceSampler(torusKnot).build();
+    this.geometryArray = [
+      new THREE.PlaneGeometry( 10, 10 ),
+      new THREE.TorusKnotGeometry(4, 1.3, 100, 16),
+      new THREE.SphereGeometry( 5, 32, 32 ),
+      new THREE.BoxGeometry( 1, 1, 1 ),
+      new THREE.ConeGeometry( 5, 10, 32 ),
+      new THREE.CylinderGeometry( 3, 3, 10, 32 ),
+      new THREE.TorusGeometry( 5, 2, 16, 100 )
+    ]
+    const mesh = new THREE.Mesh(this.geometryArray[0]);
+    const mesh2 = new THREE.Mesh(this.geometryArray[4]);
+    this.sampler = new MeshSurfaceSampler(mesh).build();
+    this.sampler2 = new MeshSurfaceSampler(mesh2).build();
 
     const vertices = [];
     const tempPosition = new THREE.Vector3();
+    const tempPosition2 = new THREE.Vector3();
 
     for (let i = 0; i < 15000; i++) {
       this.sampler.sample(tempPosition);
+      this.sampler2.sample(tempPosition2);
       vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
+      vertices.push(tempPosition2.x, tempPosition2.y, tempPosition2.z);
+    }
+
+    this.uniforms = {
+
     }
 
     this.pointGeometry = new THREE.BufferGeometry();
@@ -62,9 +78,10 @@ export class Webgl {
       "position",
       new THREE.Float32BufferAttribute(vertices, 3)
     );
-    this.pointMaterial = new THREE.PointsMaterial({
-      color: 0x66ccff,
-      size: 0.03,
+    this.pointMaterial = new THREE.ShaderMaterial({
+      uniforms: this.uniforms,
+      vertexShader,
+      fragmentShader,
     });
     this.points = new THREE.Points(this.pointGeometry, this.pointMaterial);
     this.group.add(this.points);
@@ -91,6 +108,7 @@ export class Webgl {
   render() {
     requestAnimationFrame(this.render);
     this.renderer.render(this.scene, this.camera);
-    this.group.rotation.y += 0.01;
+    this.group.rotation.x += 0.001;
+    this.group.rotation.y += 0.001;
   }
 }
