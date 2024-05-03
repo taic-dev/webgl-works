@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import vertexShader from "../shader/vertexShader.glsl"
+import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 import { PARAMS } from "./constants";
 
@@ -20,7 +20,7 @@ export class Webgl {
   _setRenderer() {
     this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     this.renderer.setSize(PARAMS.WINDOW.W, PARAMS.WINDOW.H);
-    this.renderer.setClearColor({ color: 0x22222 })
+    this.renderer.setClearColor({ color: 0x22222 });
     this.renderer.setPixelRatio(PARAMS.WINDOW.PIXEL_RATIO);
     const element = document.querySelector(".webgl");
     element?.appendChild(this.renderer.domElement);
@@ -45,14 +45,14 @@ export class Webgl {
 
   _setMesh() {
     this.geometryArray = [
-      new THREE.PlaneGeometry( 10, 10 ),
+      new THREE.PlaneGeometry(10, 10),
       new THREE.TorusKnotGeometry(4, 1.3, 100, 16),
-      new THREE.SphereGeometry( 5, 32, 32 ),
-      new THREE.BoxGeometry( 1, 1, 1 ),
-      new THREE.ConeGeometry( 5, 10, 32 ),
-      new THREE.CylinderGeometry( 3, 3, 10, 32 ),
-      new THREE.TorusGeometry( 5, 2, 16, 100 )
-    ]
+      new THREE.SphereGeometry(5, 32, 32),
+      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.ConeGeometry(5, 10, 32),
+      new THREE.CylinderGeometry(3, 3, 10, 32),
+      new THREE.TorusGeometry(5, 2, 16, 100),
+    ];
     const mesh = new THREE.Mesh(this.geometryArray[0]);
     const mesh2 = new THREE.Mesh(this.geometryArray[4]);
     this.sampler = new MeshSurfaceSampler(mesh).build();
@@ -69,9 +69,7 @@ export class Webgl {
       vertices.push(tempPosition2.x, tempPosition2.y, tempPosition2.z);
     }
 
-    this.uniforms = {
-
-    }
+    this.uniforms = {};
 
     this.pointGeometry = new THREE.BufferGeometry();
     this.pointGeometry.setAttribute(
@@ -95,6 +93,14 @@ export class Webgl {
   _setAxesHelper() {
     const axesHelper = new THREE.AxesHelper(10);
     this.scene.add(axesHelper);
+  }
+
+  _onResize() {
+    setTimeout(() => {
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+    }, 500);
   }
 
   init() {

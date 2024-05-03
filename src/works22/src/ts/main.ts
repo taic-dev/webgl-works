@@ -4,4 +4,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const webgl = new Webgl();
   webgl.init();
   webgl.render();
+
+  window.addEventListener('resize', () => {
+    webgl._onResize();
+  })
 });
