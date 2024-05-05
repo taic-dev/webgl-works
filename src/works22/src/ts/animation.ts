@@ -1,4 +1,5 @@
 import { gsap } from "gsap";
+import { PERCENTS } from "./constants";
 
 type argType = {
   turn: { x: number; y: number };
@@ -6,10 +7,8 @@ type argType = {
 };
 
 type sliderIndexType = {
-  sliderIndex: {
-    index: number;
-    current: { value: number };
-  };
+  uPercents: { value: number[] };
+  index: number;
 };
 
 export const scaleAnimation = ({ turn, uAnimation }: argType) => {
@@ -19,7 +18,7 @@ export const scaleAnimation = ({ turn, uAnimation }: argType) => {
     y: 0.05,
   })
     .to(uAnimation, {
-      value: 1.5,
+      value: 2,
       duration: 1.0,
       ease: "power2.inOut",
     })
@@ -29,7 +28,7 @@ export const scaleAnimation = ({ turn, uAnimation }: argType) => {
     })
     .to(uAnimation, {
       value: 1,
-      duration: 1.0,
+      duration: 0.5,
       ease: "power2.inOut",
     });
 };
@@ -37,7 +36,8 @@ export const scaleAnimation = ({ turn, uAnimation }: argType) => {
 export const sliderAnimation = ({
   turn,
   uAnimation,
-  sliderIndex,
+  uPercents,
+  index,
 }: argType & sliderIndexType) => {
   const tl = gsap.timeline();
   tl.to(turn, {
@@ -49,8 +49,11 @@ export const sliderAnimation = ({
       duration: 1.0,
       ease: "power2.inOut",
     })
-    .to(sliderIndex.current, {
-      value: sliderIndex.index,
+    .to(uPercents, {
+      value: PERCENTS.map((v, i) => {
+        return i < index ? 1.0 : 0.0;
+      }),
+      duration: 0,
     })
     .add(() => {
       scaleAnimation({ turn, uAnimation });

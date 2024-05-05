@@ -3,7 +3,7 @@ import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.j
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
-import { PARAMS } from "./constants";
+import { PARAMS, POSITION_NAME, PERCENTS } from "./constants";
 import { scaleAnimation, sliderAnimation } from "./animation";
 
 export class Webgl {
@@ -53,17 +53,8 @@ export class Webgl {
     this.camera.lookAt(0, 0, 0);
   }
 
-  _setMesh() {
-    this.geometryArray = [
-      new THREE.PlaneGeometry(10, 10),
-      new THREE.TorusKnotGeometry(4, 1.3, 100, 16),
-      new THREE.SphereGeometry(5, 32, 32),
-      new THREE.BoxGeometry(10, 10, 10),
-      new THREE.ConeGeometry(5, 10, 32),
-      new THREE.CylinderGeometry(3, 3, 10, 32),
-      new THREE.TorusGeometry(5, 2, 16, 100),
-    ];
-    const mesh = new THREE.Mesh(this.geometryArray[this.current.value]);
+  _getGeometryPosition(index: number) {
+    const mesh = new THREE.Mesh(PARAMS.GEOMETRY[index]);
     this.sampler = new MeshSurfaceSampler(mesh).build();
 
     const vertices = [];
@@ -80,20 +71,34 @@ export class Webgl {
       );
     }
 
+    return vertices;
+  }
+
+  _setGeometryPosition(
+    pointGeometry: THREE.BufferGeometry,
+    name: string,
+    position: number[]
+  ) {
+    pointGeometry.setAttribute(
+      name,
+      new THREE.Float32BufferAttribute(position, 3)
+    );
+  }
+
+  _setMesh() {
+    this.pointGeometry = new THREE.BufferGeometry();
+
+    POSITION_NAME.forEach((name, index) => {
+      const positionNumber = this._getGeometryPosition(index);
+      this._setGeometryPosition(this.pointGeometry, name, positionNumber);
+    });
+
     this.uniforms = {
       uTime: { value: 0 },
       uAnimation: { value: 0 },
+      uPercents: { value: PERCENTS },
     };
 
-    this.pointGeometry = new THREE.BufferGeometry();
-    this.pointGeometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(vertices, 3)
-    );
-    this.pointGeometry.setAttribute(
-      "rands",
-      new THREE.Float32BufferAttribute(randVertices, 3)
-    );
     this.pointMaterial = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader,
@@ -113,41 +118,38 @@ export class Webgl {
   _sliderAnimation() {
     this.prev.addEventListener("click", () => {
       const index =
-        (this.current.value - 1 + this.geometryArray.length) %
-        this.geometryArray.length;
+        (this.current.value - 1 + PARAMS.GEOMETRY.length) %
+        PARAMS.GEOMETRY.length;
 
       sliderAnimation({
         turn: this.turn,
         uAnimation: this.uniforms.uAnimation,
-        sliderIndex: { index, current: this.current },
+        uPercents: this.uniforms.uPercents,
+        index,
       });
 
-      this.current.value = index
+      this.current.value = index;
     });
 
     this.next.addEventListener("click", () => {
       const index =
-        (this.current.value + 1 + this.geometryArray.length) %
-        this.geometryArray.length;
+        (this.current.value + 1 + PARAMS.GEOMETRY.length) %
+        PARAMS.GEOMETRY.length;
 
       sliderAnimation({
         turn: this.turn,
         uAnimation: this.uniforms.uAnimation,
-        sliderIndex: { index, current: this.current },
+        uPercents: this.uniforms.uPercents,
+        index,
       });
 
-      this.current.value = index
+      this.current.value = index;
     });
   }
 
   _setControl() {
     const controls = new OrbitControls(this.camera, this.renderer.domElement);
     controls.enableDamping = true;
-  }
-
-  _setAxesHelper() {
-    const axesHelper = new THREE.AxesHelper(10);
-    this.scene.add(axesHelper);
   }
 
   _onResize() {
@@ -165,7 +167,6 @@ export class Webgl {
     this._setAnimation();
     this._sliderAnimation();
     this._setControl();
-    this._setAxesHelper();
   }
 
   render() {
