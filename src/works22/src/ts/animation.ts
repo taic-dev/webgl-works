@@ -51,7 +51,7 @@ export const sliderAnimation = ({
     })
     .to(uPercents, {
       value: PERCENTS.map((v, i) => {
-        return i < index ? 1.0 : 0.0;
+        return i < index ? 1.0 : v;
       }),
       duration: 0,
     })
