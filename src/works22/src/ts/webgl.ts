@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 import { PARAMS } from "./constants";
+import { scaleAnimation, sliderAnimation } from "./animation";
 
 export class Webgl {
   [x: string]: any;
@@ -15,12 +16,21 @@ export class Webgl {
     this.group = new THREE.Group();
     this.scene.add(this.group);
     this.mesh;
+
+    this.turn = {
+      x: 0.005,
+      y: 0.005,
+    };
+
+    this.prev = document.querySelector(".prev");
+    this.next = document.querySelector(".next");
+    this.current = { value: 0 };
   }
 
   _setRenderer() {
     this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     this.renderer.setSize(PARAMS.WINDOW.W, PARAMS.WINDOW.H);
-    this.renderer.setClearColor({ color: 0x22222 });
+    this.renderer.setClearColor({ color: 0x333333 });
     this.renderer.setPixelRatio(PARAMS.WINDOW.PIXEL_RATIO);
     const element = document.querySelector(".webgl");
     element?.appendChild(this.renderer.domElement);
@@ -48,33 +58,41 @@ export class Webgl {
       new THREE.PlaneGeometry(10, 10),
       new THREE.TorusKnotGeometry(4, 1.3, 100, 16),
       new THREE.SphereGeometry(5, 32, 32),
-      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.BoxGeometry(10, 10, 10),
       new THREE.ConeGeometry(5, 10, 32),
       new THREE.CylinderGeometry(3, 3, 10, 32),
       new THREE.TorusGeometry(5, 2, 16, 100),
     ];
-    const mesh = new THREE.Mesh(this.geometryArray[0]);
-    const mesh2 = new THREE.Mesh(this.geometryArray[4]);
+    const mesh = new THREE.Mesh(this.geometryArray[this.current.value]);
     this.sampler = new MeshSurfaceSampler(mesh).build();
-    this.sampler2 = new MeshSurfaceSampler(mesh2).build();
 
     const vertices = [];
+    const randVertices = [];
     const tempPosition = new THREE.Vector3();
-    const tempPosition2 = new THREE.Vector3();
 
     for (let i = 0; i < 15000; i++) {
       this.sampler.sample(tempPosition);
-      this.sampler2.sample(tempPosition2);
       vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
-      vertices.push(tempPosition2.x, tempPosition2.y, tempPosition2.z);
+      randVertices.push(
+        (Math.random() - 1.0) * 2.0,
+        (Math.random() - 1.0) * 2.0,
+        (Math.random() - 1.0) * 2.0
+      );
     }
 
-    this.uniforms = {};
+    this.uniforms = {
+      uTime: { value: 0 },
+      uAnimation: { value: 0 },
+    };
 
     this.pointGeometry = new THREE.BufferGeometry();
     this.pointGeometry.setAttribute(
       "position",
       new THREE.Float32BufferAttribute(vertices, 3)
+    );
+    this.pointGeometry.setAttribute(
+      "rands",
+      new THREE.Float32BufferAttribute(randVertices, 3)
     );
     this.pointMaterial = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
@@ -83,6 +101,43 @@ export class Webgl {
     });
     this.points = new THREE.Points(this.pointGeometry, this.pointMaterial);
     this.group.add(this.points);
+  }
+
+  _setAnimation() {
+    scaleAnimation({
+      turn: this.turn,
+      uAnimation: this.uniforms.uAnimation,
+    });
+  }
+
+  _sliderAnimation() {
+    this.prev.addEventListener("click", () => {
+      const index =
+        (this.current.value - 1 + this.geometryArray.length) %
+        this.geometryArray.length;
+
+      sliderAnimation({
+        turn: this.turn,
+        uAnimation: this.uniforms.uAnimation,
+        sliderIndex: { index, current: this.current },
+      });
+
+      this.current.value = index
+    });
+
+    this.next.addEventListener("click", () => {
+      const index =
+        (this.current.value + 1 + this.geometryArray.length) %
+        this.geometryArray.length;
+
+      sliderAnimation({
+        turn: this.turn,
+        uAnimation: this.uniforms.uAnimation,
+        sliderIndex: { index, current: this.current },
+      });
+
+      this.current.value = index
+    });
   }
 
   _setControl() {
@@ -107,6 +162,8 @@ export class Webgl {
     this._setRenderer();
     this._setCamera();
     this._setMesh();
+    this._setAnimation();
+    this._sliderAnimation();
     this._setControl();
     this._setAxesHelper();
   }
@@ -114,7 +171,10 @@ export class Webgl {
   render() {
     requestAnimationFrame(this.render);
     this.renderer.render(this.scene, this.camera);
-    this.group.rotation.x += 0.001;
-    this.group.rotation.y += 0.001;
+    this.group.rotation.x += this.turn.x;
+    this.group.rotation.y += this.turn.y;
+    this.group.rotation.z += 0.001;
+
+    this.uniforms.uTime.value++;
   }
 }
