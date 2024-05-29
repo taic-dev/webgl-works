@@ -1,7 +1,9 @@
 import * as THREE from "three";
-import displacement from '../img/displacement.jpg'
+import displacement from "../img/displacement.jpg";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
+import gsap from "gsap";
+import { EASING } from "./constants";
 
 export class Webgl {
   renderer: THREE.WebGLRenderer | undefined;
@@ -15,7 +17,10 @@ export class Webgl {
   currentScrollY: number;
   scrollOffset: number;
   time: number;
+  isClick: boolean;
   images: HTMLImageElement[];
+  modal: HTMLElement | null;
+  modalImage: HTMLElement | null;
   planeArray: { image: HTMLImageElement; mesh: THREE.Mesh }[];
 
   constructor() {
@@ -30,8 +35,11 @@ export class Webgl {
     this.currentScrollY = 0;
     this.scrollOffset = 0;
     this.time = 0;
+    this.isClick = false;
 
     this.render = this.render.bind(this);
+    this.modal = document.querySelector(".modal");
+    this.modalImage = document.querySelector(".modal-image");
     this.images = [
       ...document.querySelectorAll(".item-image img"),
     ] as HTMLImageElement[];
@@ -84,8 +92,8 @@ export class Webgl {
     return this.mesh;
   }
 
-  setMeshPosition(image: HTMLImageElement, mesh: THREE.Mesh, offset: number) {
-    const rect = image.getBoundingClientRect();
+  setMeshPosition(img: HTMLImageElement, mesh: THREE.Mesh, offset: number) {
+    const rect = img.getBoundingClientRect();
     mesh.scale.x = rect.width;
     mesh.scale.y = rect.height;
 
@@ -97,8 +105,48 @@ export class Webgl {
     (mesh.material as any).uniforms.uTime.value = this.time++;
   }
 
+  setModal(mesh: THREE.Mesh) {
+    const rect = this.modalImage?.getBoundingClientRect();
+    if (!rect) return;
+
+    gsap.to(mesh.scale, {
+      x: rect.width,
+      y: rect.height,
+      duration: 0.5,
+      delay: 1.5,
+      ease: "power2.easeOut",
+    });
+
+    const x = rect.left - window.innerWidth / 2 + rect.width / 2;
+    const y = -rect.top + window.innerHeight / 2 - rect.height / 2;
+
+    gsap.to(mesh.position, {
+      x,
+      y,
+      z: 1,
+      duration: 0.5,
+      delay: 1,
+      ease: "power2.easeOut",
+    });
+  }
+
   updateMesh(img: HTMLImageElement, mesh: any, offset: number) {
-    this.setMeshPosition(img, mesh, offset);
+    img.addEventListener("click", () => {
+      img.classList.add("is-active");
+      document.documentElement.classList.add("is-hidden");
+      document.body.classList.add("is-hidden");
+      this.modal?.classList.add("is-show");
+
+      this.isClick = true;
+    });
+
+    if (this.isClick) {
+      img.classList.contains("is-active")
+        ? this.setModal(mesh)
+        : this.onClick(mesh);
+    } else {
+      this.setMeshPosition(img, mesh, offset);
+    }
   }
 
   onScroll() {
@@ -109,6 +157,16 @@ export class Webgl {
     this.targetScrollY = document.documentElement.scrollTop;
     this.currentScrollY = lerp(this.currentScrollY, this.targetScrollY, 0.1);
     this.scrollOffset = this.targetScrollY - this.currentScrollY;
+  }
+
+  onClick(mesh: any) {
+    const tl = gsap.timeline();
+
+    tl.to(mesh.material.uniforms.uOffset, {
+      value: -2500,
+      duration: 0.5,
+      ease: EASING.transform
+    });
   }
 
   onResize() {
@@ -141,7 +199,7 @@ export class Webgl {
       this.updateMesh(plane.image, plane.mesh, this.scrollOffset);
     }
 
-    this.onScroll();
+    // this.onScroll();
 
     this.renderer?.render(this.scene, this.camera);
     requestAnimationFrame(this.render);

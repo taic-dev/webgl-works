@@ -7,7 +7,7 @@ uniform float uOffset;
 varying vec2 vUv;
 
 const float displacementCoef = 0.001;
-const float brightnessCoef = 0.0008;
+const float brightnessCoef = 0.0005;
 
 void main() {
   vec2 ratio = vec2(

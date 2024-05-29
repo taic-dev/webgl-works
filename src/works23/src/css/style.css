@@ -3,6 +3,10 @@
   padding: 0;
 }
 
+html.is-hidden,body.is-hidden {
+  overflow: hidden;
+}
+
 canvas {
   position: fixed;
   top: 0;
@@ -14,10 +18,11 @@ canvas {
 
 h1 {
   position: fixed;
+  z-index: 1;
   margin: 15px;
   font-size: 2rem;
   font-family: "Secular One", sans-serif;
-  color: #fff;
+  color: #000;
   mix-blend-mode: difference;
 }
 
@@ -27,11 +32,19 @@ h1 {
 }
 
 main {
-  padding: 10rem;
+  padding: 10rem 5rem;
 }
 
 .title {
   margin-bottom: 3vw;
+  font-family: "Secular One", sans-serif;
+  opacity: 1;
+  transition: 0.5s;
+}
+
+body.is-hidden .title {
+  opacity: 0;
+  transition: 0.5s;
 }
 
 .title h2 {
@@ -58,4 +71,51 @@ main {
   height: 100%;
   object-fit: cover;
   opacity: 0;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1;
+  padding: 10rem 5rem;
+
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+
+  opacity: 0;
+}
+
+.modal.is-show {
+  z-index: 99;
+  opacity: 1;
+  transition: 1s 2s;
+}
+
+.modal-image {
+  max-width: 500px;
+  min-width: 500px;
+  width: 100%;
+  height: 100%;
+}
+
+.modal-desc h3 {
+  font-size: 3vw;
+  font-family: "Secular One", sans-serif;
+  margin-bottom: 2rem;
+}
+
+.modal-desc > p {
+  line-height: 3;
+}
+
+.modal-close p {
+  text-align: right;
+  margin-top: 2rem;
+  font-size: 3vw;
+  font-family: "Secular One", sans-serif;
+  cursor: pointer;
 }
