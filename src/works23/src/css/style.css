@@ -1,0 +1,61 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+h1 {
+  position: fixed;
+  margin: 15px;
+  font-size: 2rem;
+  font-family: "Secular One", sans-serif;
+  color: #fff;
+  mix-blend-mode: difference;
+}
+
+.header__logo h1 {
+  font-size: 40px;
+  font-weight: 600;
+}
+
+main {
+  padding: 10rem;
+}
+
+.title {
+  margin-bottom: 3vw;
+}
+
+.title h2 {
+  font-size: 5vw;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3vw;
+}
+
+.item {
+  width: calc(33.3333% - 2vw);
+}
+
+.item-image {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+}
+
+.item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+}
