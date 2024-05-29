@@ -1,10 +1,13 @@
 uniform sampler2D uTexture;
+uniform sampler2D uDisplacement;
 uniform float uImageAspect;
 uniform float uPlaneAspect;
 uniform float uOffset;
 
 varying vec2 vUv;
 
+const float displacementCoef = 0.001;
+const float brightnessCoef = 0.0008;
 
 void main() {
   vec2 ratio = vec2(
@@ -17,11 +20,15 @@ void main() {
     (vUv.y - 0.5) * ratio.y + 0.5
   );
 
-  float n = 0.001;
+  vec4 displacementTexture = texture2D(uDisplacement, vUv);
 
-  float colorR = texture2D(uTexture, fixedUv).r + abs(uOffset) * n;
-  float colorG = texture2D(uTexture, fixedUv).g + abs(uOffset) * n;
-  float colorB = texture2D(uTexture, fixedUv).b + abs(uOffset) * n;
-  gl_FragColor = vec4(vec3(colorR, colorG, colorB), 1.0);
-  
+  float displacementForce = displacementTexture.r * uOffset * displacementCoef;
+  vec2 uvDisplaced = vec2(fixedUv.x, fixedUv.y + displacementForce);
+  vec4 displacedTexture = texture2D(uTexture, uvDisplaced);
+
+  float r = displacedTexture.r + abs(uOffset * brightnessCoef);
+  float g = displacedTexture.g + abs(uOffset * brightnessCoef);
+  float b = displacedTexture.b + abs(uOffset * brightnessCoef);
+
+  gl_FragColor = vec4(vec3(r, g, b), 1.0);
 }

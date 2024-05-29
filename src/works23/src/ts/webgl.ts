@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import displacement from '../img/displacement.jpg'
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 
@@ -13,6 +14,7 @@ export class Webgl {
   targetScrollY: number;
   currentScrollY: number;
   scrollOffset: number;
+  time: number;
   images: HTMLImageElement[];
   planeArray: { image: HTMLImageElement; mesh: THREE.Mesh }[];
 
@@ -27,6 +29,7 @@ export class Webgl {
     this.targetScrollY = 0;
     this.currentScrollY = 0;
     this.scrollOffset = 0;
+    this.time = 0;
 
     this.render = this.render.bind(this);
     this.images = [
@@ -61,13 +64,14 @@ export class Webgl {
     this.geometry = new THREE.PlaneGeometry(1, 1, 1, 1);
 
     const loader = new THREE.TextureLoader();
-    const texture = loader.load(image.src);
 
     this.uniforms = {
-      uTexture: { value: texture },
+      uTexture: { value: loader.load(image.src) },
+      uDisplacement: { value: loader.load(displacement) },
       uImageAspect: { value: image.naturalWidth / image.naturalHeight },
       uPlaneAspect: { value: image.clientWidth / image.clientHeight },
       uOffset: { value: this.scrollOffset },
+      uTime: { value: this.time },
     };
 
     this.material = new THREE.ShaderMaterial({
@@ -90,6 +94,7 @@ export class Webgl {
 
     mesh.position.set(x, y, mesh.position.z);
     (mesh.material as any).uniforms.uOffset.value = offset;
+    (mesh.material as any).uniforms.uTime.value = this.time++;
   }
 
   updateMesh(img: HTMLImageElement, mesh: any, offset: number) {
@@ -132,11 +137,11 @@ export class Webgl {
       });
     });
 
-    this.onScroll();
-
     for (const plane of this.planeArray) {
       this.updateMesh(plane.image, plane.mesh, this.scrollOffset);
     }
+
+    this.onScroll();
 
     this.renderer?.render(this.scene, this.camera);
     requestAnimationFrame(this.render);
