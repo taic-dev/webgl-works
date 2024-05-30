@@ -96,8 +96,8 @@ body.is-hidden .title {
 }
 
 .modal-image {
-  max-width: 500px;
-  min-width: 500px;
+  max-width: 400px;
+  min-width: 400px;
   width: 100%;
   height: 100%;
 }
@@ -113,8 +113,9 @@ body.is-hidden .title {
 }
 
 .modal-close p {
-  text-align: right;
   margin-top: 2rem;
+  margin-left: auto;
+  width: fit-content;
   font-size: 3vw;
   font-family: "Secular One", sans-serif;
   cursor: pointer;

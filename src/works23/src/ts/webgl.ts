@@ -16,11 +16,13 @@ export class Webgl {
   targetScrollY: number;
   currentScrollY: number;
   scrollOffset: number;
+  offset: number;
   time: number;
-  isClick: boolean;
+  isOpen: boolean;
   images: HTMLImageElement[];
   modal: HTMLElement | null;
   modalImage: HTMLElement | null;
+  close: HTMLElement | null;
   planeArray: { image: HTMLImageElement; mesh: THREE.Mesh }[];
 
   constructor() {
@@ -34,8 +36,9 @@ export class Webgl {
     this.targetScrollY = 0;
     this.currentScrollY = 0;
     this.scrollOffset = 0;
+    this.offset = 0;
     this.time = 0;
-    this.isClick = false;
+    this.isOpen = false;
 
     this.render = this.render.bind(this);
     this.modal = document.querySelector(".modal");
@@ -43,6 +46,7 @@ export class Webgl {
     this.images = [
       ...document.querySelectorAll(".item-image img"),
     ] as HTMLImageElement[];
+    this.close = document.querySelector(".close");
     this.planeArray = [];
   }
 
@@ -105,29 +109,44 @@ export class Webgl {
     (mesh.material as any).uniforms.uTime.value = this.time++;
   }
 
-  setModal(mesh: THREE.Mesh) {
+  openModal(mesh: THREE.Mesh) {
     const rect = this.modalImage?.getBoundingClientRect();
     if (!rect) return;
-
-    gsap.to(mesh.scale, {
-      x: rect.width,
-      y: rect.height,
-      duration: 0.5,
-      delay: 1.5,
-      ease: "power2.easeOut",
-    });
 
     const x = rect.left - window.innerWidth / 2 + rect.width / 2;
     const y = -rect.top + window.innerHeight / 2 - rect.height / 2;
 
-    gsap.to(mesh.position, {
+    const tl = gsap.timeline();
+
+    tl.to(mesh.position, {
       x,
       y,
       z: 1,
-      duration: 0.5,
+      duration: 1.5,
       delay: 1,
       ease: "power2.easeOut",
-    });
+    },'<').to(
+      mesh.scale,
+      {
+        x: rect.width,
+        y: rect.height,
+        duration: 1.5,
+        delay: 1,
+        ease: "power2.easeOut",
+      },
+      "<"
+    );
+  }
+
+  closeModal(img: HTMLImageElement) {
+    img.classList.remove("is-active");
+    this.modal?.classList.remove("is-show");
+    document.documentElement.classList.remove("is-hidden");
+    document.body.classList.remove("is-hidden");
+
+    setTimeout(() => {
+      this.isOpen = false;
+    }, 2500);
   }
 
   updateMesh(img: HTMLImageElement, mesh: any, offset: number) {
@@ -136,14 +155,23 @@ export class Webgl {
       document.documentElement.classList.add("is-hidden");
       document.body.classList.add("is-hidden");
       this.modal?.classList.add("is-show");
+      this.isOpen = true;
 
-      this.isClick = true;
+      this.openModal(mesh);
     });
 
-    if (this.isClick) {
-      img.classList.contains("is-active")
-        ? this.setModal(mesh)
-        : this.onClick(mesh);
+    this.close?.addEventListener("click", () => {
+      if (img.classList.contains("is-active")) {
+        this.hideImage(mesh.material.uniforms.uOffset);
+      }
+
+      this.closeModal(img);
+    });
+
+    if (this.isOpen) {
+      if (!img.classList.contains("is-active")) {
+        this.hideImage(mesh.material.uniforms.uOffset);
+      }
     } else {
       this.setMeshPosition(img, mesh, offset);
     }
@@ -157,15 +185,22 @@ export class Webgl {
     this.targetScrollY = document.documentElement.scrollTop;
     this.currentScrollY = lerp(this.currentScrollY, this.targetScrollY, 0.1);
     this.scrollOffset = this.targetScrollY - this.currentScrollY;
+    this.offset = this.scrollOffset;
   }
 
-  onClick(mesh: any) {
-    const tl = gsap.timeline();
-
-    tl.to(mesh.material.uniforms.uOffset, {
+  hideImage(target: any) {
+    gsap.to(target, {
       value: -2500,
       duration: 0.5,
-      ease: EASING.transform
+      ease: EASING.transform,
+    });
+  }
+
+  showImage(target: any) {
+    gsap.to(target, {
+      value: 0,
+      duration: 0.5,
+      ease: EASING.transform,
     });
   }
 
@@ -196,10 +231,8 @@ export class Webgl {
     });
 
     for (const plane of this.planeArray) {
-      this.updateMesh(plane.image, plane.mesh, this.scrollOffset);
+      this.updateMesh(plane.image, plane.mesh, this.offset);
     }
-
-    // this.onScroll();
 
     this.renderer?.render(this.scene, this.camera);
     requestAnimationFrame(this.render);
