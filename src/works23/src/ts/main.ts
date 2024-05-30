@@ -1,20 +1,9 @@
-import Lenis from "@studio-freight/lenis";
 import { Webgl } from "./webgl";
+import { lenisLib } from "./lenis";
 
 window.addEventListener("DOMContentLoaded", () => {
   // lenis
-  const lenis = new Lenis();
-  const raf = (time: number) => {
-    lenis.raf(time * 0.8);
-    requestAnimationFrame(raf);
-
-    if(document.documentElement.classList.contains('is-hidden')) {
-      lenis.stop();
-    } else {
-      lenis.start();
-    }
-  };
-  requestAnimationFrame(raf);
+  lenisLib.raf(1);
 
   // webgl
   const webgl = new Webgl();

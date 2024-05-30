@@ -3,7 +3,8 @@ import displacement from "../img/displacement.jpg";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 import gsap from "gsap";
-import { EASING } from "./constants";
+import { clientRectCoordinate, lerp } from "./utils";
+import { lenisLib } from "./lenis";
 
 export class Webgl {
   renderer: THREE.WebGLRenderer | undefined;
@@ -36,11 +37,12 @@ export class Webgl {
     this.targetScrollY = 0;
     this.currentScrollY = 0;
     this.scrollOffset = 0;
-    this.offset = 0;
+    this.offset = -2500;
     this.time = 0;
     this.isOpen = false;
 
     this.render = this.render.bind(this);
+
     this.modal = document.querySelector(".modal");
     this.modalImage = document.querySelector(".modal-image");
     this.images = [
@@ -73,7 +75,7 @@ export class Webgl {
   }
 
   setMesh(image: HTMLImageElement) {
-    this.geometry = new THREE.PlaneGeometry(1, 1, 1, 1);
+    this.geometry = new THREE.PlaneGeometry(1, 1, 10, 10);
 
     const loader = new THREE.TextureLoader();
 
@@ -82,7 +84,7 @@ export class Webgl {
       uDisplacement: { value: loader.load(displacement) },
       uImageAspect: { value: image.naturalWidth / image.naturalHeight },
       uPlaneAspect: { value: image.clientWidth / image.clientHeight },
-      uOffset: { value: this.scrollOffset },
+      uOffset: { value: this.offset },
       uTime: { value: this.time },
     };
 
@@ -96,112 +98,122 @@ export class Webgl {
     return this.mesh;
   }
 
-  setMeshPosition(img: HTMLImageElement, mesh: THREE.Mesh, offset: number) {
-    const rect = img.getBoundingClientRect();
-    mesh.scale.x = rect.width;
-    mesh.scale.y = rect.height;
-
-    const x = rect.left - window.innerWidth / 2 + rect.width / 2;
-    const y = -rect.top + window.innerHeight / 2 - rect.height / 2;
-
-    mesh.position.set(x, y, mesh.position.z);
-    (mesh.material as any).uniforms.uOffset.value = offset;
-    (mesh.material as any).uniforms.uTime.value = this.time++;
+  initMesh() {
+    this.images.forEach((image) => {
+      const mesh = this.setMesh(image);
+      this.scene.add(mesh);
+      this.setMeshPosition(image, mesh);
+      this.planeArray.push({ image, mesh });
+    });
   }
 
-  openModal(mesh: THREE.Mesh) {
+  setMeshPosition(img: HTMLImageElement, mesh: THREE.Mesh) {
+    const rect = img.getBoundingClientRect();
+    const { x, y } = clientRectCoordinate(rect)
+
+    mesh.position.set(x, y, 1);
+
+    mesh.scale.x = rect.width;
+    mesh.scale.y = rect.height;
+    (mesh.material as any).uniforms.uOffset.value = this.offset
+  }
+
+  setModalPosition(mesh: THREE.Mesh) {
     const rect = this.modalImage?.getBoundingClientRect();
     if (!rect) return;
 
-    const x = rect.left - window.innerWidth / 2 + rect.width / 2;
-    const y = -rect.top + window.innerHeight / 2 - rect.height / 2;
+    const { x, y } = clientRectCoordinate(rect);
 
-    const tl = gsap.timeline();
-
-    tl.to(mesh.position, {
+    gsap.to(mesh.position, {
       x,
       y,
-      z: 1,
+      z: 2,
       duration: 1.5,
       delay: 1,
       ease: "power2.easeOut",
-    },'<').to(
-      mesh.scale,
-      {
-        x: rect.width,
-        y: rect.height,
-        duration: 1.5,
-        delay: 1,
-        ease: "power2.easeOut",
-      },
-      "<"
-    );
-  }
-
-  closeModal(img: HTMLImageElement) {
-    img.classList.remove("is-active");
-    this.modal?.classList.remove("is-show");
-    document.documentElement.classList.remove("is-hidden");
-    document.body.classList.remove("is-hidden");
-
-    setTimeout(() => {
-      this.isOpen = false;
-    }, 2500);
-  }
-
-  updateMesh(img: HTMLImageElement, mesh: any, offset: number) {
-    img.addEventListener("click", () => {
-      img.classList.add("is-active");
-      document.documentElement.classList.add("is-hidden");
-      document.body.classList.add("is-hidden");
-      this.modal?.classList.add("is-show");
-      this.isOpen = true;
-
-      this.openModal(mesh);
     });
 
+    gsap.to(mesh.scale, {
+      x: rect.width,
+      y: rect.height,
+      duration: 1.5,
+      delay: 1,
+      ease: "power2.easeOut",
+    });
+  }
+
+  openModalEvent() {
+    this.planeArray.forEach((plane) => {
+      plane.image.addEventListener("click", () => {
+        plane.image.classList.add("is-show");
+        this.modal?.classList.add("is-show");
+        this.isOpen = true;
+        lenisLib.lenis.stop();
+
+        this.hideImageAnimation(true);
+        this.setModalPosition(plane.mesh);
+      });
+    });
+  }
+
+  closeModalEvent() {
     this.close?.addEventListener("click", () => {
-      if (img.classList.contains("is-active")) {
-        this.hideImage(mesh.material.uniforms.uOffset);
-      }
+      this.hideImageAnimation(false);
+      this.modal?.classList.remove("is-show");
+      lenisLib.lenis.start();
 
-      this.closeModal(img);
+      setTimeout(() => {
+        this.isOpen = false;
+        this.offset = -2500;
+        this.showImageAnimation();
+      }, 1000);
+
+      this.planeArray.forEach((plane) => {
+        plane.image.classList.remove("is-show");
+      });
     });
-
-    if (this.isOpen) {
-      if (!img.classList.contains("is-active")) {
-        this.hideImage(mesh.material.uniforms.uOffset);
-      }
-    } else {
-      this.setMeshPosition(img, mesh, offset);
-    }
   }
 
-  onScroll() {
-    const lerp = (start: number, end: number, multiplier: number) => {
-      return (1 - multiplier) * start + multiplier * end;
-    };
+  hideImageAnimation(isMultiple: boolean) {
+    this.planeArray.forEach((plane) => {
+      const target = (plane.mesh.material as any).uniforms.uOffset;
+      if (isMultiple) {
+        if (!plane.image.classList.contains("is-show")) {
+          gsap.to(target, {
+            value: -2500,
+            duration: 1.5,
+            ease: "power1.inOut",
+          });
+        }
+      } else {
+        if (plane.image.classList.contains("is-show")) {
+          gsap.to(target, {
+            value: -2500,
+            duration: 1.5,
+            ease: "power1.inOut",
+          });
+        }
+      }
+    });
+  }
 
+  showImageAnimation() {
+    this.planeArray.forEach((plane) => {
+      const target = (plane.mesh.material as any).uniforms.uOffset;
+
+      gsap.to(target, {
+        value: 0,
+        duration: 1.5,
+        ease: "power1.inOut",
+      });
+    });
+  }
+
+  scrollAnimation() {
     this.targetScrollY = document.documentElement.scrollTop;
     this.currentScrollY = lerp(this.currentScrollY, this.targetScrollY, 0.1);
     this.scrollOffset = this.targetScrollY - this.currentScrollY;
     this.offset = this.scrollOffset;
-  }
-
-  hideImage(target: any) {
-    gsap.to(target, {
-      value: -2500,
-      duration: 0.5,
-      ease: EASING.transform,
-    });
-  }
-
-  showImage(target: any) {
-    gsap.to(target, {
-      value: 0,
-      duration: 0.5,
-      ease: EASING.transform,
-    });
   }
 
   onResize() {
@@ -215,26 +227,26 @@ export class Webgl {
   init() {
     this.setCanvas();
     this.setCamera();
+    this.initMesh();
     this.render();
+
+    this.openModalEvent();
+    this.closeModalEvent();
+    this.showImageAnimation();
   }
 
   render() {
     if (!this.camera) return;
+    this.renderer?.render(this.scene, this.camera);
 
-    window.addEventListener("load", () => {
-      this.images.forEach((image) => {
-        const mesh = this.setMesh(image);
-        this.scene.add(mesh);
-        this.setMeshPosition(image, mesh, 0);
-        this.planeArray.push({ image, mesh });
+    if (!this.isOpen) {
+      this.planeArray.forEach((plane) => {
+        this.setMeshPosition(plane.image, plane.mesh);
       });
-    });
-
-    for (const plane of this.planeArray) {
-      this.updateMesh(plane.image, plane.mesh, this.offset);
     }
 
-    this.renderer?.render(this.scene, this.camera);
+    this.scrollAnimation();
+
     requestAnimationFrame(this.render);
   }
 }
