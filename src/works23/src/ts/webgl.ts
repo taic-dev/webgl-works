@@ -5,6 +5,7 @@ import fragmentShader from "../shader/fragmentShader.glsl";
 import gsap from "gsap";
 import { clientRectCoordinate, lerp } from "./utils";
 import { lenisLib } from "./lenis";
+import { EASING } from "./constants";
 
 export class Webgl {
   renderer: THREE.WebGLRenderer | undefined;
@@ -18,9 +19,11 @@ export class Webgl {
   currentScrollY: number;
   scrollOffset: number;
   offset: number;
+  twist: number;
   time: number;
   isOpen: boolean;
   images: HTMLImageElement[];
+  tl: gsap.core.Timeline;
   modal: HTMLElement | null;
   modalImage: HTMLElement | null;
   close: HTMLElement | null;
@@ -37,12 +40,14 @@ export class Webgl {
     this.targetScrollY = 0;
     this.currentScrollY = 0;
     this.scrollOffset = 0;
-    this.offset = -2500;
+    this.offset = 2500;
+    this.twist = 0;
     this.time = 0;
     this.isOpen = false;
 
     this.render = this.render.bind(this);
 
+    this.tl = gsap.timeline();
     this.modal = document.querySelector(".modal");
     this.modalImage = document.querySelector(".modal-image");
     this.images = [
@@ -75,7 +80,7 @@ export class Webgl {
   }
 
   setMesh(image: HTMLImageElement) {
-    this.geometry = new THREE.PlaneGeometry(1, 1, 10, 10);
+    this.geometry = new THREE.PlaneGeometry(1, 1, 100, 100);
 
     const loader = new THREE.TextureLoader();
 
@@ -85,6 +90,7 @@ export class Webgl {
       uImageAspect: { value: image.naturalWidth / image.naturalHeight },
       uPlaneAspect: { value: image.clientWidth / image.clientHeight },
       uOffset: { value: this.offset },
+      uTwist: { value: this.twist },
       uTime: { value: this.time },
     };
 
@@ -109,13 +115,13 @@ export class Webgl {
 
   setMeshPosition(img: HTMLImageElement, mesh: THREE.Mesh) {
     const rect = img.getBoundingClientRect();
-    const { x, y } = clientRectCoordinate(rect)
+    const { x, y } = clientRectCoordinate(rect);
 
     mesh.position.set(x, y, 1);
 
     mesh.scale.x = rect.width;
     mesh.scale.y = rect.height;
-    (mesh.material as any).uniforms.uOffset.value = this.offset
+    (mesh.material as any).uniforms.uOffset.value = this.offset;
   }
 
   setModalPosition(mesh: THREE.Mesh) {
@@ -123,6 +129,7 @@ export class Webgl {
     if (!rect) return;
 
     const { x, y } = clientRectCoordinate(rect);
+    const target = (mesh.material as any).uniforms.uTwist;
 
     gsap.to(mesh.position, {
       x,
@@ -140,6 +147,23 @@ export class Webgl {
       delay: 1,
       ease: "power2.easeOut",
     });
+
+    this.tl
+      .to(target, {
+        value: -20,
+        duration: 1,
+        ease: 'linear'
+      })
+      .to(target, {
+        value: 20,
+        duration: 1,
+        ease: 'linear'
+      })
+      .to(target, {
+        value: 0,
+        duration: 1,
+        ease: EASING.transform
+      })
   }
 
   openModalEvent() {

@@ -17,7 +17,7 @@ canvas {
 }
 
 h1 {
-  position: fixed;
+  position: absolute;
   z-index: 1;
   margin: 15px;
   font-size: 2rem;
@@ -33,22 +33,6 @@ h1 {
 
 main {
   padding: 10rem 5rem;
-}
-
-.title {
-  margin-bottom: 3vw;
-  font-family: "Secular One", sans-serif;
-  opacity: 1;
-  transition: 0.5s;
-}
-
-body.is-hidden .title {
-  opacity: 0;
-  transition: 0.5s;
-}
-
-.title h2 {
-  font-size: 5vw;
 }
 
 .list {
@@ -96,8 +80,8 @@ body.is-hidden .title {
 }
 
 .modal-image {
-  max-width: 400px;
-  min-width: 400px;
+  max-width: 500px;
+  min-width: 500px;
   width: 100%;
   height: 100%;
 }
