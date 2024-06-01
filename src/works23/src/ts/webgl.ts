@@ -5,7 +5,7 @@ import fragmentShader from "../shader/fragmentShader.glsl";
 import gsap from "gsap";
 import { clientRectCoordinate, lerp } from "./utils";
 import { lenisLib } from "./lenis";
-import { EASING } from "./constants";
+import { ACCESSORY_DATA, EASING } from "./constants";
 
 export class Webgl {
   renderer: THREE.WebGLRenderer | undefined;
@@ -25,6 +25,8 @@ export class Webgl {
   images: HTMLImageElement[];
   tl: gsap.core.Timeline;
   modal: HTMLElement | null;
+  modalDescTitle: HTMLElement | null;
+  modalDescText: HTMLElement | null;
   modalImage: HTMLElement | null;
   close: HTMLElement | null;
   planeArray: { image: HTMLImageElement; mesh: THREE.Mesh }[];
@@ -49,6 +51,8 @@ export class Webgl {
 
     this.tl = gsap.timeline();
     this.modal = document.querySelector(".modal");
+    this.modalDescTitle = document.querySelector(".modal-desc h3");
+    this.modalDescText = document.querySelector(".modal-desc p");
     this.modalImage = document.querySelector(".modal-image");
     this.images = [
       ...document.querySelectorAll(".item-image img"),
@@ -167,10 +171,14 @@ export class Webgl {
   }
 
   openModalEvent() {
-    this.planeArray.forEach((plane) => {
+    this.planeArray.forEach((plane, index) => {
       plane.image.addEventListener("click", () => {
+        if(!this.modalDescTitle || !this.modalDescText) return
+        
         plane.image.classList.add("is-show");
         this.modal?.classList.add("is-show");
+        this.modalDescTitle.innerHTML = ACCESSORY_DATA[index].TITLE
+        this.modalDescText.innerHTML = ACCESSORY_DATA[index].TEXT
         this.isOpen = true;
         lenisLib.lenis.stop();
 
