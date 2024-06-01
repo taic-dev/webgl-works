@@ -5,7 +5,7 @@ import fragmentShader from "../shader/fragmentShader.glsl";
 import gsap from "gsap";
 import { clientRectCoordinate, lerp } from "./utils";
 import { lenisLib } from "./lenis";
-import { ACCESSORY_DATA, EASING } from "./constants";
+import { ACCESSORY_DATA } from "./constants";
 
 export class Webgl {
   renderer: THREE.WebGLRenderer | undefined;
@@ -14,13 +14,16 @@ export class Webgl {
   geometry: THREE.PlaneGeometry | undefined;
   material: THREE.ShaderMaterial | undefined;
   mesh: THREE.Mesh | undefined;
+  clock: THREE.Clock | undefined;
+  elapsed: number | undefined;
   uniforms: any;
   targetScrollY: number;
   currentScrollY: number;
   scrollOffset: number;
   offset: number;
-  twist: number;
+  amplitude: number;
   time: number;
+  isAnimation: boolean;
   isOpen: boolean;
   images: HTMLImageElement[];
   tl: gsap.core.Timeline;
@@ -38,13 +41,16 @@ export class Webgl {
     this.geometry;
     this.material;
     this.mesh;
+    this.clock = new THREE.Clock(false);
+    this.elapsed = 0;
     this.uniforms;
     this.targetScrollY = 0;
     this.currentScrollY = 0;
-    this.scrollOffset = 0;
-    this.offset = 2500;
-    this.twist = 0;
-    this.time = 0;
+    this.scrollOffset = -2500;
+    this.offset = -2500;
+    this.amplitude = 0;
+    this.time = 80;
+    this.isAnimation = false;
     this.isOpen = false;
 
     this.render = this.render.bind(this);
@@ -94,14 +100,15 @@ export class Webgl {
       uImageAspect: { value: image.naturalWidth / image.naturalHeight },
       uPlaneAspect: { value: image.clientWidth / image.clientHeight },
       uOffset: { value: this.offset },
-      uTwist: { value: this.twist },
       uTime: { value: this.time },
+      uAmplitude: { value: this.amplitude },
     };
 
     this.material = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
+      side: THREE.DoubleSide,
     });
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
@@ -125,6 +132,7 @@ export class Webgl {
 
     mesh.scale.x = rect.width;
     mesh.scale.y = rect.height;
+
     (mesh.material as any).uniforms.uOffset.value = this.offset;
   }
 
@@ -133,12 +141,11 @@ export class Webgl {
     if (!rect) return;
 
     const { x, y } = clientRectCoordinate(rect);
-    const target = (mesh.material as any).uniforms.uTwist;
 
     gsap.to(mesh.position, {
       x,
       y,
-      z: 2,
+      z: 1,
       duration: 1.5,
       delay: 1,
       ease: "power2.easeOut",
@@ -152,38 +159,40 @@ export class Webgl {
       ease: "power2.easeOut",
     });
 
-    this.tl
-      .to(target, {
-        value: -20,
-        duration: 1,
-        ease: 'linear'
-      })
-      .to(target, {
-        value: 20,
-        duration: 1,
-        ease: 'linear'
-      })
-      .to(target, {
+    gsap.fromTo(
+      (mesh.material as any).uniforms.uAmplitude,
+      {
+        value: 35,
+      },
+      {
         value: 0,
-        duration: 1,
-        ease: EASING.transform
-      })
+        duration: 3,
+        yoyo: true,
+        yoyoEase: "sine.out",
+        ease: "power1.easeInOut",
+      }
+    );
   }
 
   openModalEvent() {
     this.planeArray.forEach((plane, index) => {
       plane.image.addEventListener("click", () => {
-        if(!this.modalDescTitle || !this.modalDescText) return
-        
+        if (!this.modalDescTitle || !this.modalDescText) return;
+
         plane.image.classList.add("is-show");
         this.modal?.classList.add("is-show");
-        this.modalDescTitle.innerHTML = ACCESSORY_DATA[index].TITLE
-        this.modalDescText.innerHTML = ACCESSORY_DATA[index].TEXT
+        this.modalDescTitle.innerHTML = ACCESSORY_DATA[index].TITLE;
+        this.modalDescText.innerHTML = ACCESSORY_DATA[index].TEXT;
+        this.isAnimation = true;
         this.isOpen = true;
         lenisLib.lenis.stop();
 
         this.hideImageAnimation(true);
         this.setModalPosition(plane.mesh);
+
+        setTimeout(() => {
+          this.isAnimation = false
+        }, 3000)
       });
     });
   }
@@ -196,6 +205,7 @@ export class Webgl {
 
       setTimeout(() => {
         this.isOpen = false;
+        this.isAnimation = false;
         this.offset = -2500;
         this.showImageAnimation();
       }, 1000);
@@ -214,6 +224,11 @@ export class Webgl {
           gsap.to(target, {
             value: -2500,
             duration: 1.5,
+            ease: "power1.inOut",
+          });
+
+          gsap.to(plane.mesh.position, {
+            z: -100,
             ease: "power1.inOut",
           });
         }
@@ -271,11 +286,18 @@ export class Webgl {
     if (!this.camera) return;
     this.renderer?.render(this.scene, this.camera);
 
-    if (!this.isOpen) {
-      this.planeArray.forEach((plane) => {
+    this.planeArray.forEach((plane) => {
+      if (!this.isOpen) {
         this.setMeshPosition(plane.image, plane.mesh);
-      });
-    }
+      }
+
+      if (this.isAnimation) { 
+        (plane.mesh.material as any).uniforms.uTime.value++
+      } else {
+        (plane.mesh.material as any).uniforms.uTime.value = 80
+      }
+
+    });
 
     this.scrollAnimation();
 
