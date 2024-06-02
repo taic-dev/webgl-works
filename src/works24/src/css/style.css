@@ -3,7 +3,11 @@
   padding: 0;
 }
 
-html,body {
+html,
+body,
+main {
+  width: 100%;
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -17,11 +21,29 @@ canvas {
 }
 
 h1 {
-  position: absolute;
+  position: fixed;
   z-index: 1;
   margin: 15px;
   font-size: 2rem;
   font-family: "Secular One", sans-serif;
   color: #000;
   mix-blend-mode: difference;
+}
+
+.list {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  display: grid;
+  gap: 1%;
+  grid-template-columns: repeat(auto-fit, calc(calc(300vh / 4) - (3% / 4)));
+  width: 300vh;
+  height: 200vh;
+}
+
+.item {
+  width: 100%;
+  height: 100%;
+  background-color: #333;
 }
