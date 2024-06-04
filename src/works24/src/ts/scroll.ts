@@ -10,6 +10,7 @@ const listHeight = listWrapper?.clientHeight;
 
 const items = [...document.querySelectorAll(".item")];
 const rect = items[0].getBoundingClientRect();
+const { width } = rect;
 let { x, y } = clientRectCoordinate(rect);
 const topCoordinate = y;
 const bottomCoordinate = -y;
@@ -59,9 +60,9 @@ window.addEventListener("wheel", (e: MouseEvent) => {
     if(y > topCoordinate) {
       console.log("action:",topCoordinate)
       item.style.display = 'none';
-      item.style.transform = `translate(0, ${topCoordinate}px)`
+      item.style.transform = `translate(0, ${listHeight - width - 45}px)`
 
-      scrollNumArray[i] = topCoordinate
+      scrollNumArray[i] = listHeight
       // item.style.setProperty("transform", `translate(0, ${topCoordinate}px)`);
     }
 
