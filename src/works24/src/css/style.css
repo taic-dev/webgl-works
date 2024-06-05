@@ -37,10 +37,10 @@ h1 {
   transform: translate3d(-50%, -50%, 0);
   display: grid;
   justify-content: center;
-  gap: 15px;
-  grid-template-columns: repeat(auto-fit, calc(calc(150vw / 4) - (45px / 3)));
+  gap: 50px;
+  grid-template-columns: repeat(auto-fit, calc(calc(150vw / 4) - (150px / 3)));
   width: 150vw;
-  height:  150vh;
+  height:  250vh;
 }
 
 .item {
@@ -48,3 +48,34 @@ h1 {
   height: 100%;
   background-color: #333;
 }
+
+.item__img {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+}
+
+.item:nth-child(1) .item__img {background-image: url('../img/image1.jpg');}
+.item:nth-child(2) .item__img {background-image: url('../img/image2.jpg');}
+.item:nth-child(3) .item__img {background-image: url('../img/image3.jpg');}
+.item:nth-child(4) .item__img {background-image: url('../img/image4.jpg');}
+
+.item:nth-child(5) .item__img {background-image: url('../img/image5.jpg');}
+.item:nth-child(6) .item__img {background-image: url('../img/image6.jpg');}
+.item:nth-child(7) .item__img {background-image: url('../img/image7.jpg');}
+
+.item:nth-child(8) .item__img {background-image: url('../img/image8.jpg');}
+.item:nth-child(9) .item__img {background-image: url('../img/image9.jpg');}
+.item:nth-child(10) .item__img {background-image: url('../img/image10.jpg');}
+
+.item:nth-child(11) .item__img {background-image: url('../img/image11.jpg');}
+.item:nth-child(12) .item__img {background-image: url('../img/image12.jpg');}
+.item:nth-child(13) .item__img {background-image: url('../img/image13.jpg');}
+.item:nth-child(14) .item__img {background-image: url('../img/image14.jpg');}
+
+.item:nth-child(15) .item__img {background-image: url('../img/image15.jpg');}
+.item:nth-child(16) .item__img {background-image: url('../img/image16.jpg');}
+.item:nth-child(17) .item__img {background-image: url('../img/image17.jpg');}
+.item:nth-child(18) .item__img {background-image: url('../img/image18.jpg');}
+.item:nth-child(19) .item__img {background-image: url('../img/image19.jpg');}
+.item:nth-child(20) .item__img {background-image: url('../img/image20.jpg');}
