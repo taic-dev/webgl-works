@@ -38,9 +38,9 @@ h1 {
   display: grid;
   justify-content: center;
   gap: 15px;
-  grid-template-columns: repeat(auto-fit, calc(calc(100vw / 4) - (45px / 4)));
-  width: 100vw;
-  height:  130vh;
+  grid-template-columns: repeat(auto-fit, calc(calc(150vw / 4) - (45px / 3)));
+  width: 150vw;
+  height:  150vh;
 }
 
 .item {
