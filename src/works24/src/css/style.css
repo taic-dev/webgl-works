@@ -36,10 +36,11 @@ h1 {
   left: 50%;
   transform: translate3d(-50%, -50%, 0);
   display: grid;
+  justify-content: center;
   gap: 15px;
-  grid-template-columns: repeat(auto-fit, calc(calc(300vh / 4) - (45px / 4)));
-  width: 300vh;
-  height: 200vh;
+  grid-template-columns: repeat(auto-fit, calc(calc(100vw / 4) - (45px / 4)));
+  width: 100vw;
+  height:  130vh;
 }
 
 .item {
