@@ -2,6 +2,8 @@ import gsap from "gsap";
 import { EASING } from "./constants";
 import { clientRectCoordinate } from "./utils";
 
+const ROW = 4
+const COLUMN = 5
 const GAP = 50
 const items = [...document.querySelectorAll<HTMLElement>(".item")];
 const itemWidth = items[0].clientWidth;
@@ -26,26 +28,26 @@ window.addEventListener("wheel", (e: WheelEvent) => {
 
     // slide up
     if (y > initPosition[0].y + initPosition[0].y / 4) {
-      item.style.transform = `translate(0, ${itemHeight * 5 + GAP * 5 + scrollArray[i].y}px)`;
-      scrollArray[i].y = itemHeight * 5 + GAP * 5 + scrollArray[i].y;
+      item.style.transform = `translate(0, ${itemHeight * COLUMN + GAP * COLUMN + scrollArray[i].y}px)`;
+      scrollArray[i].y = itemHeight * COLUMN + GAP * COLUMN + scrollArray[i].y;
     }
 
     // slide down
     if (y < initPosition[items.length - 1].y + initPosition[items.length - 1].y / 4) {
-      item.style.transform = `translate(0, -${itemHeight * 5 - GAP * 5 + scrollArray[i].y}px)`;
-      scrollArray[i].y = -itemHeight * 5 - GAP * 5 + scrollArray[i].y;
+      item.style.transform = `translate(0, -${itemHeight * COLUMN - GAP * COLUMN + scrollArray[i].y}px)`;
+      scrollArray[i].y = -itemHeight * COLUMN - GAP * COLUMN + scrollArray[i].y;
     }
 
     // slide left
     if (x < initPosition[0].x + initPosition[0].x / 4) {
-      item.style.transform = `translate(${itemWidth * 4 + GAP * 4 + scrollArray[i].x}px, 0)`;
-      scrollArray[i].x = itemWidth * 4 + GAP * 4 + scrollArray[i].x;
+      item.style.transform = `translate(${itemWidth * ROW + GAP * ROW + scrollArray[i].x}px, 0)`;
+      scrollArray[i].x = itemWidth * ROW + GAP * ROW + scrollArray[i].x;
     }
 
     // slide right
     if (x > initPosition[items.length - 1].x + initPosition[items.length - 1].x / 4) {
-      item.style.transform = `translate(-${itemWidth * 4 - GAP * 4 + scrollArray[i].x}px, 0)`;
-      scrollArray[i].x = -itemWidth * 4 - GAP * 4 + scrollArray[i].x;
+      item.style.transform = `translate(-${itemWidth * ROW - GAP * ROW + scrollArray[i].x}px, 0)`;
+      scrollArray[i].x = -itemWidth * ROW - GAP * ROW + scrollArray[i].x;
     }
 
     item.style.transform = `translate(${scrollArray[i].x}px, ${scrollArray[i].y}px)`;
