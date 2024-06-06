@@ -2,6 +2,7 @@ import * as THREE from "three";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 import { clientRectCoordinate, getImageAspect, getImageUrl } from "./utils";
+import { loadingAnimation, scrollAnimation } from "./animation";
 
 export class Webgl {
   renderer: THREE.WebGLRenderer | undefined;
@@ -71,6 +72,8 @@ export class Webgl {
       uTexture: { value: loader.load(url) },
       uImageAspect: { value: imgSize.w / imgSize.h },
       uPlaneAspect: { value: element.clientWidth / element.clientHeight },
+      uLoading: { value: 0 },
+      uOffset: { value: { x: 0, y: 0 } },
     };
 
     this.material = new THREE.ShaderMaterial({
@@ -94,7 +97,29 @@ export class Webgl {
     mesh.scale.y = rect.height;
   }
 
+  _loadingAnimation() {
+    this.planeArray.forEach((plane) => {
+      loadingAnimation(
+        (plane.mesh.material as any).uniforms.uLoading,
+        (plane.mesh.material as any).uniforms.uOffset.value
+      );
+    });
+  }
+
+  _scrollAnimation(x: number, y: number) {
+    this.planeArray.forEach((plane) => {
+      scrollAnimation(
+        (plane.mesh.material as any).uniforms.uOffset.value,
+        x,
+        y
+      );
+    });
+  }
+
   init() {
+    window.addEventListener("load", () => {
+      this._loadingAnimation();
+    });
     this.setCanvas();
     this.setCamera();
     this.initMesh();
