@@ -8,7 +8,7 @@ export const loadingAnimation = (
   gsap.fromTo(
     targetLoading,
     {
-      value: 3,
+      value: 2,
       duration: 1,
       ease: EASING.transform,
     },

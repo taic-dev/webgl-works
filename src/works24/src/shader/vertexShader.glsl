@@ -13,8 +13,8 @@ void main() {
     pos.x = pos.x + sin(pos.y * PI) * 1.0 * uLoading;
     pos.y = pos.y + sin(pos.x * PI) * 1.0 * -uLoading;
   }else {
-    pos.x = pos.x + sin(pos.y * PI + uOffset.x * 0.1 ) * 0.01 * uOffset.x;
-    pos.y = pos.y + sin(pos.x * PI + uOffset.y * 0.1 ) * 0.01 * uOffset.y;
+    pos.x = pos.x + cos(pos.y * 2.5 * PI) * 0.01 * uOffset.x;
+    pos.y = pos.y + cos(pos.x * 2.5 * PI) * 0.01 * uOffset.y;
   };
 
 
