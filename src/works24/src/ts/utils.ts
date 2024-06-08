@@ -15,7 +15,7 @@ export const getImageUrl = (element: HTMLElement) => {
 };
 
 export const getImageAspect = (element: HTMLElement) => {
-  return new Promise<{ w: number; h: number }>((resolve, reject) => {
+  return new Promise<{ w: number; h: number }>((resolve) => {
     const img = new Image();
     const url = getImageUrl(element);
     img.src = url;
