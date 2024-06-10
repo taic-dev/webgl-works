@@ -14,9 +14,16 @@ export class Webgl {
   imageElement: HTMLImageElement | null;
 
   constructor() {
+    this.camera;
+    this.geometry;
+    this.uniforms;
+    this.material;
+    this.mesh;
     this.scene = new THREE.Scene();
     this.imageElement =
-      document.querySelector<HTMLImageElement>("image__wrapper img");
+      document.querySelector<HTMLImageElement>(".image__wrapper img");
+
+    this.render = this.render.bind(this);
   }
 
   setCanvas() {
@@ -44,6 +51,8 @@ export class Webgl {
   setMesh() {
     this.geometry = new THREE.PlaneGeometry(1, 1, 10, 10);
 
+    this.geometry.scale(PARAMS.WINDOW.W / 2, PARAMS.WINDOW.H / 2, 1);
+
     if (!this.imageElement) return;
     const loader = new THREE.TextureLoader();
     const texture = loader.load(this.imageElement.src);
@@ -53,7 +62,7 @@ export class Webgl {
       uImageAspect: {
         value: this.imageElement.naturalWidth / this.imageElement.naturalHeight,
       },
-      uTextureAspect: {
+      uPlaneAspect: {
         value: this.imageElement.clientWidth / this.imageElement.clientHeight,
       },
       uLoading: { value: 0 },
@@ -66,15 +75,13 @@ export class Webgl {
     });
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
-
-    return this.mesh;
+    this.scene.add(this.mesh);
   }
 
   init() {
     this.setCanvas();
     this.setCamera();
     this.setMesh();
-    this.render();
   }
 
   render() {

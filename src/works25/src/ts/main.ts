@@ -1,3 +1,7 @@
+import { Webgl } from "./webgl"
+
 window.addEventListener('DOMContentLoaded', () => {
-  console.log("dom loaded")
+  const webgl = new Webgl();
+  webgl.init();
+  webgl.render();
 })
