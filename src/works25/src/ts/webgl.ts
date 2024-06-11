@@ -11,6 +11,7 @@ export class Webgl {
   material: THREE.ShaderMaterial | undefined;
   uniforms: any;
   mesh: THREE.Mesh | undefined;
+  clock: THREE.Clock | undefined
   imageElement: HTMLImageElement | null;
 
   constructor() {
@@ -20,6 +21,7 @@ export class Webgl {
     this.material;
     this.mesh;
     this.scene = new THREE.Scene();
+    this.clock = new THREE.Clock();
     this.imageElement =
       document.querySelector<HTMLImageElement>(".image__wrapper img");
 
@@ -58,6 +60,7 @@ export class Webgl {
     const texture = loader.load(this.imageElement.src);
 
     this.uniforms = {
+      uResolution: { value: { x: PARAMS.WINDOW.W, y: PARAMS.WINDOW.H } },
       uTexture: { value: texture },
       uImageAspect: {
         value: this.imageElement.naturalWidth / this.imageElement.naturalHeight,
@@ -66,6 +69,7 @@ export class Webgl {
         value: this.imageElement.clientWidth / this.imageElement.clientHeight,
       },
       uLoading: { value: 0 },
+      uTime: { value: 0 }
     };
 
     this.material = new THREE.ShaderMaterial({
@@ -85,8 +89,11 @@ export class Webgl {
   }
 
   render() {
-    if (!this.camera) return;
+    if (!this.camera || !this.mesh) return;
     this.renderer?.render(this.scene, this.camera);
+
+    const time = this.clock?.getElapsedTime();
+    (this.mesh.material as any).uniforms.uTime.value = time;
 
     requestAnimationFrame(this.render);
   }
