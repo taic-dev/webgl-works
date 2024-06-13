@@ -1,12 +1,21 @@
-import { Webgl } from "./webgl"
+import { Webgl } from "./webgl";
+import { textAnimation } from "./animation";
 
 const webgl = new Webgl();
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener("load", () => {
+  // webgl
   webgl.init();
   webgl.render();
-})
 
-window.addEventListener('resize', () => {
+  // text animation
+  textAnimation();
+});
+
+window.addEventListener("resize", () => {
+  // webgl
   webgl.onResize();
-})
+
+  // text animation
+  textAnimation();
+});

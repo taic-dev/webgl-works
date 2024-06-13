@@ -1,17 +1,24 @@
+:root {
+  --text-width: 0px
+}
+
 * {
   margin: 0;
   padding: 0;
 }
 
+@font-face {
+	font-family: 'Nacelle';
+	src: url(../fonts/Nacelle-HeavyItalic.otf);
+}
+
 html,
 body,
 main {
+  font-family: Nacelle;
   width: 100%;
   height: 100vh;
-}
-
-main {
-  position: relative;
+  overflow: hidden;
 }
 
 canvas {
@@ -25,12 +32,16 @@ canvas {
 
 h1 {
   position: fixed;
-  z-index: 1;
+  z-index: 99;
   margin: 15px;
   font-size: 2rem;
   font-family: "Secular One", sans-serif;
   color: #000;
   mix-blend-mode: difference;
+}
+
+.wrapper {
+  position: relative;
 }
 
 .image__wrapper {
@@ -48,4 +59,43 @@ h1 {
   height: 500px;
   object-fit: cover;
   opacity: 0;
+}
+
+.text__wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -99;
+}
+
+.text__wrapper p {
+  line-height: 1;
+  font-size: 10vw;
+  white-space: nowrap;
+  text-shadow: var(--text-width) 0 0;
+  transform: translateX(0);
+  will-change: transform;
+}
+
+.text__wrapper p {
+  &:nth-child(1) { animation: 20s linear infinite loopText; }
+  &:nth-child(2) { animation: 20s 1s linear infinite loopText; }
+  &:nth-child(3) { animation: 20s 2s linear infinite loopText; }
+  &:nth-child(4) { animation: 20s 3s linear infinite loopText; }
+  &:nth-child(5) { animation: 20s 4s linear infinite loopText; }
+  &:nth-child(6) { animation: 20s 5s linear infinite loopText; }
+  &:nth-child(7) { animation: 20s 6s linear infinite loopText; }
+  &:nth-child(8) { animation: 20s 7s linear infinite loopText; }
+  &:nth-child(9) { animation: 20s 8s linear infinite loopText; }
+  &:nth-child(10) { animation: 20s 9s linear infinite loopText; }
+}
+
+@keyframes loopText {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
