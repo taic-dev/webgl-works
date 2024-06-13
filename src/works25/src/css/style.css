@@ -55,9 +55,8 @@ h1 {
   left: 50%;
   transform: translate(-50%, -50%);
   
-  width: 400px;
-  height: 500px;
-  object-fit: cover;
+  width: calc(590px / 1.5);
+  height: calc(860px / 1.5);
   opacity: 0;
 }
 

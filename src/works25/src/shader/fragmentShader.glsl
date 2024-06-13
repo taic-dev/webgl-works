@@ -27,7 +27,7 @@ void main() {
 
   vec2 ratio = vec2(
     min(uPlaneAspect / uImageAspect, 1.0),
-    min((1.0 / uPlaneAspect) / (1.0 / uImageAspect), 1.0)
+    max((1.0 / uPlaneAspect) / (1.0 / uImageAspect), 1.0)
   );
 
   vec2 fixedUv = vec2(
