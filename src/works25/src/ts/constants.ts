@@ -12,7 +12,7 @@ export const PARAMS = {
     POSITION: {
       X: 0,
       Y: 0,
-      Z: 300,
+      Z: 1,
     },
   },
   PLANE_GEOMETRY: {
