@@ -11,7 +11,7 @@ export class Webgl {
   material: THREE.ShaderMaterial | undefined;
   uniforms: any;
   mesh: THREE.Mesh | undefined;
-  clock: THREE.Clock | undefined
+  clock: THREE.Clock | undefined;
   imageElement: HTMLImageElement | null;
 
   constructor() {
@@ -22,8 +22,7 @@ export class Webgl {
     this.mesh;
     this.scene = new THREE.Scene();
     this.clock = new THREE.Clock();
-    this.imageElement =
-      document.querySelector<HTMLImageElement>(".image__wrapper img");
+    this.imageElement = document.querySelector<HTMLImageElement>(".image__wrapper img");
 
     this.render = this.render.bind(this);
   }
@@ -51,16 +50,25 @@ export class Webgl {
   }
 
   setMesh() {
+    if (!this.imageElement) return;
     this.geometry = new THREE.PlaneGeometry(1, 1, 10, 10);
 
-    this.geometry.scale(PARAMS.WINDOW.W / 2, PARAMS.WINDOW.H / 2, 1);
+    this.geometry.scale(
+      this.imageElement.clientWidth / 2,
+      this.imageElement.clientHeight / 2,
+      1
+    );
 
-    if (!this.imageElement) return;
     const loader = new THREE.TextureLoader();
     const texture = loader.load(this.imageElement.src);
 
     this.uniforms = {
-      uResolution: { value: { x: PARAMS.WINDOW.W, y: PARAMS.WINDOW.H } },
+      uResolution: {
+        value: {
+          x: this.imageElement.clientWidth,
+          y: this.imageElement.clientHeight,
+        },
+      },
       uTexture: { value: texture },
       uImageAspect: {
         value: this.imageElement.naturalWidth / this.imageElement.naturalHeight,
@@ -69,7 +77,8 @@ export class Webgl {
         value: this.imageElement.clientWidth / this.imageElement.clientHeight,
       },
       uLoading: { value: 0 },
-      uTime: { value: 0 }
+      uTime: { value: 0 },
+      uEffect: { value: 1 },
     };
 
     this.material = new THREE.ShaderMaterial({
