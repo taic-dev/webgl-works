@@ -1,8 +1,10 @@
 import * as THREE from "three";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
+import cardBack from "../img/card-bg.png";
 import { PARAMS } from "./constants";
 import { clientRectCoordinate } from "./utils";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 export class Webgl {
   renderer: THREE.WebGLRenderer | undefined;
@@ -14,6 +16,7 @@ export class Webgl {
   mesh: THREE.Mesh | undefined;
   clock: THREE.Clock | undefined;
   imageElement: HTMLImageElement | null;
+  controls: OrbitControls | undefined;
 
   constructor() {
     this.camera;
@@ -26,6 +29,7 @@ export class Webgl {
     this.imageElement = document.querySelector<HTMLImageElement>(
       ".image__wrapper img"
     );
+    this.controls;
 
     this.render = this.render.bind(this);
   }
@@ -57,7 +61,8 @@ export class Webgl {
     this.geometry = new THREE.PlaneGeometry(1, 1, 10, 10);
 
     const loader = new THREE.TextureLoader();
-    const texture = loader.load(this.imageElement.src);
+    const textureFront = loader.load(this.imageElement.src);
+    const textureBack = loader.load(cardBack);
 
     this.uniforms = {
       uResolution: {
@@ -66,7 +71,8 @@ export class Webgl {
           y: this.imageElement.clientHeight,
         },
       },
-      uTexture: { value: texture },
+      uTextureFront: { value: textureFront },
+      uTextureBack: { value: textureBack },
       uImageAspect: {
         value: this.imageElement.naturalWidth / this.imageElement.naturalHeight,
       },
@@ -82,6 +88,7 @@ export class Webgl {
       uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
+      side: THREE.DoubleSide
     });
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
@@ -100,9 +107,19 @@ export class Webgl {
     this.mesh.scale.y = rect.height;
   }
 
+  setHelper() {
+    if (!this.camera) return;
+    // OrbitControls
+    this.controls = new OrbitControls(this.camera, this.renderer?.domElement);
+
+    // AxesHelper
+    const axesHelper = new THREE.AxesHelper(2000);
+    this.scene.add(axesHelper);
+  }
+
   onResize() {
     setTimeout(() => {
-      if(!this.camera) return
+      if (!this.camera) return;
       this.renderer?.setSize(window.innerWidth, window.innerHeight);
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
@@ -112,15 +129,17 @@ export class Webgl {
     this.setCanvas();
     this.setCamera();
     this.setMesh();
+    this.setHelper();
   }
 
   render() {
-    if (!this.camera || !this.mesh) return;
+    if (!this.camera || !this.mesh || !this.controls) return;
     this.renderer?.render(this.scene, this.camera);
 
     const time = this.clock?.getElapsedTime();
     (this.mesh.material as any).uniforms.uTime.value = time;
 
+    this.controls.update();
     this.setMeshPosition();
 
     requestAnimationFrame(this.render);

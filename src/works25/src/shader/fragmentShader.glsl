@@ -1,5 +1,6 @@
 uniform vec2 uResolution;
-uniform sampler2D uTexture;
+uniform sampler2D uTextureFront;
+uniform sampler2D uTextureBack;
 uniform float uImageAspect;
 uniform float uPlaneAspect;
 uniform float uEffect;
@@ -11,10 +12,10 @@ const float displacementCoef = 0.5;
 const float uOffset = 0.005;
 
 void main() {
-  vec2 uv = (gl_FragCoord.xy * 2.0 - uResolution) / min(uResolution.x, uResolution.y);
+  vec2 effectUv = (gl_FragCoord.xy * 2.0 - uResolution) / min(uResolution.x, uResolution.y);
 
   vec3 effect;
-  vec2 q = mod(uv, 0.2) -0.1;
+  vec2 q = mod(effectUv, 0.2) -0.1;
   float ip = 0.;
   float c = 0.;
 
@@ -30,15 +31,19 @@ void main() {
     max((1.0 / uPlaneAspect) / (1.0 / uImageAspect), 1.0)
   );
 
-  vec2 fixedUv = vec2(
+  vec2 textureUv = vec2(
     (vUv.x - 0.5) * ratio.x + 0.5,
     (vUv.y - 0.5) * ratio.y + 0.5
   );
 
   float displacementForce = effect.r * uOffset * displacementCoef;
-  vec2 uvDisplaced = vec2(fixedUv.x + displacementForce, fixedUv.y + displacementForce);
-  vec4 displacedTexture = texture2D(uTexture, uvDisplaced);
+  vec2 uvDisplaced = vec2(textureUv.x + displacementForce, textureUv.y + displacementForce);
+  vec4 displacedTexture = texture2D(uTextureFront, uvDisplaced);
 
-  gl_FragColor = vec4(displacedTexture);
+  vec4 backTexture = texture2D(uTextureBack, textureUv);
+
+  vec4 finalColor = gl_FrontFacing ? displacedTexture : backTexture;
+
+  gl_FragColor = vec4(finalColor);
   // gl_FragColor = vec4(vec3(effect), 1.);
 }
