@@ -1,9 +1,10 @@
+import gsap from "gsap";
 import * as THREE from "three";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 import cardBack from "../img/card-bg.png";
-import { PARAMS } from "./constants";
-import { clientRectCoordinate } from "./utils";
+import { EASING, PARAMS } from "./constants";
+import { clientRectCoordinate, mouseCoordinate } from "./utils";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 export class Webgl {
@@ -17,6 +18,7 @@ export class Webgl {
   clock: THREE.Clock | undefined;
   imageElement: HTMLImageElement | null;
   controls: OrbitControls | undefined;
+  mouse: THREE.Vector2;
 
   constructor() {
     this.camera;
@@ -30,6 +32,7 @@ export class Webgl {
       ".image__wrapper img"
     );
     this.controls;
+    this.mouse = new THREE.Vector2();
 
     this.render = this.render.bind(this);
   }
@@ -71,6 +74,7 @@ export class Webgl {
           y: this.imageElement.clientHeight,
         },
       },
+      uMouse: { value: { x: 0, y: 0 } },
       uTextureFront: { value: textureFront },
       uTextureBack: { value: textureBack },
       uImageAspect: {
@@ -88,7 +92,7 @@ export class Webgl {
       uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
-      side: THREE.DoubleSide
+      side: THREE.DoubleSide,
     });
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
@@ -105,6 +109,34 @@ export class Webgl {
 
     this.mesh.scale.x = rect.width;
     this.mesh.scale.y = rect.height;
+  }
+
+  moveMouseEvent() {
+    this.imageElement?.addEventListener("mousemove", (e) => {
+      if (!this.imageElement || !this.mesh) return;
+
+      const { x, y } = mouseCoordinate(e, this.imageElement);
+
+      (this.mesh.material as any).uniforms.uMouse.value = { x, y };
+
+      gsap.to(this.mesh.rotation, {
+        x: y * 0.7,
+        y: -x * 0.7,
+        duration: 0.5,
+        ease: "power1.out",
+      });
+    });
+
+    this.imageElement?.addEventListener("mouseleave", (e) => {
+      if (!this.mesh) return;
+
+      gsap.to(this.mesh.rotation, {
+        x: 0,
+        y: 0,
+        duration: 0.5,
+        ease: EASING.transform
+      });
+    })
   }
 
   setHelper() {
@@ -125,10 +157,12 @@ export class Webgl {
       this.camera.updateProjectionMatrix();
     }, 500);
   }
+
   init() {
     this.setCanvas();
     this.setCamera();
     this.setMesh();
+    this.moveMouseEvent();
     this.setHelper();
   }
 
