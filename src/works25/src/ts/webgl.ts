@@ -3,6 +3,11 @@ import * as THREE from "three";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 import cardBack from "../img/card-bg.png";
+import frontColor1 from "../img/card-front1.png";
+import frontColor2 from "../img/card-front2.png";
+import frontColor3 from "../img/card-front3.png";
+import effectColor1 from "../img/effect1.jpg";
+import effectColor2 from "../img/effect2.jpg";
 import { EASING, PARAMS } from "./constants";
 import { clientRectCoordinate, mouseCoordinate } from "./utils";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -64,8 +69,13 @@ export class Webgl {
     this.geometry = new THREE.PlaneGeometry(1, 1, 10, 10);
 
     const loader = new THREE.TextureLoader();
-    const textureFront = loader.load(this.imageElement.src);
+    const frontTexture1 = loader.load(frontColor1);
+    const frontTexture2 = loader.load(frontColor2);
+    const frontTexture3 = loader.load(frontColor3);
+
     const textureBack = loader.load(cardBack);
+    const effectTexture1 = loader.load(effectColor1);
+    const effectTexture2 = loader.load(effectColor2);
 
     this.uniforms = {
       uResolution: {
@@ -75,7 +85,9 @@ export class Webgl {
         },
       },
       uMouse: { value: { x: 0, y: 0 } },
-      uTextureFront: { value: textureFront },
+      uFrontTexture1: { value: frontTexture1 },
+      uFrontTexture2: { value: frontTexture2 },
+      uFrontTexture3: { value: frontTexture3 },
       uTextureBack: { value: textureBack },
       uImageAspect: {
         value: this.imageElement.naturalWidth / this.imageElement.naturalHeight,
@@ -85,7 +97,8 @@ export class Webgl {
       },
       uLoading: { value: 0 },
       uTime: { value: 0 },
-      uEffect: { value: 1 },
+      uEffectTexture1: { value: effectTexture1 },
+      uEffectTexture2: { value: effectTexture2 },
     };
 
     this.material = new THREE.ShaderMaterial({
@@ -131,6 +144,13 @@ export class Webgl {
       if (!this.mesh) return;
 
       gsap.to(this.mesh.rotation, {
+        x: 0,
+        y: 0,
+        duration: 0.5,
+        ease: EASING.transform
+      });
+
+      gsap.to((this.mesh.material as any).uniforms.uMouse.value, {
         x: 0,
         y: 0,
         duration: 0.5,

@@ -1,31 +1,18 @@
 uniform vec2 uResolution;
-uniform sampler2D uTextureFront;
+uniform sampler2D uFrontTexture1;
+uniform sampler2D uFrontTexture2;
+uniform sampler2D uFrontTexture3;
 uniform sampler2D uTextureBack;
+uniform sampler2D uEffectTexture1;
+uniform sampler2D uEffectTexture2;
 uniform float uImageAspect;
 uniform float uPlaneAspect;
-uniform float uEffect;
+uniform vec2 uMouse;
 uniform float uTime;
 
 varying vec2 vUv;
 
-const float displacementCoef = 0.5;
-const float uOffset = 0.005;
-
 void main() {
-  vec2 effectUv = (gl_FragCoord.xy * 2.0 - uResolution) / min(uResolution.x, uResolution.y);
-
-  vec3 effect;
-  vec2 q = mod(effectUv, 0.2) -0.1;
-  float ip = 0.;
-  float c = 0.;
-
-  for(float i=0.; i<10.; i++) {
-    ip = dot(1., i);
-    c += length(q * 10.) + sin(uTime * 1.);
-  }
-
-  effect = vec3(sin(abs(pow(c, 2.)) / ip * 0.5));
-
   vec2 ratio = vec2(
     min(uPlaneAspect / uImageAspect, 1.0),
     max((1.0 / uPlaneAspect) / (1.0 / uImageAspect), 1.0)
@@ -36,13 +23,20 @@ void main() {
     (vUv.y - 0.5) * ratio.y + 0.5
   );
 
-  float displacementForce = effect.r * uOffset * displacementCoef;
-  vec2 uvDisplaced = vec2(textureUv.x + displacementForce, textureUv.y + displacementForce);
-  vec4 displacedTexture = texture2D(uTextureFront, uvDisplaced);
+  vec4 frontTexture1 = texture2D(uFrontTexture1, textureUv);
+  vec4 frontTexture2 = texture2D(uFrontTexture2, textureUv);
+  vec4 frontTexture3 = texture2D(uFrontTexture3, textureUv);
+  
+  vec4 effectTexture1 = texture2D(uEffectTexture1, textureUv * abs(uMouse.x * 2.));
+  vec4 effectTexture2 = texture2D(uEffectTexture2, textureUv * abs(uMouse.x * 2.));
+  
+  vec4 frontColor1 = mix(frontTexture1, effectTexture1, abs(uMouse.y * 0.5));
+  vec4 frontColor2 = mix(frontTexture2, effectTexture2, abs(uMouse.y));
+  vec4 frontColor3 = frontTexture3;
 
-  vec4 backTexture = texture2D(uTextureBack, textureUv);
+  vec4 backColor = texture2D(uTextureBack, textureUv);
 
-  vec4 finalColor = gl_FrontFacing ? displacedTexture : backTexture;
+  vec4 finalColor = gl_FrontFacing ? frontColor1 : backColor;
 
   gl_FragColor = vec4(finalColor);
   // gl_FragColor = vec4(vec3(effect), 1.);
