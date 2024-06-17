@@ -12,6 +12,11 @@ uniform float uTime;
 
 varying vec2 vUv;
 
+// 加算ブレンド
+vec3 overlay(vec3 base, vec3 blend) {
+    return mix(2.0 * base * blend, 1.0 - 2.0 * (1.0 - base) * (1.0 - blend), step(0.5, base));
+}
+
 void main() {
   vec2 ratio = vec2(
     min(uPlaneAspect / uImageAspect, 1.0),
@@ -27,11 +32,14 @@ void main() {
   vec4 frontTexture2 = texture2D(uFrontTexture2, textureUv);
   vec4 frontTexture3 = texture2D(uFrontTexture3, textureUv);
   
-  vec4 effectTexture1 = texture2D(uEffectTexture1, textureUv * abs(uMouse.x * 2.));
-  vec4 effectTexture2 = texture2D(uEffectTexture2, textureUv * abs(uMouse.x * 2.));
+  vec4 effectTexture1 = texture2D(uEffectTexture1, textureUv + abs(uMouse.x));
+  vec4 effectTexture2 = texture2D(uEffectTexture2, textureUv + abs(uMouse.x) );
   
-  vec4 frontColor1 = mix(frontTexture1, effectTexture1, abs(uMouse.y * 0.5));
-  vec4 frontColor2 = mix(frontTexture2, effectTexture2, abs(uMouse.y));
+  vec3 blendedColor1 = overlay(frontTexture1.rgb, effectTexture1.rgb);
+  vec3 blendedColor2 = overlay(frontTexture2.rgb, effectTexture2.rgb);
+
+  vec4 frontColor1 = mix(frontTexture1, vec4(blendedColor1, 1.0), abs(uMouse.y));
+  vec4 frontColor2 = mix(frontTexture2, vec4(blendedColor2, 1.0), abs(uMouse.y * 1.5));
   vec4 frontColor3 = frontTexture3;
 
   vec4 backColor = texture2D(uTextureBack, textureUv);
@@ -39,5 +47,4 @@ void main() {
   vec4 finalColor = gl_FrontFacing ? frontColor1 : backColor;
 
   gl_FragColor = vec4(finalColor);
-  // gl_FragColor = vec4(vec3(effect), 1.);
 }

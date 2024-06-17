@@ -75,6 +75,8 @@ export class Webgl {
 
     const textureBack = loader.load(cardBack);
     const effectTexture1 = loader.load(effectColor1);
+    effectTexture1.wrapS = THREE.RepeatWrapping;
+    effectTexture1.wrapT = THREE.RepeatWrapping;
     const effectTexture2 = loader.load(effectColor2);
 
     this.uniforms = {
