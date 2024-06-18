@@ -44,7 +44,33 @@ h1 {
   position: relative;
 }
 
+.card__list {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5%;
+}
+
+.card__item {
+
+}
+
+.card {
+  width: calc(590px / 2.5);
+  height: calc(860px / 2.5);
+}
+
+.card img {
+  width: 100%;
+  opacity: 0;
+}
+
 .image__wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+
   width: 100%;
   height: 100vh;
 }

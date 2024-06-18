@@ -1,5 +1,8 @@
 import gsap from "gsap";
 import CustomEase from "gsap/CustomEase";
+import frontColor1 from "../img/card-front1.png";
+import frontColor2 from "../img/card-front2.png";
+import frontColor3 from "../img/card-front3.png";
 
 gsap.registerPlugin(CustomEase);
 
@@ -36,3 +39,5 @@ export const PARAMS = {
   },
   TEXTURE: [],
 }
+
+export const textureArray = [frontColor3, frontColor1, frontColor2];

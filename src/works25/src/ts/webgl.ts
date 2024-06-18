@@ -3,12 +3,9 @@ import * as THREE from "three";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 import cardBack from "../img/card-bg.png";
-import frontColor1 from "../img/card-front1.png";
-import frontColor2 from "../img/card-front2.png";
-import frontColor3 from "../img/card-front3.png";
 import effectColor1 from "../img/effect1.jpg";
 import effectColor2 from "../img/effect2.jpg";
-import { EASING, PARAMS } from "./constants";
+import { EASING, PARAMS, textureArray } from "./constants";
 import { clientRectCoordinate, mouseCoordinate } from "./utils";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
@@ -21,9 +18,12 @@ export class Webgl {
   uniforms: any;
   mesh: THREE.Mesh | undefined;
   clock: THREE.Clock | undefined;
+  cards: HTMLImageElement[] | null;
   imageElement: HTMLImageElement | null;
+  planeArray: { mesh: THREE.Mesh; image: HTMLElement; }[]
   controls: OrbitControls | undefined;
   mouse: THREE.Vector2;
+  isModal: boolean
 
   constructor() {
     this.camera;
@@ -33,11 +33,14 @@ export class Webgl {
     this.mesh;
     this.scene = new THREE.Scene();
     this.clock = new THREE.Clock();
+    this.cards = [...document.querySelectorAll<HTMLImageElement>('.card img')];
     this.imageElement = document.querySelector<HTMLImageElement>(
       ".image__wrapper img"
     );
+    this.planeArray = [];
     this.controls;
     this.mouse = new THREE.Vector2();
+    this.isModal = false
 
     this.render = this.render.bind(this);
   }
@@ -64,39 +67,44 @@ export class Webgl {
     this.camera.position.set(0, 0, dist);
   }
 
-  setMesh() {
-    if (!this.imageElement) return;
+  initMesh() {
+    this.cards?.forEach((image, index) => {
+      const mesh = this.setMesh(image, index)
+      this.scene.add(mesh);
+      mesh.rotation.y = Math.PI / 180 * -180
+
+      this.setMeshPosition(mesh, image);
+      this.planeArray.push({ mesh, image });
+    })
+  }
+
+  setMesh(image: HTMLImageElement, index: number) {
     this.geometry = new THREE.PlaneGeometry(1, 1, 10, 10);
 
     const loader = new THREE.TextureLoader();
-    const frontTexture1 = loader.load(frontColor1);
-    const frontTexture2 = loader.load(frontColor2);
-    const frontTexture3 = loader.load(frontColor3);
-
+    const frontTexture = loader.load(textureArray[index]);
     const textureBack = loader.load(cardBack);
+
     const effectTexture1 = loader.load(effectColor1);
     effectTexture1.wrapS = THREE.RepeatWrapping;
     effectTexture1.wrapT = THREE.RepeatWrapping;
     const effectTexture2 = loader.load(effectColor2);
 
+    const number = index + 1;
+
     this.uniforms = {
       uResolution: {
         value: {
-          x: this.imageElement.clientWidth,
-          y: this.imageElement.clientHeight,
+          x: image.clientWidth,
+          y: image.clientHeight,
         },
       },
       uMouse: { value: { x: 0, y: 0 } },
-      uFrontTexture1: { value: frontTexture1 },
-      uFrontTexture2: { value: frontTexture2 },
-      uFrontTexture3: { value: frontTexture3 },
+      uIndex: { value: number },
+      uFrontTexture: { value: frontTexture },
       uTextureBack: { value: textureBack },
-      uImageAspect: {
-        value: this.imageElement.naturalWidth / this.imageElement.naturalHeight,
-      },
-      uPlaneAspect: {
-        value: this.imageElement.clientWidth / this.imageElement.clientHeight,
-      },
+      uImageAspect: { value: image.naturalWidth / image.naturalHeight },
+      uPlaneAspect: { value: image.clientWidth / image.clientHeight },
       uLoading: { value: 0 },
       uTime: { value: 0 },
       uEffectTexture1: { value: effectTexture1 },
@@ -111,22 +119,21 @@ export class Webgl {
     });
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.scene.add(this.mesh);
+    return this.mesh;
   }
 
-  setMeshPosition() {
-    if (!this.imageElement || !this.mesh) return;
-
-    const rect = this.imageElement.getBoundingClientRect();
+  setMeshPosition(mesh: THREE.Mesh, image: HTMLElement) {
+    const rect = image.getBoundingClientRect();
     const { x, y } = clientRectCoordinate(rect);
 
-    this.mesh.position.set(x, y, 1);
+    mesh.position.set(x, y, 1);
 
-    this.mesh.scale.x = rect.width;
-    this.mesh.scale.y = rect.height;
+    mesh.scale.x = rect.width;
+    mesh.scale.y = rect.height;
   }
 
   moveMouseEvent() {
+    if(!this.isModal) return
     this.imageElement?.addEventListener("mousemove", (e) => {
       if (!this.imageElement || !this.mesh) return;
 
@@ -183,7 +190,7 @@ export class Webgl {
   init() {
     this.setCanvas();
     this.setCamera();
-    this.setMesh();
+    this.initMesh();
     this.moveMouseEvent();
     this.setHelper();
   }
@@ -196,7 +203,10 @@ export class Webgl {
     (this.mesh.material as any).uniforms.uTime.value = time;
 
     this.controls.update();
-    this.setMeshPosition();
+
+    this.planeArray.forEach((plane) => {
+      this.setMeshPosition(plane.mesh, plane.image);
+    })
 
     requestAnimationFrame(this.render);
   }
