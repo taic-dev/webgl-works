@@ -19,11 +19,18 @@ export class Webgl {
   mesh: THREE.Mesh | undefined;
   clock: THREE.Clock | undefined;
   cards: HTMLImageElement[] | null;
+  wrapper:  HTMLImageElement | null;
   imageElement: HTMLImageElement | null;
-  planeArray: { mesh: THREE.Mesh; image: HTMLElement; }[]
+  planeArray: { mesh: THREE.Mesh; image: HTMLElement }[];
   controls: OrbitControls | undefined;
   mouse: THREE.Vector2;
-  isModal: boolean
+  modalInfo: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    isShow: boolean;
+  };
 
   constructor() {
     this.camera;
@@ -33,14 +40,21 @@ export class Webgl {
     this.mesh;
     this.scene = new THREE.Scene();
     this.clock = new THREE.Clock();
-    this.cards = [...document.querySelectorAll<HTMLImageElement>('.card img')];
+    this.cards = [...document.querySelectorAll<HTMLImageElement>(".card img")];
+    this.wrapper = document.querySelector<HTMLImageElement>(".image__wrapper");
     this.imageElement = document.querySelector<HTMLImageElement>(
-      ".image__wrapper img"
+      ".image__wrapper div"
     );
     this.planeArray = [];
     this.controls;
     this.mouse = new THREE.Vector2();
-    this.isModal = false
+    this.modalInfo = {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+      isShow: false,
+    };
 
     this.render = this.render.bind(this);
   }
@@ -69,13 +83,33 @@ export class Webgl {
 
   initMesh() {
     this.cards?.forEach((image, index) => {
-      const mesh = this.setMesh(image, index)
+      if (!this.imageElement) return;
+
+      const mesh = this.setMesh(image, index);
       this.scene.add(mesh);
-      mesh.rotation.y = Math.PI / 180 * -180
+      mesh.rotation.y = (Math.PI / 180) * -180;
 
       this.setMeshPosition(mesh, image);
-      this.planeArray.push({ mesh, image });
-    })
+      this.planeArray.push({ mesh, image, isShow: false, });
+
+      const rect = this.imageElement.getBoundingClientRect();
+      const { x, y } = clientRectCoordinate(rect);
+      this.modalInfo.x = x;
+      this.modalInfo.y = y;
+      this.modalInfo.width = rect.width;
+      this.modalInfo.height = rect.height;
+
+      image.addEventListener("click", () => {
+        this.clickMouseEvent(mesh)
+        this.planeArray
+      });
+
+      this.imageElement.addEventListener("click", () => 
+        this.clickMouseEvent(mesh)
+      );
+
+      this.moveMouseEvent(mesh);
+    });
   }
 
   setMesh(image: HTMLImageElement, index: number) {
@@ -132,16 +166,21 @@ export class Webgl {
     mesh.scale.y = rect.height;
   }
 
-  moveMouseEvent() {
-    if(!this.isModal) return
+  moveMouseEvent(mesh: THREE.Mesh) {
+    console.log(this.imageElement)
+    console.log(!this.modalInfo.isShow)
+    // if (this.modalInfo.isShow) return;
+
     this.imageElement?.addEventListener("mousemove", (e) => {
-      if (!this.imageElement || !this.mesh) return;
+      if (!this.imageElement) return;
+
+      console.log(11)
 
       const { x, y } = mouseCoordinate(e, this.imageElement);
 
-      (this.mesh.material as any).uniforms.uMouse.value = { x, y };
+      (mesh.material as any).uniforms.uMouse.value = { x, y };
 
-      gsap.to(this.mesh.rotation, {
+      gsap.to(mesh.rotation, {
         x: y * 0.7,
         y: -x * 0.7,
         duration: 0.5,
@@ -150,22 +189,46 @@ export class Webgl {
     });
 
     this.imageElement?.addEventListener("mouseleave", (e) => {
-      if (!this.mesh) return;
-
-      gsap.to(this.mesh.rotation, {
+      gsap.to(mesh.rotation, {
         x: 0,
         y: 0,
         duration: 0.5,
-        ease: EASING.transform
+        ease: EASING.transform,
       });
 
-      gsap.to((this.mesh.material as any).uniforms.uMouse.value, {
+      gsap.to((mesh.material as any).uniforms.uMouse.value, {
         x: 0,
         y: 0,
         duration: 0.5,
-        ease: EASING.transform
+        ease: EASING.transform,
       });
-    })
+    });
+  }
+
+  clickMouseEvent(mesh: THREE.Mesh) {
+    this.modalInfo.isShow = true;
+    this.wrapper.style.zIndex = 1
+
+    gsap.to(mesh.position as any, {
+      x: this.modalInfo.x,
+      y: this.modalInfo.y,
+      z: 2,
+      duration: 0.5,
+      ease: EASING.transform,
+    });
+
+    gsap.to(mesh.scale, {
+      x: this.modalInfo.width,
+      y: this.modalInfo.height,
+      duration: 0.5,
+      ease: EASING.transform,
+    });
+
+    gsap.to(mesh.rotation, {
+      y: 0,
+      duration: 0.5,
+      ease: EASING.transform,
+    });
   }
 
   setHelper() {
@@ -191,7 +254,6 @@ export class Webgl {
     this.setCanvas();
     this.setCamera();
     this.initMesh();
-    this.moveMouseEvent();
     this.setHelper();
   }
 
@@ -204,9 +266,11 @@ export class Webgl {
 
     this.controls.update();
 
-    this.planeArray.forEach((plane) => {
-      this.setMeshPosition(plane.mesh, plane.image);
-    })
+    if (!this.modalInfo.isShow) {
+      this.planeArray.forEach((plane) => {
+        this.setMeshPosition(plane.mesh, plane.image);
+      });
+    }
 
     requestAnimationFrame(this.render);
   }

@@ -40,16 +40,17 @@ void main() {
   
   vec4 frontColor;
   if(uIndex == 1.) {
+    frontColor = frontTexture;
+    
+  } else if(uIndex == 2.) {
     vec4 effectTexture1 = texture2D(uEffectTexture1, vec2(textureUv.x * 15., textureUv.y * 10.));
-    vec3 se_effect = overlay(effectTexture1.rgb, customNoise * 1.2);
+    vec3 se_effect = overlay(effectTexture1.rgb, customNoise * 1.5);
     vec3 blendedColor1 = overlay(frontTexture.rgb, se_effect.rgb);
     frontColor = mix(frontTexture, vec4(blendedColor1, 1.), abs(uMouse.x * 2.));
-  } else if(uIndex == 2.) {
+  } else if(uIndex == 3.) {
     vec4 effectTexture2 = texture2D(uEffectTexture2, textureUv + abs(uMouse.x) );
     vec3 blendedColor2 = overlay(frontTexture.rgb, effectTexture2.rgb);
     frontColor = mix(frontTexture, vec4(blendedColor2, 1.0), abs(uMouse.y * 1.5));
-  } else if(uIndex == 3.) {
-    frontColor = frontTexture;
   }
 
   vec4 backColor = texture2D(uTextureBack, textureUv);
