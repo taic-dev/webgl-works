@@ -1,13 +1,13 @@
-import gsap from "gsap";
 import * as THREE from "three";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 import cardBack from "../img/card-bg.png";
 import effectColor1 from "../img/effect1.jpg";
 import effectColor2 from "../img/effect2.jpg";
-import { EASING, PARAMS, textureArray } from "./constants";
-import { clientRectCoordinate, mouseCoordinate } from "./utils";
+import { PARAMS, textureArray } from "./constants";
+import { clientRectCoordinate } from "./utils";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { clickMouseEvent, hideCardAnimation, loadingAnimation, moveMouseEvent } from "./animation";
 
 export class Webgl {
   renderer: THREE.WebGLRenderer | undefined;
@@ -19,9 +19,9 @@ export class Webgl {
   mesh: THREE.Mesh | undefined;
   clock: THREE.Clock | undefined;
   cards: HTMLImageElement[] | null;
-  wrapper:  HTMLImageElement | null;
+  wrapper: HTMLImageElement | null;
   imageElement: HTMLImageElement | null;
-  planeArray: { mesh: THREE.Mesh; image: HTMLElement }[];
+  planeArray: { mesh: THREE.Mesh; image: HTMLElement; isShow: boolean }[];
   controls: OrbitControls | undefined;
   mouse: THREE.Vector2;
   modalInfo: {
@@ -90,7 +90,7 @@ export class Webgl {
       mesh.rotation.y = (Math.PI / 180) * -180;
 
       this.setMeshPosition(mesh, image);
-      this.planeArray.push({ mesh, image, isShow: false, });
+      this.planeArray.push({ mesh, image, isShow: false });
 
       const rect = this.imageElement.getBoundingClientRect();
       const { x, y } = clientRectCoordinate(rect);
@@ -98,18 +98,31 @@ export class Webgl {
       this.modalInfo.y = y;
       this.modalInfo.width = rect.width;
       this.modalInfo.height = rect.height;
-
-      image.addEventListener("click", () => {
-        this.clickMouseEvent(mesh)
-        this.planeArray
-      });
-
-      this.imageElement.addEventListener("click", () => 
-        this.clickMouseEvent(mesh)
-      );
-
-      this.moveMouseEvent(mesh);
     });
+
+    this.planeArray.forEach((plane) => {
+      plane.image.addEventListener("click", () => {
+        plane.isShow = true;
+        this.modalInfo.isShow = true;
+        this.wrapper && (this.wrapper.style.zIndex = "1");
+        clickMouseEvent(plane.mesh, this.modalInfo);
+
+        this.initAnimation();
+      });
+    });
+  }
+
+  initAnimation() {
+    this.planeArray.forEach((plane) => {
+      if (plane.isShow) {
+        moveMouseEvent(plane.mesh, this.imageElement);
+        
+      } else {
+        hideCardAnimation(plane.mesh)
+      }
+
+    });
+
   }
 
   setMesh(image: HTMLImageElement, index: number) {
@@ -160,75 +173,10 @@ export class Webgl {
     const rect = image.getBoundingClientRect();
     const { x, y } = clientRectCoordinate(rect);
 
-    mesh.position.set(x, y, 1);
+    mesh.position.set(x, y, 0);
 
     mesh.scale.x = rect.width;
     mesh.scale.y = rect.height;
-  }
-
-  moveMouseEvent(mesh: THREE.Mesh) {
-    console.log(this.imageElement)
-    console.log(!this.modalInfo.isShow)
-    // if (this.modalInfo.isShow) return;
-
-    this.imageElement?.addEventListener("mousemove", (e) => {
-      if (!this.imageElement) return;
-
-      console.log(11)
-
-      const { x, y } = mouseCoordinate(e, this.imageElement);
-
-      (mesh.material as any).uniforms.uMouse.value = { x, y };
-
-      gsap.to(mesh.rotation, {
-        x: y * 0.7,
-        y: -x * 0.7,
-        duration: 0.5,
-        ease: "power1.out",
-      });
-    });
-
-    this.imageElement?.addEventListener("mouseleave", (e) => {
-      gsap.to(mesh.rotation, {
-        x: 0,
-        y: 0,
-        duration: 0.5,
-        ease: EASING.transform,
-      });
-
-      gsap.to((mesh.material as any).uniforms.uMouse.value, {
-        x: 0,
-        y: 0,
-        duration: 0.5,
-        ease: EASING.transform,
-      });
-    });
-  }
-
-  clickMouseEvent(mesh: THREE.Mesh) {
-    this.modalInfo.isShow = true;
-    this.wrapper.style.zIndex = 1
-
-    gsap.to(mesh.position as any, {
-      x: this.modalInfo.x,
-      y: this.modalInfo.y,
-      z: 2,
-      duration: 0.5,
-      ease: EASING.transform,
-    });
-
-    gsap.to(mesh.scale, {
-      x: this.modalInfo.width,
-      y: this.modalInfo.height,
-      duration: 0.5,
-      ease: EASING.transform,
-    });
-
-    gsap.to(mesh.rotation, {
-      y: 0,
-      duration: 0.5,
-      ease: EASING.transform,
-    });
   }
 
   setHelper() {
