@@ -7,7 +7,13 @@ import effectColor2 from "../img/effect2.jpg";
 import { PARAMS, textureArray } from "./constants";
 import { clientRectCoordinate } from "./utils";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { clickMouseEvent, hideCardAnimation, loadingAnimation, moveMouseEvent } from "./animation";
+import {
+  clickMouseEvent,
+  closeModal,
+  hideCardAnimation,
+  loadingAnimation,
+  moveMouseEvent,
+} from "./animation";
 
 export class Webgl {
   renderer: THREE.WebGLRenderer | undefined;
@@ -30,6 +36,13 @@ export class Webgl {
     width: number;
     height: number;
     isShow: boolean;
+  };
+  saveMeshInfo: {
+    x: number;
+    y: number;
+    z: number;
+    w: number;
+    h: number;
   };
 
   constructor() {
@@ -54,6 +67,13 @@ export class Webgl {
       width: 0,
       height: 0,
       isShow: false,
+    };
+    this.saveMeshInfo = {
+      x: 0,
+      y: 0,
+      z: 0,
+      w: 0,
+      h: 0,
     };
 
     this.render = this.render.bind(this);
@@ -115,14 +135,30 @@ export class Webgl {
   initAnimation() {
     this.planeArray.forEach((plane) => {
       if (plane.isShow) {
+
         moveMouseEvent(plane.mesh, this.imageElement);
-        
+
+        const rect = plane.image.getBoundingClientRect();
+
+        this.saveMeshInfo = {
+          x: plane.mesh.position.x,
+          y: plane.mesh.position.y,
+          z: 0,
+          w: rect.width,
+          h: rect.height,
+        };
+
+        this.imageElement?.addEventListener("click", () => {
+          closeModal(plane.mesh, this.saveMeshInfo);
+          // plane.isShow = false
+          this.wrapper && (this.wrapper.style.zIndex = "-1");
+        });
       } else {
-        hideCardAnimation(plane.mesh)
+        hideCardAnimation(plane.mesh);
       }
 
+      plane.isShow = false
     });
-
   }
 
   setMesh(image: HTMLImageElement, index: number) {

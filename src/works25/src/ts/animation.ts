@@ -8,7 +8,7 @@ type ModalInfo = {
   width: number;
   height: number;
   isShow: boolean;
-}
+};
 
 export const clickMouseEvent = (mesh: THREE.Mesh, modalInfo: ModalInfo) => {
   gsap.to(mesh.position, {
@@ -31,13 +31,39 @@ export const clickMouseEvent = (mesh: THREE.Mesh, modalInfo: ModalInfo) => {
     duration: 0.5,
     ease: EASING.transform,
   });
-}
+};
 
-export const moveMouseEvent = (mesh: THREE.Mesh, element: HTMLElement | null) => {
+export const closeModal = (
+  mesh: THREE.Mesh,
+  saveMeshInfo: { x: number; y: number; z: number; w: number; h: number }
+) => {
+  gsap.to(mesh.position, {
+    x: saveMeshInfo.x,
+    y: saveMeshInfo.y,
+    z: saveMeshInfo.z,
+    duration: 0.5,
+    ease: EASING.transform,
+  });
+
+  gsap.to(mesh.scale, {
+    x: saveMeshInfo.w,
+    y: saveMeshInfo.h,
+    duration: 0.5,
+    ease: EASING.transform,
+  });
+
+  gsap.to(mesh.rotation, {
+    y: (Math.PI / 180) * 180
+  })
+};
+
+export const moveMouseEvent = (
+  mesh: THREE.Mesh,
+  element: HTMLElement | null
+) => {
   if (!element) return;
 
   element.addEventListener("mousemove", (e) => {
-
     const { x, y } = mouseCoordinate(e, element);
     (mesh.material as any).uniforms.uMouse.value = { x, y };
 
@@ -64,7 +90,7 @@ export const moveMouseEvent = (mesh: THREE.Mesh, element: HTMLElement | null) =>
       ease: EASING.transform,
     });
   });
-}
+};
 
 export const hideCardAnimation = (mesh: THREE.Mesh) => {
   gsap.to(mesh.position, {
@@ -72,7 +98,7 @@ export const hideCardAnimation = (mesh: THREE.Mesh) => {
     duration: 0.5,
     ease: EASING.transform,
   });
-}
+};
 
 export const textAnimation = () => {
   // text animation
@@ -81,9 +107,9 @@ export const textAnimation = () => {
   elements.forEach((element) => {
     const { width } = element.getBoundingClientRect();
     element?.style.setProperty("--text-width", `${String(width)}px`);
-  })
+  });
 };
 
 export const loadingAnimation = (element: HTMLElement) => {
-  element.classList.add('is-active');
-}
+  element.classList.add("is-active");
+};
