@@ -91,9 +91,17 @@ export const onMouseLeave = (mesh: THREE.Mesh) => {
   });
 };
 
-export const hideCardAnimation = (mesh: THREE.Mesh) => {
+export const backCardAnimation = (mesh: THREE.Mesh) => {
   gsap.to(mesh.position, {
     z: -100,
+    duration: 0.5,
+    ease: EASING.transform,
+  });
+};
+
+export const frontCardAnimation = (mesh: THREE.Mesh) => {
+  gsap.to(mesh.position, {
+    z: 0,
     duration: 0.5,
     ease: EASING.transform,
   });

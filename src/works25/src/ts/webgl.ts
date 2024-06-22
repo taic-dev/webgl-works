@@ -10,10 +10,11 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import {
   onMeshScaleUp,
   onMeshScaleDown,
-  hideCardAnimation,
   loadingAnimation,
   onMouseMove,
   onMouseLeave,
+  backCardAnimation,
+  frontCardAnimation,
 } from "./animation";
 
 export class Webgl {
@@ -124,36 +125,51 @@ export class Webgl {
 
   setModal() {
     this.planeArray.forEach((plane) => {
-
       // Modal open
       const handleClick = () => {
-        if (!plane.isShow) { onMeshScaleUp(plane.mesh, this.modalInfo); }
-
         plane.isShow = true;
         this.modal && (this.modal.style.zIndex = "1");
+        onMeshScaleUp(plane.mesh, this.modalInfo);
 
-        // マウスイベントの追加
+        // back card
+        this.planeArray.forEach((plane) => {
+          if (!plane.isShow) {
+            backCardAnimation(plane.mesh);
+          }
+        });
+
+        // add mouse event
         this.imageElement?.addEventListener("mousemove", handleMouseMove);
         this.imageElement?.addEventListener("mouseleave", handleMouseLeave);
-      }
+      };
 
       // Modal Close
       const handleClose = () => {
         this.planeArray.forEach((plane) => {
-          if (plane.isShow) { onMeshScaleDown(plane.mesh, plane.frame); }
-
           plane.isShow = false;
           this.modal && (this.modal.style.zIndex = "-1");
+          onMeshScaleDown(plane.mesh, plane.frame);
 
-          // マウスイベントを削除
+          // front card
+          this.planeArray.forEach((plane) => {
+            if (!plane.isShow) {
+              frontCardAnimation(plane.mesh);
+            }
+          });
+
+          // remove mouse event
           this.imageElement?.removeEventListener("mousemove", handleMouseMove);
-          this.imageElement?.removeEventListener("mouseleave", handleMouseLeave);
+          this.imageElement?.removeEventListener(
+            "mouseleave",
+            handleMouseLeave
+          );
         });
-      }
-      
-      const handleMouseMove = (e: MouseEvent) => onMouseMove(e, plane.mesh, this.imageElement);
+      };
+
+      const handleMouseMove = (e: MouseEvent) =>
+        onMouseMove(e, plane.mesh, this.imageElement);
       const handleMouseLeave = () => onMouseLeave(plane.mesh);
-      
+
       plane.image.addEventListener("click", handleClick);
       this.close?.addEventListener("click", handleClose);
     });
