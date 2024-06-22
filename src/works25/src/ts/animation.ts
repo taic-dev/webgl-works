@@ -35,60 +35,59 @@ export const onMeshScaleUp = (mesh: THREE.Mesh, modalInfo: ModalInfo) => {
 
 export const onMeshScaleDown = (
   mesh: THREE.Mesh,
-  saveMeshInfo: { x: number; y: number; z: number; w: number; h: number }
+  frame: { x: number; y: number; z: number; w: number; h: number }
 ) => {
   gsap.to(mesh.position, {
-    x: saveMeshInfo.x,
-    y: saveMeshInfo.y,
-    z: saveMeshInfo.z,
+    x: frame.x,
+    y: frame.y,
+    z: frame.z,
     duration: 0.5,
     ease: EASING.transform,
   });
 
   gsap.to(mesh.scale, {
-    x: saveMeshInfo.w,
-    y: saveMeshInfo.h,
+    x: frame.w,
+    y: frame.h,
     duration: 0.5,
     ease: EASING.transform,
   });
 
   gsap.to(mesh.rotation, {
-    y: (Math.PI / 180) * 180
-  })
+    y: (Math.PI / 180) * 180,
+  });
 };
 
-export const moveMouseEvent = (
+export const onMouseMove = (
+  e: MouseEvent,
   mesh: THREE.Mesh,
   element: HTMLElement | null
 ) => {
   if (!element) return;
 
-  element.addEventListener("mousemove", (e) => {
-    const { x, y } = mouseCoordinate(e, element);
-    (mesh.material as any).uniforms.uMouse.value = { x, y };
+  const { x, y } = mouseCoordinate(e, element);
+  (mesh.material as any).uniforms.uMouse.value = { x, y };
 
-    gsap.to(mesh.rotation, {
-      x: y * 0.7,
-      y: -x * 0.7,
-      duration: 0.5,
-      ease: "power1.out",
-    });
+  gsap.to(mesh.rotation, {
+    x: y * 0.7,
+    y: -x * 0.7,
+    duration: 0.5,
+    ease: "power1.out",
+  });
+};
+
+export const onMouseLeave = (mesh: THREE.Mesh) => {
+  gsap.to(mesh.rotation, {
+    x: 0,
+    y: 0,
+    duration: 0.5,
+    ease: EASING.transform,
   });
 
-  element.addEventListener("mouseleave", () => {
-    gsap.to(mesh.rotation, {
-      x: 0,
-      y: 0,
-      duration: 0.5,
-      ease: EASING.transform,
-    });
-
-    gsap.to((mesh.material as any).uniforms.uMouse.value, {
-      x: 0,
-      y: 0,
-      duration: 0.5,
-      ease: EASING.transform,
-    });
+  gsap.to((mesh.material as any).uniforms.uMouse.value, {
+    x: 0,
+    y: 0,
+    duration: 0.5,
+    ease: EASING.transform,
   });
 };
 

@@ -12,7 +12,8 @@ import {
   onMeshScaleDown,
   hideCardAnimation,
   loadingAnimation,
-  moveMouseEvent,
+  onMouseMove,
+  onMouseLeave,
 } from "./animation";
 
 export class Webgl {
@@ -24,10 +25,17 @@ export class Webgl {
   uniforms: any;
   mesh: THREE.Mesh | undefined;
   clock: THREE.Clock | undefined;
+  raycaster: THREE.Raycaster;
   cards: HTMLImageElement[] | null;
-  wrapper: HTMLImageElement | null;
+  modal: HTMLImageElement | null;
+  close: HTMLElement | null;
   imageElement: HTMLImageElement | null;
-  planeArray: { mesh: THREE.Mesh; image: HTMLElement; isShow: boolean }[];
+  planeArray: {
+    mesh: THREE.Mesh;
+    image: HTMLElement;
+    frame: { x: number; y: number; z: number; w: number; h: number };
+    isShow: boolean;
+  }[];
   controls: OrbitControls | undefined;
   mouse: THREE.Vector2;
   modalInfo: {
@@ -36,13 +44,6 @@ export class Webgl {
     width: number;
     height: number;
     isShow: boolean;
-  };
-  saveMeshInfo: {
-    x: number;
-    y: number;
-    z: number;
-    w: number;
-    h: number;
   };
 
   constructor() {
@@ -53,8 +54,10 @@ export class Webgl {
     this.mesh;
     this.scene = new THREE.Scene();
     this.clock = new THREE.Clock();
+    this.raycaster = new THREE.Raycaster();
     this.cards = [...document.querySelectorAll<HTMLImageElement>(".card img")];
-    this.wrapper = document.querySelector<HTMLImageElement>(".image__wrapper");
+    this.modal = document.querySelector<HTMLImageElement>(".modal");
+    this.close = document.querySelector<HTMLElement>(".close");
     this.imageElement = document.querySelector<HTMLImageElement>(
       ".image__wrapper div"
     );
@@ -67,13 +70,6 @@ export class Webgl {
       width: 0,
       height: 0,
       isShow: false,
-    };
-    this.saveMeshInfo = {
-      x: 0,
-      y: 0,
-      z: 0,
-      w: 0,
-      h: 0,
     };
 
     this.render = this.render.bind(this);
@@ -109,56 +105,57 @@ export class Webgl {
       this.scene.add(mesh);
       mesh.rotation.y = (Math.PI / 180) * -180;
 
-      this.setMeshPosition(mesh, image);
-      this.planeArray.push({ mesh, image, isShow: false });
+      const { x, y, width, height } = this.setMeshPosition(mesh, image);
+      this.planeArray.push({
+        mesh,
+        image,
+        frame: { x, y, z: 0, w: width, h: height },
+        isShow: false,
+      });
 
       const rect = this.imageElement.getBoundingClientRect();
-      const { x, y } = clientRectCoordinate(rect);
-      this.modalInfo.x = x;
-      this.modalInfo.y = y;
+      const { x: modalX, y: modalY } = clientRectCoordinate(rect);
+      this.modalInfo.x = modalX;
+      this.modalInfo.y = modalY;
       this.modalInfo.width = rect.width;
       this.modalInfo.height = rect.height;
     });
-
-    this.planeArray.forEach((plane) => {
-      plane.image.addEventListener("click", () => {
-        plane.isShow = true;
-        this.modalInfo.isShow = true;
-        this.wrapper && (this.wrapper.style.zIndex = "1");
-        onMeshScaleUp(plane.mesh, this.modalInfo);
-
-        this.initAnimation();
-      });
-    });
   }
 
-  initAnimation() {
+  setModal() {
     this.planeArray.forEach((plane) => {
-      if (plane.isShow) {
 
-        moveMouseEvent(plane.mesh, this.imageElement);
+      // Modal open
+      const handleClick = () => {
+        if (!plane.isShow) { onMeshScaleUp(plane.mesh, this.modalInfo); }
 
-        const rect = plane.image.getBoundingClientRect();
+        plane.isShow = true;
+        this.modal && (this.modal.style.zIndex = "1");
 
-        this.saveMeshInfo = {
-          x: plane.mesh.position.x,
-          y: plane.mesh.position.y,
-          z: 0,
-          w: rect.width,
-          h: rect.height,
-        };
-
-        this.imageElement?.addEventListener("click", () => {
-          onMeshScaleDown(plane.mesh, this.saveMeshInfo);
-          plane.isShow = false;
-          this.modalInfo.isShow = false;
-          this.wrapper && (this.wrapper.style.zIndex = "-1");
-        });
-      } else {
-        hideCardAnimation(plane.mesh);
+        // マウスイベントの追加
+        this.imageElement?.addEventListener("mousemove", handleMouseMove);
+        this.imageElement?.addEventListener("mouseleave", handleMouseLeave);
       }
 
-      plane.isShow = false
+      // Modal Close
+      const handleClose = () => {
+        this.planeArray.forEach((plane) => {
+          if (plane.isShow) { onMeshScaleDown(plane.mesh, plane.frame); }
+
+          plane.isShow = false;
+          this.modal && (this.modal.style.zIndex = "-1");
+
+          // マウスイベントを削除
+          this.imageElement?.removeEventListener("mousemove", handleMouseMove);
+          this.imageElement?.removeEventListener("mouseleave", handleMouseLeave);
+        });
+      }
+      
+      const handleMouseMove = (e: MouseEvent) => onMouseMove(e, plane.mesh, this.imageElement);
+      const handleMouseLeave = () => onMouseLeave(plane.mesh);
+      
+      plane.image.addEventListener("click", handleClick);
+      this.close?.addEventListener("click", handleClose);
     });
   }
 
@@ -214,6 +211,8 @@ export class Webgl {
 
     mesh.scale.x = rect.width;
     mesh.scale.y = rect.height;
+
+    return { x, y, width: rect.width, height: rect.height };
   }
 
   setHelper() {
@@ -239,6 +238,7 @@ export class Webgl {
     this.setCanvas();
     this.setCamera();
     this.initMesh();
+    this.setModal();
     this.setHelper();
   }
 
@@ -250,12 +250,6 @@ export class Webgl {
     (this.mesh.material as any).uniforms.uTime.value = time;
 
     this.controls.update();
-
-    if (!this.modalInfo.isShow) {
-      this.planeArray.forEach((plane) => {
-        this.setMeshPosition(plane.mesh, plane.image);
-      });
-    }
 
     requestAnimationFrame(this.render);
   }
