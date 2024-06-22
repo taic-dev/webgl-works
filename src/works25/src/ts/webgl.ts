@@ -8,8 +8,8 @@ import { PARAMS, textureArray } from "./constants";
 import { clientRectCoordinate } from "./utils";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import {
-  clickMouseEvent,
-  closeModal,
+  onMeshScaleUp,
+  onMeshScaleDown,
   hideCardAnimation,
   loadingAnimation,
   moveMouseEvent,
@@ -125,7 +125,7 @@ export class Webgl {
         plane.isShow = true;
         this.modalInfo.isShow = true;
         this.wrapper && (this.wrapper.style.zIndex = "1");
-        clickMouseEvent(plane.mesh, this.modalInfo);
+        onMeshScaleUp(plane.mesh, this.modalInfo);
 
         this.initAnimation();
       });
@@ -149,8 +149,9 @@ export class Webgl {
         };
 
         this.imageElement?.addEventListener("click", () => {
-          closeModal(plane.mesh, this.saveMeshInfo);
-          // plane.isShow = false
+          onMeshScaleDown(plane.mesh, this.saveMeshInfo);
+          plane.isShow = false;
+          this.modalInfo.isShow = false;
           this.wrapper && (this.wrapper.style.zIndex = "-1");
         });
       } else {

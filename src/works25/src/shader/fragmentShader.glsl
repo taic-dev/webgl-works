@@ -41,7 +41,6 @@ void main() {
   vec4 frontColor;
   if(uIndex == 1.) {
     frontColor = frontTexture;
-    
   } else if(uIndex == 2.) {
     vec4 effectTexture1 = texture2D(uEffectTexture1, vec2(textureUv.x * 15., textureUv.y * 10.));
     vec3 se_effect = overlay(effectTexture1.rgb, customNoise * 1.5);

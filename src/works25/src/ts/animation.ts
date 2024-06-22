@@ -10,7 +10,7 @@ type ModalInfo = {
   isShow: boolean;
 };
 
-export const clickMouseEvent = (mesh: THREE.Mesh, modalInfo: ModalInfo) => {
+export const onMeshScaleUp = (mesh: THREE.Mesh, modalInfo: ModalInfo) => {
   gsap.to(mesh.position, {
     x: modalInfo.x,
     y: modalInfo.y,
@@ -33,7 +33,7 @@ export const clickMouseEvent = (mesh: THREE.Mesh, modalInfo: ModalInfo) => {
   });
 };
 
-export const closeModal = (
+export const onMeshScaleDown = (
   mesh: THREE.Mesh,
   saveMeshInfo: { x: number; y: number; z: number; w: number; h: number }
 ) => {
