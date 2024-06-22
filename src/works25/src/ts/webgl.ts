@@ -123,58 +123,6 @@ export class Webgl {
     });
   }
 
-  setModal() {
-    this.planeArray.forEach((plane) => {
-      // Modal open
-      const handleClick = () => {
-        plane.isShow = true;
-        this.modal && (this.modal.style.zIndex = "1");
-        onMeshScaleUp(plane.mesh, this.modalInfo);
-
-        // back card
-        this.planeArray.forEach((plane) => {
-          if (!plane.isShow) {
-            backCardAnimation(plane.mesh);
-          }
-        });
-
-        // add mouse event
-        this.imageElement?.addEventListener("mousemove", handleMouseMove);
-        this.imageElement?.addEventListener("mouseleave", handleMouseLeave);
-      };
-
-      // Modal Close
-      const handleClose = () => {
-        this.planeArray.forEach((plane) => {
-          plane.isShow = false;
-          this.modal && (this.modal.style.zIndex = "-1");
-          onMeshScaleDown(plane.mesh, plane.frame);
-
-          // front card
-          this.planeArray.forEach((plane) => {
-            if (!plane.isShow) {
-              frontCardAnimation(plane.mesh);
-            }
-          });
-
-          // remove mouse event
-          this.imageElement?.removeEventListener("mousemove", handleMouseMove);
-          this.imageElement?.removeEventListener(
-            "mouseleave",
-            handleMouseLeave
-          );
-        });
-      };
-
-      const handleMouseMove = (e: MouseEvent) =>
-        onMouseMove(e, plane.mesh, this.imageElement);
-      const handleMouseLeave = () => onMouseLeave(plane.mesh);
-
-      plane.image.addEventListener("click", handleClick);
-      this.close?.addEventListener("click", handleClose);
-    });
-  }
-
   setMesh(image: HTMLImageElement, index: number) {
     this.geometry = new THREE.PlaneGeometry(1, 1, 10, 10);
 
@@ -203,7 +151,6 @@ export class Webgl {
       uImageAspect: { value: image.naturalWidth / image.naturalHeight },
       uPlaneAspect: { value: image.clientWidth / image.clientHeight },
       uLoading: { value: 0 },
-      uTime: { value: 0 },
       uEffectTexture1: { value: effectTexture1 },
       uEffectTexture2: { value: effectTexture2 },
     };
@@ -220,15 +167,68 @@ export class Webgl {
   }
 
   setMeshPosition(mesh: THREE.Mesh, image: HTMLElement) {
+    setTimeout(() => {
+      loadingAnimation(mesh, image)
+    }, 500)
+
     const rect = image.getBoundingClientRect();
     const { x, y } = clientRectCoordinate(rect);
-
-    mesh.position.set(x, y, 0);
-
-    mesh.scale.x = rect.width;
-    mesh.scale.y = rect.height;
-
+    
     return { x, y, width: rect.width, height: rect.height };
+  }
+
+  setModal() {
+    this.planeArray.forEach((plane) => {
+      // Modal open
+      const handleClick = () => {
+        plane.isShow = true;
+        this.modal && (this.modal.style.zIndex = "1");
+        onMeshScaleUp(plane.mesh, this.modalInfo);
+
+        // back card
+        this.planeArray.forEach((plane) => {
+          if (!plane.isShow) {
+            backCardAnimation(plane.mesh);
+          }
+        });
+
+        // add mouse event
+        this.imageElement?.addEventListener("mousemove", handleMouseMove);
+        this.imageElement?.addEventListener("mouseleave", handleMouseLeave);
+      };
+
+      // Modal Close
+      const handleClose = () => {
+        this.planeArray.forEach((plane) => {
+          if(plane.isShow) {
+            plane.isShow = false;
+            this.modal && (this.modal.style.zIndex = "-1");
+            onMeshScaleDown(plane.mesh, plane.frame);
+          }
+
+          // front card
+          this.planeArray.forEach((plane) => {
+            if (!plane.isShow) {
+              frontCardAnimation(plane.mesh);
+            }
+          });
+
+          // remove mouse event
+          this.imageElement?.removeEventListener("mousemove", handleMouseMove);
+          this.imageElement?.removeEventListener(
+            "mouseleave",
+            handleMouseLeave
+          );
+        });
+      };
+
+      const handleMouseMove = (e: MouseEvent) =>
+        onMouseMove(e, plane.mesh, this.imageElement);
+      const handleMouseLeave = () => onMouseLeave(plane.mesh);
+
+      plane.image.addEventListener("click", handleClick);
+      this.close?.addEventListener("click", handleClose);
+    });
   }
 
   setHelper() {
@@ -255,17 +255,11 @@ export class Webgl {
     this.setCamera();
     this.initMesh();
     this.setModal();
-    this.setHelper();
   }
 
   render() {
-    if (!this.camera || !this.mesh || !this.controls) return;
+    if (!this.camera || !this.mesh) return;
     this.renderer?.render(this.scene, this.camera);
-
-    const time = this.clock?.getElapsedTime();
-    (this.mesh.material as any).uniforms.uTime.value = time;
-
-    this.controls.update();
 
     requestAnimationFrame(this.render);
   }

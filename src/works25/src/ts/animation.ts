@@ -1,6 +1,6 @@
 import gsap from "gsap";
 import { EASING } from "./constants";
-import { mouseCoordinate } from "./utils";
+import { clientRectCoordinate, mouseCoordinate } from "./utils";
 
 type ModalInfo = {
   x: number;
@@ -8,6 +8,46 @@ type ModalInfo = {
   width: number;
   height: number;
   isShow: boolean;
+};
+
+export const loadingAnimation = (
+  mesh: THREE.Mesh,
+  element: HTMLElement | null
+) => {
+  if (!element) return;
+
+  const rect = element.getBoundingClientRect();
+  const { x, y } = clientRectCoordinate(rect);
+  const tl = gsap.timeline();
+
+  tl.to(mesh.scale, {
+    x: rect.width,
+    y: rect.height,
+    duration: 1,
+    ease: EASING.transform,
+  })
+  .to(mesh.rotation, {
+    z: (Math.PI / 180) * 360,
+    duration: 0.5,
+    ease: EASING.transform,
+  }, '-=1')
+  .to(mesh.position, {
+    x,
+    y,
+    z: 0,
+    duration: 1,
+    ease: EASING.transform,
+  })
+};
+
+export const textAnimation = () => {
+  // text animation
+  const elements = document.querySelectorAll<HTMLElement>(".text__wrapper span p");
+  if (!elements) return;
+  elements.forEach((element) => {
+    const { width } = element.getBoundingClientRect();
+    element?.style.setProperty("--text-width", `${String(width)}px`);
+  });
 };
 
 export const onMeshScaleUp = (mesh: THREE.Mesh, modalInfo: ModalInfo) => {
@@ -105,18 +145,4 @@ export const frontCardAnimation = (mesh: THREE.Mesh) => {
     duration: 0.5,
     ease: EASING.transform,
   });
-};
-
-export const textAnimation = () => {
-  // text animation
-  const elements = document.querySelectorAll<HTMLElement>(".text__wrapper p");
-  if (!elements) return;
-  elements.forEach((element) => {
-    const { width } = element.getBoundingClientRect();
-    element?.style.setProperty("--text-width", `${String(width)}px`);
-  });
-};
-
-export const loadingAnimation = (element: HTMLElement) => {
-  element.classList.add("is-active");
 };
