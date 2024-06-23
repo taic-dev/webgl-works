@@ -13,7 +13,7 @@ varying vec2 vUv;
 
 // ノイズ
 float noise(vec2 xy) {
-  return fract(sin(dot(xy, vec2(12.9898, 78.2323))) * 43758.5453123 + (uMouse.x + uMouse.y));
+  return fract(sin(dot(xy, vec2(12.9898, 78.2323))) * 43758.5453123 + (uMouse.x + uMouse.y) * 2.5);
 }
 
 // 加算ブレンド
@@ -43,7 +43,7 @@ void main() {
     frontColor = frontTexture;
   } else if(uIndex == 2.) {
     vec4 effectTexture1 = texture2D(uEffectTexture1, vec2(textureUv.x * 15., textureUv.y * 10.));
-    vec3 se_effect = overlay(effectTexture1.rgb, customNoise * 1.5);
+    vec3 se_effect = overlay(effectTexture1.rgb, customNoise * 2.5);
     vec3 blendedColor1 = overlay(frontTexture.rgb, se_effect.rgb);
     frontColor = mix(frontTexture, vec4(blendedColor1, 1.), abs(uMouse.x * 2.));
   } else if(uIndex == 3.) {
