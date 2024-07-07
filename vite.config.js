@@ -8,7 +8,7 @@ export default defineConfig({
   root: "src",
   plugins: [
     gltf({
-      include: ["**/*.gltf",]
+      include: ["**/*.gltf", '**/*.glb']
     }),
     rawLoader({
       fileRegex: /\.glsl$/
@@ -48,7 +48,7 @@ export default defineConfig({
         works26: resolve(__dirname, 'src/works26/index.html'),
       },
     },
-    assetsInclude: ['*.gltf'],
+    assetsInclude: ['*.gltf', '**/*.glb'],
     chunkSizeWarningLimit: 100000000,
   },
 })
