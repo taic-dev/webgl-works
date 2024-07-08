@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { MODEL, PARAMS } from "./constants";
 import { randomNum } from "./utils";
-import { firstAnimation, inhaleAnimation } from "./animation";
+import { firstAnimation, inhaleAnimation, vomitAnimation } from "./animation";
 
 export class Webgl {
   renderer: THREE.WebGLRenderer | undefined;
@@ -13,6 +13,7 @@ export class Webgl {
   models: THREE.Group[];
   modelSize: { x: number; y: number; z: number };
   inhaleElement: HTMLElement | null;
+  vomitElement: HTMLElement | null;
 
   constructor() {
     this.camera;
@@ -22,6 +23,7 @@ export class Webgl {
     this.modelSize = { x: 0, y: 0, z: 0 };
 
     this.inhaleElement = document.getElementById("inhale");
+    this.vomitElement = document.getElementById("vomit");
   }
 
   setCanvas() {
@@ -126,6 +128,12 @@ export class Webgl {
         inhaleAnimation(model);
       });
     });
+
+    this.vomitElement?.addEventListener('click', () => {
+      this.models.forEach((model) => {
+        vomitAnimation(model);
+      });
+    })
   }
 
   init() {
