@@ -1,3 +1,6 @@
+import gsap from "gsap";
+import CustomEase from "gsap/CustomEase";
+
 import manzu1 from "../model/manzu/manzu1.glb";
 import manzu2 from "../model/manzu/manzu2.glb";
 import manzu3 from "../model/manzu/manzu3.glb";
@@ -35,6 +38,16 @@ import zihai4 from "../model/zihai/zihai4.glb";
 import zihai5 from "../model/zihai/zihai5.glb";
 import zihai6 from "../model/zihai/zihai6.glb";
 import zihai7 from "../model/zihai/zihai7.glb";
+
+gsap.registerPlugin(CustomEase);
+
+export const EASING = {
+  transform: CustomEase.create("transform", "M0,0 C0.44,0.05 0.17,1 1,1"),
+  colorAndOpacity: CustomEase.create(
+    "colorAndOpacity",
+    "M0,0 C0.26,0.16 0.1,1 1,1 "
+  ),
+};
 
 export const PARAMS = {
   WINDOW: {

@@ -3,6 +3,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { MODEL, PARAMS } from "./constants";
 import { randomNum } from "./utils";
+import { firstAnimation, inhaleAnimation } from "./animation";
 
 export class Webgl {
   renderer: THREE.WebGLRenderer | undefined;
@@ -11,6 +12,7 @@ export class Webgl {
   controls: OrbitControls | undefined;
   models: THREE.Group[];
   modelSize: { x: number; y: number; z: number };
+  inhaleElement: HTMLElement | null;
 
   constructor() {
     this.camera;
@@ -18,12 +20,14 @@ export class Webgl {
     this.render = this.render.bind(this);
     this.models = [];
     this.modelSize = { x: 0, y: 0, z: 0 };
+
+    this.inhaleElement = document.getElementById("inhale");
   }
 
   setCanvas() {
     const element = document.querySelector(".webgl");
-    // this.renderer = new THREE.WebGLRenderer({ alpha: true });
     this.renderer = new THREE.WebGLRenderer();
+    this.renderer.setClearColor('#008036')
     this.renderer.setSize(PARAMS.WINDOW.W, PARAMS.WINDOW.H);
     this.renderer.setPixelRatio(PARAMS.WINDOW.PIXEL_RATIO);
     element?.appendChild(this.renderer.domElement);
@@ -40,7 +44,7 @@ export class Webgl {
     // const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
     // const dist = window.innerHeight / 2 / Math.tan(fovRad);
 
-    this.camera.position.set(0, 0, 20);
+    this.camera.position.set(0, 0, 15);
   }
 
   setLight() {
@@ -53,19 +57,19 @@ export class Webgl {
   }
 
   setMesh() {
-    for(let m = 1; m <= 4; m++) {
-    for (let i = 1; i <= Object.keys(MODEL.MANZU).length; i++) {
-      this.initMesh(MODEL.MANZU[i]);
-    }
-    for (let i = 1; i <= Object.keys(MODEL.PINZU).length; i++) {
-      this.initMesh(MODEL.PINZU[i]);
-    }
-    for (let i = 1; i <= Object.keys(MODEL.SOZU).length; i++) {
-      this.initMesh(MODEL.SOZU[i]);
-    }
-    for (let i = 1; i <= Object.keys(MODEL.ZIHAI).length; i++) {
-      this.initMesh(MODEL.ZIHAI[i]);
-    }
+    for (let m = 1; m <= 4; m++) {
+      for (let i = 1; i <= Object.keys(MODEL.MANZU).length; i++) {
+        this.initMesh(MODEL.MANZU[i]);
+      }
+      for (let i = 1; i <= Object.keys(MODEL.PINZU).length; i++) {
+        this.initMesh(MODEL.PINZU[i]);
+      }
+      for (let i = 1; i <= Object.keys(MODEL.SOZU).length; i++) {
+        this.initMesh(MODEL.SOZU[i]);
+      }
+      for (let i = 1; i <= Object.keys(MODEL.ZIHAI).length; i++) {
+        this.initMesh(MODEL.ZIHAI[i]);
+      }
     }
   }
 
@@ -76,22 +80,24 @@ export class Webgl {
       async (gltf) => {
         this.scene.add(gltf.scene);
         this.models.push(gltf.scene);
-        this.modelSize = this.getMeshSize(gltf.scene);
-        gltf.scene.position.set(randomNum(), randomNum(), randomNum());
+        this.modelSize = {
+          x: gltf.scene.scale.x,
+          y: gltf.scene.scale.y,
+          z: gltf.scene.scale.z,
+        };
+        gltf.scene.scale.set(0, 0, 0);
+        gltf.scene.rotation.set(0, 0, randomNum(10, 0));
+        gltf.scene.position.set(
+          randomNum(20, 20),
+          randomNum(25, 25),
+          randomNum(10, 10)
+        );
       },
       undefined,
       function (error) {
         console.error(error);
       }
     );
-  }
-
-  getMeshSize(model: any) {
-    const box = new THREE.Box3().setFromObject(model);
-    const x = box.max.x - box.min.x;
-    const y = box.max.y - box.min.y;
-    const z = box.max.z - box.min.z;
-    return { x, y, z };
   }
 
   setHelper() {
@@ -106,12 +112,29 @@ export class Webgl {
     this.scene.add(axesHelper);
   }
 
+  animation() {
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        this.models.forEach((model) => {
+          firstAnimation(model, this.modelSize);
+        });
+      }, 1000);
+    });
+
+    this.inhaleElement?.addEventListener("click", () => {
+      this.models.forEach((model) => {
+        inhaleAnimation(model);
+      });
+    });
+  }
+
   init() {
     this.setCanvas();
     this.setCamera();
     this.setLight();
     this.setHelper();
     this.setMesh();
+    this.animation();
     this.render();
   }
 
@@ -135,15 +158,11 @@ export class Webgl {
       const x = radius * Math.cos(rad);
       const y = radius * Math.sin(rad);
 
-      console.log(randomNum());
-
-      if(model.position.y <= -20) {
-        model.position.setY(20);
+      if (model.position.y <= -25) {
+        model.position.setY(25);
       } else {
-        model.position.setY(model.position.y += -0.01);
+        model.position.setY((model.position.y += -0.01));
       }
-
-
     });
 
     requestAnimationFrame(this.render);

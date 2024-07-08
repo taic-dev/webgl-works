@@ -1,3 +1,3 @@
-export const randomNum = () => {
-  return Math.random() * ( 20 - (-20) ) + (-20);
+export const randomNum = (max: number, min: number) => {
+  return Math.random() * ( max - (-min) ) + (-min);
 };

@@ -29,3 +29,27 @@ h1 {
   color: #000;
   mix-blend-mode: difference;
 }
+
+.button-list {
+  position: absolute;
+  right: 2vw;
+  bottom: 2vw;
+
+  display: flex;
+  gap: 15px;
+}
+
+.button-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 5vw;
+  height: 5vw;
+  border-radius: 50%;
+  background-color: #fff;
+}
+
+.button-item button {
+  font-size: 3vw;
+}
