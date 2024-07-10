@@ -14,6 +14,7 @@ export class Webgl {
   modelSize: { x: number; y: number; z: number };
   inhaleElement: HTMLElement | null;
   vomitElement: HTMLElement | null;
+  isAnimated: boolean
 
   constructor() {
     this.camera;
@@ -24,6 +25,7 @@ export class Webgl {
 
     this.inhaleElement = document.getElementById("inhale");
     this.vomitElement = document.getElementById("vomit");
+    this.isAnimated = false
   }
 
   setCanvas() {
