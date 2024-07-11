@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import vertexShader from "../shader/vertexShader.glsl";
+import fragmentShader from "../shader/fragmentShader.glsl";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { MODEL, PARAMS } from "./constants";
@@ -11,6 +13,8 @@ export class Webgl {
   scene: THREE.Scene;
   controls: OrbitControls | undefined;
   models: THREE.Group[];
+  uniforms: any;
+  material: THREE.ShaderMaterial | undefined;
   modelSize: { x: number; y: number; z: number };
   inhaleElement: HTMLElement | null;
   vomitElement: HTMLElement | null;
@@ -96,6 +100,19 @@ export class Webgl {
           randomNum(25, 25),
           randomNum(10, 10)
         );
+
+        this.uniforms = {
+          resolution: this.modelSize,
+          uTexture: { value: gltf.scene.children[1].material.map }
+        }
+    
+        this.material = new THREE.ShaderMaterial({
+          uniforms: this.uniforms,
+          vertexShader,
+          fragmentShader
+        })
+
+        // gltf.scene.children[1].material = this.material
       },
       undefined,
       function (error) {
