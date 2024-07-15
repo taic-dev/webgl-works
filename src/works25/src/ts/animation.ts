@@ -104,7 +104,7 @@ export const onMouseMove = (
 ) => {
   if (!element) return;
 
-  const { x, y } = mouseCoordinate(e, element);
+  const { x, y } = mouseCoordinate(e);
   (mesh.material as any).uniforms.uMouse.value = { x, y };
 
   gsap.to(mesh.rotation, {

@@ -5,7 +5,7 @@ export const clientRectCoordinate = (rect: DOMRect) => {
   return { x, y };
 };
 
-export const mouseCoordinate = (e: MouseEvent, element: Element) => {
+export const mouseCoordinate = (e: MouseEvent) => {
   e.preventDefault();
 
   const x = (e.clientX / window.innerWidth) * 2 - 1;
