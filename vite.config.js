@@ -48,7 +48,7 @@ export default defineConfig({
         works26: resolve(__dirname, 'src/works26/index.html'),
       },
     },
-    assetsInclude: ['*.gltf', '**/*.glb'],
+    assetsInclude: ['*.gltf', '*.glb'],
     chunkSizeWarningLimit: 100000000,
   },
 })

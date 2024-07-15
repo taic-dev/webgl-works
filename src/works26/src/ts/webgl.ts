@@ -103,7 +103,7 @@ export class Webgl {
 
         this.uniforms = {
           resolution: this.modelSize,
-          uTexture: { value: gltf.scene.children[1].material.map }
+          uTexture: { value: (gltf.scene.children[1] as any).material.map }
         }
     
         this.material = new THREE.ShaderMaterial({
