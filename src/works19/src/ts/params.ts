@@ -18,7 +18,7 @@ export const PARAMS = {
   PLANE_GEOMETRY: {
     X: 1.,
     Y: 1.,
-    X_SEGMENTS: 1,
-    Y_SEGMENTS: 1,
+    X_SEGMENTS: 10,
+    Y_SEGMENTS: 10,
   }
 }

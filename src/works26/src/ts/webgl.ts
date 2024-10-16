@@ -167,7 +167,7 @@ export class Webgl {
 
   render() {
     if (!this.camera) return;
-    const radius = 30;
+    // const radius = 30;
     const modelNum = 34;
     let degree = 0;
     let deg = 360 / modelNum;
@@ -181,9 +181,9 @@ export class Webgl {
       model.rotation.z -= 0.001 * (i * 0.01);
 
       // 角度をラジアンに変換
-      const rad = (degree * Math.PI) / 180;
-      const x = radius * Math.cos(rad);
-      const y = radius * Math.sin(rad);
+      // const rad = (degree * Math.PI) / 180;
+      // const x = radius * Math.cos(rad);
+      // const y = radius * Math.sin(rad);
 
       if (model.position.y <= -25) {
         model.position.setY(25);
