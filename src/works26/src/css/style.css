@@ -13,16 +13,17 @@ main {
 }
 
 canvas {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: -1;
 }
 
 h1 {
   position: fixed;
-  z-index: 99;
+  top: 0;
   margin: 15px;
   font-size: 2rem;
   font-family: "Secular One", sans-serif;

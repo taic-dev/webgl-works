@@ -5,7 +5,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { MODEL, PARAMS } from "./constants";
 import { randomNum } from "./utils";
-import { firstAnimation, inhaleAnimation, vomitAnimation } from "./animation";
+import { firstAnimation, vomitAnimation } from "./animation";
 
 export class Webgl {
   renderer: THREE.WebGLRenderer | undefined;
@@ -48,9 +48,6 @@ export class Webgl {
       PARAMS.CAMERA.NEAR,
       PARAMS.CAMERA.FAR
     );
-
-    // const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
-    // const dist = window.innerHeight / 2 / Math.tan(fovRad);
 
     this.camera.position.set(0, 0, 15);
   }
@@ -111,8 +108,6 @@ export class Webgl {
           vertexShader,
           fragmentShader
         })
-
-        // gltf.scene.children[1].material = this.material
       },
       undefined,
       function (error) {
@@ -142,12 +137,6 @@ export class Webgl {
       }, 1000);
     });
 
-    this.inhaleElement?.addEventListener("click", () => {
-      this.models.forEach((model) => {
-        inhaleAnimation(model);
-      });
-    });
-
     this.vomitElement?.addEventListener('click', () => {
       this.models.forEach((model) => {
         vomitAnimation(model);
@@ -159,7 +148,7 @@ export class Webgl {
     this.setCanvas();
     this.setCamera();
     this.setLight();
-    this.setHelper();
+    // this.setHelper();
     this.setMesh();
     this.animation();
     this.render();
@@ -167,7 +156,6 @@ export class Webgl {
 
   render() {
     if (!this.camera) return;
-    // const radius = 30;
     const modelNum = 34;
     let degree = 0;
     let deg = 360 / modelNum;
@@ -179,11 +167,6 @@ export class Webgl {
 
       model.rotation.y += 0.002 * (i * 0.01);
       model.rotation.z -= 0.001 * (i * 0.01);
-
-      // 角度をラジアンに変換
-      // const rad = (degree * Math.PI) / 180;
-      // const x = radius * Math.cos(rad);
-      // const y = radius * Math.sin(rad);
 
       if (model.position.y <= -25) {
         model.position.setY(25);

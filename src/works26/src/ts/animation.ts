@@ -23,24 +23,6 @@ export const firstAnimation = (
   });
 };
 
-export const inhaleAnimation = (target: THREE.Group) => {
-  gsap.to(target.position, {
-    x: 0,
-    y: 0,
-    z: -100,
-    duration: 3.5,
-    ease: EASING.transform,
-  });
-
-  gsap.to(target.rotation, {
-    x: 10,
-    y: 10,
-    z: -10,
-    duration: 2.5,
-    ease: EASING.transform,
-  });
-};
-
 export const vomitAnimation = (target: THREE.Group) => {
   gsap.to(target.position, {
     x: randomNum(20, 20),
