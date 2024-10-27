@@ -221,7 +221,7 @@ export class Webgl {
     this._setRenderer(element);
     this._setCamera();
 
-    this._setControls();
+    // this._setControls();
 
     this._setParticle();
     this._setAutoPlay();
