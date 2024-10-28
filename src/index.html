@@ -1,74 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="stylesheet" href="./assets/css/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WebGL works</title>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;600&family=Secular+One&display=swap");
     </style>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        font-family: Secular One, sans-serif;
-      }
-      html,
-      body {
-        overflow: hidden;
-        font-family: Secular One, sans-serif;
-      }
-      canvas {
-        position: absolute;
-        top: 0;
-        z-index: -1;
-      }
-      h1 {
-        margin: 10px;
-      }
-      h2 {
-        margin-left: 15px;
-      }
-      ul {
-        margin-left: 35px;
-      }
-      .wrapper {
-        margin: 10px;
-      }
-    </style>
   </head>
   <body>
     <div class="wrapper">
       <h1>WebGL works</h1>
-      <h2>WebGL</h2>
-      <ul>
-        <li><a href="works01/index.html">Works01</a></li>
-        <li><a href="works02/index.html">Works02</a></li>
-        <li><a href="works03/index.html">Works03</a></li>
-        <li><a href="works04/index.html">Works04</a></li>
-        <li><a href="works05/index.html">Works05</a></li>
-        <li><a href="works06/index.html">Works06</a></li>
-        <li><a href="works07/index.html">Works07</a></li>
-        <li><a href="works08/index.html">Works08</a></li>
-        <li><a href="works09/index.html">Works09</a></li>
-        <li><a href="works10/index.html">Works10</a></li>
-        <li><a href="works11/index.html">Works11</a></li>
-        <li><a href="works12/index.html">Works12</a></li>
-        <li><a href="works13/index.html">Works13</a></li>
-        <li><a href="works14/index.html">Works14</a></li>
-        <li><a href="works15/index.html">Works15</a></li>
-        <li><a href="works16/index.html">Works16</a></li>
-        <li><a href="works17/index.html">Works17</a></li>
-        <li><a href="works18/index.html">Works18</a></li>
-        <li><a href="works19/index.html">works19</a></li>
-        <li><a href="works20/index.html">works20</a></li>
-        <li><a href="works21/index.html">works21</a></li>
-        <li><a href="works22/index.html">works22</a></li>
-        <li><a href="works23/index.html">works23</a></li>
-        <li><a href="works24/index.html">works24</a></li>
-        <li><a href="works25/index.html">works25</a></li>
-        <li><a href="works26/index.html">works26</a></li>
+      <ul class="list">
+        <li class="item"><a class="item-link" href="works01/index.html"><img class="item-image" src="./assets/images/works01.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works02/index.html"><img class="item-image" src="./assets/images/works02.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works03/index.html"><img class="item-image" src="./assets/images/works03.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works04/index.html"><img class="item-image" src="./assets/images/works04.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works05/index.html"><img class="item-image" src="./assets/images/works05.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works06/index.html"><img class="item-image" src="./assets/images/works06.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works07/index.html"><img class="item-image" src="./assets/images/works07.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works08/index.html"><img class="item-image" src="./assets/images/works08.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works09/index.html"><img class="item-image" src="./assets/images/works09.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works10/index.html"><img class="item-image" src="./assets/images/works10.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works11/index.html"><img class="item-image" src="./assets/images/works11.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works12/index.html"><img class="item-image" src="./assets/images/works12.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works13/index.html"><img class="item-image" src="./assets/images/works13.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works14/index.html"><img class="item-image" src="./assets/images/works14.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works15/index.html"><img class="item-image" src="./assets/images/works15.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works16/index.html"><img class="item-image" src="./assets/images/works16.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works17/index.html"><img class="item-image" src="./assets/images/works17.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works18/index.html"><img class="item-image" src="./assets/images/works18.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works19/index.html"><img class="item-image" src="./assets/images/works19.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works20/index.html"><img class="item-image" src="./assets/images/works20.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works21/index.html"><img class="item-image" src="./assets/images/works21.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works22/index.html"><img class="item-image" src="./assets/images/works22.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works23/index.html"><img class="item-image" src="./assets/images/works23.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works24/index.html"><img class="item-image" src="./assets/images/works24.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works25/index.html"><img class="item-image" src="./assets/images/works25.png" alt=""></a></li>
+        <li class="item"><a class="item-link" href="works26/index.html"><img class="item-image" src="./assets/images/works26.png" alt=""></a></li>
       </ul>
     </div>
   </body>
