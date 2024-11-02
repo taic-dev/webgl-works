@@ -23,6 +23,7 @@ canvas {
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: -1;
 }
 
 h1 {
@@ -35,7 +36,17 @@ h1 {
   mix-blend-mode: difference;
 }
 
-.text {
-  font-size: 30rem;
-  font-family: 'geki-font';
+.text__wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text__image {
+  width: 400px;
+  height: 400px;
+  opacity: 0;
+  visibility: hidden;
 }

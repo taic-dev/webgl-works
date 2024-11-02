@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
+import Text1 from "../image/oku.png";
 
 export class Webgl {
   w: number;
@@ -15,6 +16,7 @@ export class Webgl {
   geometry: THREE.PlaneGeometry | undefined;
   mesh: THREE.Mesh | undefined;
   controls: OrbitControls | undefined;
+  image: HTMLImageElement
 
   constructor() {
     this.w = window.innerWidth;
@@ -22,6 +24,8 @@ export class Webgl {
     this.aspect = this.w / this.h;
     this.scene = new THREE.Scene();
     this.render = this.render.bind(this)
+
+    this.image = document.querySelector<HTMLImageElement>('.text__image')!;
   }
 
   _setCanvas() {
@@ -40,9 +44,16 @@ export class Webgl {
   }
 
   _setMesh() {
-    this.geometry = new THREE.PlaneGeometry(this.w, this.h);
+    const rect = this.image.getBoundingClientRect();
+    
+    const loader = new THREE.TextureLoader();
+    const fontImage = loader.load(Text1);
+    this.geometry = new THREE.PlaneGeometry(this.image.clientWidth, this.image.clientHeight, 10, 10);
     this.uniforms = {
-      uResolution: { value: new THREE.Vector2(this.w, this.h) },
+      uFontTexture: { value: fontImage },
+      uFontTextureAspect: { value: this.image.naturalWidth / this.image.naturalHeight },
+      uPlaneAspect: { value: this.image.clientWidth / this.image.clientHeight },
+      uResolution: { value: new THREE.Vector2(this.image.clientWidth, this.image.clientHeight) },
     };
     this.material = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
