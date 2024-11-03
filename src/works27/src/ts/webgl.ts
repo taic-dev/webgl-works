@@ -2,7 +2,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
-import Text1 from "../image/oku.png";
+import text from "../image/oku.png";
+import displacement from "../image/displacement3.jpg";
 
 export class Webgl {
   w: number;
@@ -17,6 +18,10 @@ export class Webgl {
   mesh: THREE.Mesh | undefined;
   controls: OrbitControls | undefined;
   image: HTMLImageElement
+  clock: THREE.Clock
+  elapsedTime: number
+  deltaTime: number
+  time: number | undefined
 
   constructor() {
     this.w = window.innerWidth;
@@ -26,6 +31,10 @@ export class Webgl {
     this.render = this.render.bind(this)
 
     this.image = document.querySelector<HTMLImageElement>('.text__image')!;
+    this.clock = new THREE.Clock();
+    this.elapsedTime = 0
+    this.deltaTime = 0
+    this.time = this.clock.getElapsedTime();
   }
 
   _setCanvas() {
@@ -47,13 +56,14 @@ export class Webgl {
     const rect = this.image.getBoundingClientRect();
     
     const loader = new THREE.TextureLoader();
-    const fontImage = loader.load(Text1);
     this.geometry = new THREE.PlaneGeometry(this.image.clientWidth, this.image.clientHeight, 10, 10);
     this.uniforms = {
-      uFontTexture: { value: fontImage },
+      uDisplacement: { value: loader.load(displacement) },
+      uFontTexture: { value: loader.load(text) },
       uFontTextureAspect: { value: this.image.naturalWidth / this.image.naturalHeight },
       uPlaneAspect: { value: this.image.clientWidth / this.image.clientHeight },
       uResolution: { value: new THREE.Vector2(this.image.clientWidth, this.image.clientHeight) },
+      uTime: { value: this.time }
     };
     this.material = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
@@ -82,8 +92,13 @@ export class Webgl {
   }
 
   render() {
-    if(!this.camera) return;
+    if(!this.camera || !this.material) return;
     this.renderer?.render(this.scene, this.camera);
+
+    this.elapsedTime = this.clock.getElapsedTime();
+    this.deltaTime = this.clock.getDelta();
+
+    this.material.uniforms.uTime.value = this.elapsedTime;
 
     requestAnimationFrame(this.render)
   }
