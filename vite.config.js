@@ -3,6 +3,7 @@ import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import gltf from 'vite-plugin-gltf';
 import rawLoader from 'vite-raw-plugin';
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig({
   root: "src",
@@ -13,6 +14,14 @@ export default defineConfig({
     rawLoader({
       fileRegex: /\.glsl$/
     }),
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'assets/js/*',
+          dest: 'assets/js'
+        }
+      ]
+    })
   ],
   build: {
     outDir: './dist',

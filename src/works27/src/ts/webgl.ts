@@ -53,7 +53,7 @@ export class Webgl {
   }
 
   _setMesh() {
-    const rect = this.image.getBoundingClientRect();
+    // const rect = this.image.getBoundingClientRect();
     
     const loader = new THREE.TextureLoader();
     this.geometry = new THREE.PlaneGeometry(this.image.clientWidth, this.image.clientHeight, 10, 10);
