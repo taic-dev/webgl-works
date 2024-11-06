@@ -56,6 +56,7 @@ export default defineConfig({
         works25: resolve(__dirname, 'src/works25/index.html'),
         works26: resolve(__dirname, 'src/works26/index.html'),
         works27: resolve(__dirname, 'src/works27/index.html'),
+        works28: resolve(__dirname, 'src/works28/index.html'),
       },
     },
     assetsInclude: ['*.gltf', '*.glb'],
