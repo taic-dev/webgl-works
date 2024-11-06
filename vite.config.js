@@ -2,18 +2,14 @@
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import gltf from 'vite-plugin-gltf';
-import rawLoader from 'vite-raw-plugin';
+import { glslify } from "vite-plugin-glslify";
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig({
   root: "src",
   plugins: [
-    gltf({
-      include: ["**/*.gltf", '**/*.glb']
-    }),
-    rawLoader({
-      fileRegex: /\.glsl$/
-    }),
+    glslify(),
+    gltf({ include: ["**/*.gltf", '**/*.glb'] }),
     viteStaticCopy({
       targets: [
         {
@@ -21,7 +17,7 @@ export default defineConfig({
           dest: 'assets/js'
         }
       ]
-    })
+    }),
   ],
   build: {
     outDir: './dist',
