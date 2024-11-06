@@ -9,7 +9,7 @@ void main() {
   vec2 st = gl_FragCoord.xy / uResolution;
 
   vec4 depthTexture = texture2D(uDepthImage, vUv);
-  vec4 originalTexture = texture2D(uOriginalImage, vUv + uMouse * depthTexture.r * 0.1);
+  vec4 originalTexture = texture2D(uOriginalImage, vUv + uMouse * depthTexture.r * 0.05);
 
   gl_FragColor = vec4(originalTexture.r, originalTexture.g, originalTexture.b, 1.0);
 }

@@ -3,7 +3,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 import originalImage from "../image/original-image.webp";
-import depthImage from "../image/10.png";
+// import depthImage from "../image/original-image.webp";
+import fireDepthImage from "../image/fire-depth-image.png";
 import { mouseCoordinate } from "./utils";
 
 export class Webgl {
@@ -55,7 +56,7 @@ export class Webgl {
     );
     this.uniforms = {
       uOriginalImage: { value: loader.load(originalImage) },
-      uDepthImage: { value: loader.load(depthImage) },
+      uDepthImage: { value: loader.load(fireDepthImage) },
       uMouse: { value: new THREE.Vector2(this.x, this.y) },
       uResolution: { value: new THREE.Vector2(this.w, this.h) },
     };
