@@ -22,7 +22,6 @@
     "gsap": "^3.12.2",
     "lil-gui": "^0.18.2",
     "three": "^0.154.0",
-    "vite-plugin-glsl": "^1.1.2",
     "vite-plugin-static-copy": "^2.0.0",
     "vite-raw-plugin": "^1.0.2"
   }
