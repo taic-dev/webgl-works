@@ -17,15 +17,11 @@ canvas {
   z-index: -1;
 }
 
-header {
+h1 {
   position: absolute;
   top: 0;
-}
-
-h1 {
   margin: 15px;
   font-size: 2rem;
   font-family: "Secular One", sans-serif;
-  color: #000;
-  mix-blend-mode: difference;
+  color: #fff;
 }
