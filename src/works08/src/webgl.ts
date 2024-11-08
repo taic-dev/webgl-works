@@ -1,9 +1,9 @@
 // import { gsap } from "gsap";
 import * as THREE from "three";
 // import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import HeightTexture from "../src/images/heightTexture2.png"
-import Mountainside from "../src/images/texture.png"
-import AlphaTexture from "../src/images/alphaTexure.png"
+import HeightTexture from "../src/images/heightTexture2.png";
+import Mountainside from "../src/images/texture.png";
+import AlphaTexture from "../src/images/alphaTexure.png";
 
 export class WebGL {
   [x: string]: any;
@@ -51,7 +51,7 @@ export class WebGL {
     this.directionalLight;
     this.ambientLight;
     this.plane;
-    this.pointLight
+    this.pointLight;
 
     this.controls;
     this.axesHelper;
@@ -62,9 +62,8 @@ export class WebGL {
 
     window.addEventListener("pointermove", (event) => {
       const y = (event.clientY / window.innerHeight) * 2.0 - 1.0;
-      
-      this.plane.material.displacementScale = y 
 
+      this.plane.material.displacementScale = y;
     });
   }
 
@@ -97,63 +96,51 @@ export class WebGL {
 
     this.camera.lookAt(WebGL.CAMERA_PARAM.lookAt);
 
-    // ライト
-    // this.directionalLight = new THREE.DirectionalLight(
-    //   WebGL.DIRECTIONAL_LIGHT_PARAM.color,
-    //   WebGL.DIRECTIONAL_LIGHT_PARAM.intensity
-    // );
-
-    // this.directionalLight.position.set(
-    //   WebGL.DIRECTIONAL_LIGHT_PARAM.x,
-    //   WebGL.DIRECTIONAL_LIGHT_PARAM.y,
-    //   WebGL.DIRECTIONAL_LIGHT_PARAM.z
-    // );
-    // this.scene.add(this.directionalLight);
-
     this.ambientLight = new THREE.AmbientLight(
       WebGL.AMBIENT_LIGHT_PARAM.color,
       WebGL.AMBIENT_LIGHT_PARAM.intensity
     );
     this.scene.add(this.ambientLight);
 
-    // PointLight  
-    this.pointLight = new THREE.PointLight('#00b3ff', 2)
-    this.pointLight.x = 2
-    this.pointLight.y = 10 
-    this.pointLight.z = .4
-    this.scene.add(this.pointLight)
+    // PointLight
+    this.pointLight = new THREE.PointLight("#00b3ff", 2);
+    this.pointLight.x = 2;
+    this.pointLight.y = 10;
+    this.pointLight.z = 0.4;
+    this.scene.add(this.pointLight);
 
     // plane
     const loader = new THREE.TextureLoader();
-    const texture = loader.load(Mountainside)
-    const heightTexture = loader.load(HeightTexture)
-    const alphaTexture = loader.load(AlphaTexture)
+    const texture = loader.load(Mountainside);
+    const heightTexture = loader.load(HeightTexture);
+    const alphaTexture = loader.load(AlphaTexture);
     const planeGeometry = new THREE.PlaneGeometry(3, 3, 64, 64);
     const planeMaterial = new THREE.MeshStandardMaterial({
-      color: '#00b3ff',
+      color: "#00b3ff",
       map: texture,
       displacementMap: heightTexture,
-      displacementScale: .6,
+      displacementScale: 0.6,
       alphaMap: alphaTexture,
       transparent: true,
       depthTest: false,
     });
     this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
     this.plane.position.set(0, 0, 0);
-    this.plane.rotation.x = 181
+    this.plane.rotation.x = 181;
     this.scene.add(this.plane);
 
-    // コントロール
-    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-
-    // ヘルパー
-    // this.axesHelper = new THREE.AxesHelper(5.0);
-    // this.scene.add(this.axesHelper);
+    // 画面のリサイズ
+    window.addEventListener("resize", () => {
+      this.renderer?.setPixelRatio(window.devicePixelRatio);
+      this.renderer?.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera?.updateProjectionMatrix();
+    });
   }
 
   render() {
     requestAnimationFrame(this.render);
-    this.plane.rotation.z += 0.003
+    this.plane.rotation.z += 0.003;
     this.renderer.render(this.scene, this.camera);
   }
 }

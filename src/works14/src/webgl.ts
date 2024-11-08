@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import vertex from "../src/shader/vertex.glsl"
-import fragment from "../src/shader/fragment.glsl"
+import vertex from "../src/shader/vertex.glsl";
+import fragment from "../src/shader/fragment.glsl";
 
 export class WebGL {
   [x: string]: any;
@@ -62,15 +62,21 @@ export class WebGL {
     this.raycaster = new THREE.Raycaster();
 
     window.addEventListener("pointermove", (event) => {
-      this.material.uniforms.mouseX = (event.clientX / window.innerWidth) * 2.0 - 1.0;
-      this.material.uniforms.mouseY = (event.clientY / window.innerHeight) * 2.0 - 1.0;
+      this.material.uniforms.mouseX =
+        (event.clientX / window.innerWidth) * 2.0 - 1.0;
+      this.material.uniforms.mouseY =
+        (event.clientY / window.innerHeight) * 2.0 - 1.0;
     });
 
-    window.addEventListener("resize",()=>{
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
-      this.camera.aspect = window.innerWidth / window.innerHeight;
-      this.camera.updateProjectionMatrix();
-    }, false);
+    window.addEventListener(
+      "resize",
+      () => {
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+      },
+      false
+    );
   }
 
   init() {
@@ -126,13 +132,13 @@ export class WebGL {
 
     // plane
     // const loader = new THREE.TextureLoader();
-    const planeGeometry = new THREE.PlaneGeometry(1,1,1,1);
+    const planeGeometry = new THREE.PlaneGeometry(1, 1, 1, 1);
     this.material = new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0.0 },
         mouseX: { value: 0.0 },
         mouseY: { value: 0.0 },
-        resolution: { value: { x: window.innerWidth, y: window.innerHeight } }
+        resolution: { value: { x: window.innerWidth, y: window.innerHeight } },
       },
       vertexShader: vertex,
       fragmentShader: fragment,
@@ -141,18 +147,19 @@ export class WebGL {
     this.plane.position.set(0, 0, 0);
     this.scene.add(this.plane);
 
-    // コントロール
-    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-
-    // ヘルパー
-    // this.axesHelper = new THREE.AxesHelper(5.0);
-    // this.scene.add(this.axesHelper);
+    // 画面のリサイズ
+    window.addEventListener("resize", () => {
+      this.renderer?.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera?.updateProjectionMatrix();
+      this.material.uniforms.resolution.value = { x: window.innerWidth, y: window.innerHeight }
+    });
   }
 
   render() {
     requestAnimationFrame(this.render);
-    this.time += 0.01
-    this.material.uniforms.time.value = this.time
+    this.time += 0.01;
+    this.material.uniforms.time.value = this.time;
     this.renderer.render(this.scene, this.camera);
   }
 }

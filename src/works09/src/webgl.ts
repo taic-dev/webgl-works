@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import vertex from "./shader/vertex.glsl"
-import fragment from "./shader/fragment.glsl"
-import Mountain from "../src/images/texture.jpg"
+import vertex from "./shader/vertex.glsl";
+import fragment from "./shader/fragment.glsl";
+import Mountain from "../src/images/texture.jpg";
 
 export class WebGL {
   [x: string]: any;
@@ -50,7 +50,7 @@ export class WebGL {
     this.directionalLight;
     this.ambientLight;
     this.plane;
-    this.uniforms
+    this.uniforms;
 
     this.controls;
     this.axesHelper;
@@ -66,7 +66,7 @@ export class WebGL {
     this.renderer.setClearColor(
       new THREE.Color(WebGL.RENDERER_PARAM.clearColor)
     );
-    this.renderer.setPixelRatio(window.devicePixelRatio)
+    this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(
       WebGL.RENDERER_PARAM.width,
       WebGL.RENDERER_PARAM.height
@@ -85,10 +85,10 @@ export class WebGL {
       WebGL.CAMERA_PARAM.far
     );
 
-    const fovRad = (WebGL.CAMERA_PARAM.fov / 2) * (Math.PI / 180)
-    const dist = window.innerHeight / 2 / Math.tan(fovRad)
+    const fovRad = (WebGL.CAMERA_PARAM.fov / 2) * (Math.PI / 180);
+    const dist = window.innerHeight / 2 / Math.tan(fovRad);
 
-    this.camera.position.z = dist
+    this.camera.position.z = dist;
     this.camera.lookAt(WebGL.CAMERA_PARAM.lookAt);
 
     // ライト
@@ -112,7 +112,7 @@ export class WebGL {
 
     // plane
     const loader = new THREE.TextureLoader();
-    const texture = loader.load(Mountain)
+    const texture = loader.load(Mountain);
 
     this.uniforms = {
       uTexture: { value: texture },
@@ -120,29 +120,33 @@ export class WebGL {
       uPlaneAspect: { value: 400 / 600 },
       uTime: { value: 0 },
       uMouseX: { value: 0 },
-      uMouseY: { value: 0 }
-    }
+      uMouseY: { value: 0 },
+    };
 
-    const geo = new THREE.PlaneGeometry(400, 600, 100, 100)
+    const geo = new THREE.PlaneGeometry(400, 600, 100, 100);
     const mat = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader: vertex,
       fragmentShader: fragment,
-    })
+    });
     this.plane = new THREE.Mesh(geo, mat);
     this.scene.add(this.plane);
-
-    // ヘルパー
-    // this.axesHelper = new THREE.AxesHelper(5.0);
-    // this.scene.add(this.axesHelper);
 
     window.addEventListener("pointermove", (event) => {
       const x = (event.clientX / window.innerWidth) * 2.0 - 1.0;
       const y = (event.clientY / window.innerHeight) * 2.0 - 1.0;
 
-      this.uniforms.uMouseX.value += x * 2
-      this.uniforms.uMouseY.value += -y * 2
-      this.uniforms.uTime.value++
+      this.uniforms.uMouseX.value += x * 2;
+      this.uniforms.uMouseY.value += -y * 2;
+      this.uniforms.uTime.value++;
+    });
+
+    // 画面のリサイズ
+    window.addEventListener("resize", () => {
+      this.renderer?.setPixelRatio(window.devicePixelRatio);
+      this.renderer?.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera?.updateProjectionMatrix();
     });
   }
 

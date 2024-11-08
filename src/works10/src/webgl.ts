@@ -52,7 +52,7 @@ export class WebGL {
     this.directionalLight;
     this.ambientLight;
     this.plane;
-    this.flag = false
+    this.flag = false;
 
     this.controls;
     this.axesHelper;
@@ -66,35 +66,35 @@ export class WebGL {
 
       if (intersects.length > 0) {
         const object = intersects[0].object;
-        let Hold = 0
-        if(!this.flag) {
+        let Hold = 0;
+        if (!this.flag) {
           this.flag = true;
-          gsap.to((object.material), 3.5,{
-            onStart: function() {},
-            onUpdate: function() {
-              const  add = (1.0 * this.progress() - Hold) * (-1) ;
+          gsap.to(object.material, 3.5, {
+            onStart: function () {},
+            onUpdate: function () {
+              const add = (1.0 * this.progress() - Hold) * -1;
               Hold = 1.0 * this.progress();
               object.material.uniforms.uInfluence.value += add * 100;
               object.material.uniforms.uStep.value += add;
             },
-            onRepeat: function() {},
-            onComplete:function(){},
+            onRepeat: function () {},
+            onComplete: function () {},
           });
         } else {
           this.flag = false;
-          gsap.to((object.material), 3.5,{ 
-            onStart: function() {},
-            onUpdate: function() {
-              const  add = (1.0 * this.progress() - Hold)  ;
+          gsap.to(object.material, 3.5, {
+            onStart: function () {},
+            onUpdate: function () {
+              const add = 1.0 * this.progress() - Hold;
               Hold = 1.0 * this.progress();
               object.material.uniforms.uInfluence.value += add * 10;
               object.material.uniforms.uStep.value += add;
             },
-            onRepeat: function() {},
-            onComplete:function(){},
+            onRepeat: function () {},
+            onComplete: function () {},
           });
         }
-      } 
+      }
     });
   }
 
@@ -152,30 +152,33 @@ export class WebGL {
     // plane
     const planeGeometry = new THREE.PlaneGeometry(10, 10, 500, 500);
     const planeMaterial = new THREE.ShaderMaterial({
-      uniforms : { 
-        uPixelRation : {value:Math.min(window.devicePixelRatio, 2.0)},
-        uResolution: {value: new THREE.Vector2(window.innerWidth, window.innerHeight)},
+      uniforms: {
+        uPixelRation: { value: Math.min(window.devicePixelRatio, 2.0) },
+        uResolution: {
+          value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+        },
         uTime: { value: 0.0 },
         uSize: { value: 0.01 },
-        uStep: { value: 1.00 },
+        uStep: { value: 1.0 },
         uInfluence: { value: 10.0 },
-        udisplayment: {value:new THREE.TextureLoader().load(Texture)},
+        udisplayment: { value: new THREE.TextureLoader().load(Texture) },
       },
-      vertexShader:Vertex,
+      vertexShader: Vertex,
       fragmentShader: Fragment,
       blending: THREE.NormalBlending,
-      transparent:true,
+      transparent: true,
     });
     this.plane = new THREE.Points(planeGeometry, planeMaterial);
     this.plane.position.set(0, 0, 0);
     this.scene.add(this.plane);
 
-    // コントロール
-    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-
-    // ヘルパー
-    // this.axesHelper = new THREE.AxesHelper(5.0);
-    // this.scene.add(this.axesHelper);
+    // 画面のリサイズ
+    window.addEventListener("resize", () => {
+      this.renderer?.setPixelRatio(window.devicePixelRatio);
+      this.renderer?.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera?.updateProjectionMatrix();
+    });
   }
 
   render() {

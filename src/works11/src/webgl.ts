@@ -1,8 +1,6 @@
-// import { gsap } from "gsap";
-// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as THREE from "three";
-import vertex from "./shader/vertex.glsl"
-import fragment from "./shader/fragment.glsl"
+import vertex from "./shader/vertex.glsl";
+import fragment from "./shader/fragment.glsl";
 import brush from "./images/burash.png";
 import ocean from "./images/ocean.png";
 
@@ -64,21 +62,23 @@ export class WebGL {
     this.plane;
     this.quad;
 
-    this.oceanGeo
-    this.oceanGeoFS
-    this.material
+    this.oceanGeo;
+    this.oceanGeoFS;
+    this.material;
 
     this.mouse = new THREE.Vector2(0, 0);
     this.prevMouse = new THREE.Vector2(0, 0);
     this.currentWave = 0;
 
     this.baseTexture = new THREE.WebGLRenderTarget(
-      window.innerWidth, window.innerHeight, {
+      window.innerWidth,
+      window.innerHeight,
+      {
         minFilter: THREE.LinearFilter,
         magFilter: THREE.LinearFilter,
-        format: THREE.RGBAFormat
+        format: THREE.RGBAFormat,
       }
-    )
+    );
 
     this.controls;
     this.axesHelper;
@@ -168,43 +168,43 @@ export class WebGL {
 
     // Ocean Plane
     const loader = new THREE.TextureLoader();
-    const texture = loader.load(ocean)
+    const texture = loader.load(ocean);
 
     this.uniforms = {
       uTexture: { value: texture },
       uDisplacement: { value: null },
-    }
+    };
 
-    this.oceanGeo = new THREE.PlaneGeometry(4, 2, 100, 100)
-    this.oceanGeoFS = new THREE.PlaneGeometry(4, 2, 100, 100)
-    
+    this.oceanGeo = new THREE.PlaneGeometry(4, 2, 100, 100);
+    this.oceanGeoFS = new THREE.PlaneGeometry(4, 2, 100, 100);
+
     this.material = new THREE.ShaderMaterial({
       side: THREE.DoubleSide,
       uniforms: this.uniforms,
       vertexShader: vertex,
       fragmentShader: fragment,
-    })
+    });
     this.quad = new THREE.Mesh(this.oceanGeoFS, this.material);
     this.scene1.add(this.quad);
 
     this.plane = new THREE.Mesh(this.oceanGeo, this.material);
 
-
-    // コントロール
-    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-
-    // ヘルパー
-    // this.axesHelper = new THREE.AxesHelper(5.0);
-    // this.scene.add(this.axesHelper);
+    // 画面のリサイズ
+    window.addEventListener("resize", () => {
+      this.renderer?.setPixelRatio(window.devicePixelRatio);
+      this.renderer?.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera?.updateProjectionMatrix();
+    });
   }
 
   setNewWave(x: number, y: number, index: number) {
-    let meshe = this.meshes[index]
-    meshe.visible = true
-    meshe.position.x = x
-    meshe.position.y = -y
-    meshe.scale.x = meshe.scale.y = 1
-    meshe.material.opacity = 1
+    let meshe = this.meshes[index];
+    meshe.visible = true;
+    meshe.position.x = x;
+    meshe.position.y = -y;
+    meshe.scale.x = meshe.scale.y = 1;
+    meshe.material.opacity = 1;
   }
 
   trackMousePos() {
@@ -213,31 +213,31 @@ export class WebGL {
       Math.abs(this.mouse.y - this.prevMouse.y) < 0.005
     ) {
     } else {
-      this.setNewWave(this.mouse.x, this.mouse.y, this.currentWave)
-      this.currentWave = (this.currentWave + 1) % this.max
+      this.setNewWave(this.mouse.x, this.mouse.y, this.currentWave);
+      this.currentWave = (this.currentWave + 1) % this.max;
     }
 
-    this.prevMouse.x = this.mouse.x
-    this.prevMouse.y = this.mouse.y
+    this.prevMouse.x = this.mouse.x;
+    this.prevMouse.y = this.mouse.y;
   }
 
   render() {
     this.trackMousePos();
     requestAnimationFrame(this.render);
-    this.renderer.setRenderTarget(this.baseTexture)
+    this.renderer.setRenderTarget(this.baseTexture);
     this.renderer.render(this.scene, this.camera);
-    this.material.uniforms.uDisplacement.value = this.baseTexture.texture
-    this.renderer.setRenderTarget(null)
-    this.renderer.clear()
+    this.material.uniforms.uDisplacement.value = this.baseTexture.texture;
+    this.renderer.setRenderTarget(null);
+    this.renderer.clear();
     this.renderer.render(this.scene1, this.camera);
 
     this.meshes.forEach((meshe: any) => {
       // meshe.position.x = this.mouse.x;
       // meshe.position.y = -this.mouse.y;
-      meshe.rotation.z += 0.05
-      meshe.material.opacity *= 0.98
-      meshe.scale.x = 0.98 * meshe.scale.x + 0.15
-      meshe.scale.y = meshe.scale.x
+      meshe.rotation.z += 0.05;
+      meshe.material.opacity *= 0.98;
+      meshe.scale.x = 0.98 * meshe.scale.x + 0.15;
+      meshe.scale.y = meshe.scale.x;
     });
   }
 }

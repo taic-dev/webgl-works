@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import GUI from "lil-gui";
-import vertex from "../src/shader/vertex.glsl"
-import fragment from "../src/shader/fragment.glsl"
+import vertex from "../src/shader/vertex.glsl";
+import fragment from "../src/shader/fragment.glsl";
 
 export class WebGL {
   [x: string]: any;
@@ -67,15 +67,21 @@ export class WebGL {
     this.raycaster = new THREE.Raycaster();
 
     window.addEventListener("pointermove", (event) => {
-      this.material.uniforms.mouseX = (event.clientX / window.innerWidth) * 2.0 - 1.0;
-      this.material.uniforms.mouseY = (event.clientY / window.innerHeight) * 2.0 - 1.0;
+      this.material.uniforms.mouseX =
+        (event.clientX / window.innerWidth) * 2.0 - 1.0;
+      this.material.uniforms.mouseY =
+        (event.clientY / window.innerHeight) * 2.0 - 1.0;
     });
 
-    window.addEventListener("resize",()=>{
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
-      this.camera.aspect = window.innerWidth / window.innerHeight;
-      this.camera.updateProjectionMatrix();
-    }, false);
+    window.addEventListener(
+      "resize",
+      () => {
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+      },
+      false
+    );
   }
 
   init() {
@@ -131,14 +137,14 @@ export class WebGL {
 
     // plane
     // const loader = new THREE.TextureLoader();
-    const planeGeometry = new THREE.PlaneGeometry(1,1,1,1);
+    const planeGeometry = new THREE.PlaneGeometry(1, 1, 1, 1);
     this.material = new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0.0 },
         effect1Number: { value: this.effect1Number },
         effect2Number: { value: this.effect2Number },
         effect3Number: { value: this.effect3Number },
-        resolution: { value: { x: window.innerWidth, y: window.innerHeight } }
+        resolution: { value: { x: window.innerWidth, y: window.innerHeight } },
       },
       vertexShader: vertex,
       fragmentShader: fragment,
@@ -149,29 +155,31 @@ export class WebGL {
 
     const gui = new GUI();
     this.guiValue = {
-      effect1:  this.effect1Number,
-      effect2:  this.effect2Number,
-      effect3:  this.effect3Number,
-    }
-    gui.add(this.guiValue, "effect1", 0 , 1);
-    gui.add(this.guiValue, "effect2", 0 , 100000.0);
-    gui.add(this.guiValue, "effect3", 0.01 , 1);
+      effect1: this.effect1Number,
+      effect2: this.effect2Number,
+      effect3: this.effect3Number,
+    };
+    gui.add(this.guiValue, "effect1", 0, 1);
+    gui.add(this.guiValue, "effect2", 0, 100000.0);
+    gui.add(this.guiValue, "effect3", 0.01, 1);
 
-    // コントロール
-    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-
-    // ヘルパー
-    // this.axesHelper = new THREE.AxesHelper(5.0);
-    // this.scene.add(this.axesHelper);
+    // 画面のリサイズ
+    window.addEventListener("resize", () => {
+      this.renderer?.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera?.updateProjectionMatrix();
+      this.mesh?.scale.set(window.innerWidth, window.innerHeight, 0);
+      this.material.uniforms.resolution.value = { x: window.innerWidth, y: window.innerHeight }
+    });
   }
 
   render() {
     requestAnimationFrame(this.render);
-    this.time += 0.01
-    this.material.uniforms.time.value = this.time
-    this.material.uniforms.effect1Number.value = this.guiValue.effect1
-    this.material.uniforms.effect2Number.value = this.guiValue.effect2
-    this.material.uniforms.effect3Number.value = this.guiValue.effect3
+    this.time += 0.01;
+    this.material.uniforms.time.value = this.time;
+    this.material.uniforms.effect1Number.value = this.guiValue.effect1;
+    this.material.uniforms.effect2Number.value = this.guiValue.effect2;
+    this.material.uniforms.effect3Number.value = this.guiValue.effect3;
     this.renderer.render(this.scene, this.camera);
   }
 }

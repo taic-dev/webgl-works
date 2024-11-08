@@ -64,10 +64,10 @@ window.addEventListener("DOMContentLoaded", () => {
   // 画面のリサイズ
   window.addEventListener('resize', () => {
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth / window.innerHeight - 100);
-    camera.aspect = window.innerWidth / window.innerHeight - 100;
-    camera.updateProjectionMatrix();
-    camera.lookAt(new THREE.Vector3(0.0, 0.0, 0,0));
+    // renderer.setSize(window.innerWidth / window.innerHeight);
+    // camera.aspect = window.innerWidth / window.innerHeight - 100;
+    // camera.updateProjectionMatrix();
+    // camera.lookAt(new THREE.Vector3(0.0, 0.0, 0,0));
   })
   
   // カメラ操作

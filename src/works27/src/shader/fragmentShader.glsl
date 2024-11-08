@@ -33,7 +33,7 @@ vec3 palette(float t) {
 
 vec4 effect1(float uSize, float uSpeed) {
   vec2 st = gl_FragCoord.xy/uResolution.xy;
-  vec2 p = vec2(vUv * uSize);
+  vec2 p = vec2(st * uSize);
   p = rotate2d(noise2d(p)) * vec2((noise2d(vec2(uTime * uSpeed))));
   float n = noise(p);
 
@@ -42,8 +42,8 @@ vec4 effect1(float uSize, float uSpeed) {
 
 vec4 effect2(float uSize, float uSpeed) {
   vec2 st = gl_FragCoord.xy/uResolution.xy;
-  vec2 p = vec2(vUv * uSize);
-  p = rotate2d(noise2d(p)) * vec2((noise2d(vec2(uTime * uSpeed))) * vUv + 1. );
+  vec2 p = vec2(st * uSize);
+  p = rotate2d(noise2d(p)) * vec2((noise2d(vec2(uTime * uSpeed))));
   float n = noise(p);
 
   return vec4(overlay(vec3(n), vec3(n)), 1.);
