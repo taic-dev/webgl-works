@@ -1,0 +1,52 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+@font-face {
+	font-family: 'geki-font';
+	src: url(../font/geki-font.ttf);
+}
+
+html,
+body,
+main {
+  font-family: Nacelle;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+h1 {
+  position: fixed;
+  top: 0;
+  margin: 15px;
+  font-size: 2rem;
+  font-family: "Secular One", sans-serif;
+  color: #000;
+  mix-blend-mode: difference;
+}
+
+.text__wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text__image {
+  width: 400px;
+  height: 400px;
+  opacity: 0;
+  visibility: hidden;
+}
