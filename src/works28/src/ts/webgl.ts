@@ -4,7 +4,7 @@ import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 import effectFragmentShader from "../shader/effectFragmentShader.glsl";
 import originalImage from "../image/original-image.webp";
-import effectImage from "../image/effect.png";
+import effectImage from "../image/effect.jpg";
 import fireDepthImage from "../image/fire-depth-image.png";
 import { mouseCoordinate } from "./utils";
 
@@ -134,6 +134,8 @@ export class Webgl {
 
     (this.mesh?.material as any).uniforms.uTime.value++;
     
+
+    console.log((this.mesh.material as any).uniforms.uMouse.value)
     requestAnimationFrame(this.render);
   }
 }
