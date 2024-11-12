@@ -134,8 +134,6 @@ export class Webgl {
 
     (this.mesh?.material as any).uniforms.uTime.value++;
     
-
-    console.log((this.mesh.material as any).uniforms.uMouse.value)
     requestAnimationFrame(this.render);
   }
 }
