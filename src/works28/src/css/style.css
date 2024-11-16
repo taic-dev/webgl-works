@@ -3,10 +3,10 @@
   padding: 0;
 }
 
-/* @font-face {
-	font-family: '';
-	src: url(../font/.ttf);
-} */
+@font-face {
+	font-family: 'geki-font';
+	src: url(../font/geki-font.ttf);
+}
 
 html,
 body,
@@ -32,20 +32,21 @@ h1 {
   margin: 15px;
   font-size: 2rem;
   font-family: "Secular One", sans-serif;
-  color: #000;
-  mix-blend-mode: difference;
+  color: #fff;
 }
 
-.card__wrapper {
+.image__wrapper {
   width: 100%;
   height: 100%;
-
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.card {
-  width: calc(590px / 2);
-  height: calc(860px / 2);
+.image {
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+  opacity: 0;
+  visibility: hidden;
 }

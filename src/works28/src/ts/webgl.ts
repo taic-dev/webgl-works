@@ -1,11 +1,10 @@
+import { gsap } from "gsap";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
-import effectFragmentShader from "../shader/effectFragmentShader.glsl";
-import originalImage from "../image/original-image.webp";
-import effectImage from "../image/effect.jpg";
-import fireDepthImage from "../image/fire-depth-image.png";
+import face from "../image/mountain.png";
+import displacement from "../image/mountain-displacement.png";
 import { mouseCoordinate } from "./utils";
 
 export class Webgl {
@@ -20,17 +19,24 @@ export class Webgl {
   geometry: THREE.PlaneGeometry | undefined;
   mesh: THREE.Mesh | undefined;
   controls: OrbitControls | undefined;
-  x: number;
-  y: number;
+  image: HTMLImageElement;
+  clock: THREE.Clock;
+  elapsedTime: number;
+  deltaTime: number;
+  time: number | undefined;
 
   constructor() {
     this.w = window.innerWidth;
     this.h = window.innerHeight;
-    this.x = 0;
-    this.y = 0;
     this.aspect = this.w / this.h;
     this.scene = new THREE.Scene();
     this.render = this.render.bind(this);
+
+    this.image = document.querySelector<HTMLImageElement>(".image")!;
+    this.clock = new THREE.Clock();
+    this.elapsedTime = 0;
+    this.deltaTime = 0;
+    this.time = this.clock.getElapsedTime();
   }
 
   _setCanvas() {
@@ -49,17 +55,25 @@ export class Webgl {
   }
 
   _setMesh() {
-    const element = document.querySelector(".card");
     const loader = new THREE.TextureLoader();
-    this.geometry = new THREE.PlaneGeometry(
-      element?.clientWidth,
-      element?.clientHeight
-    );
+    this.geometry = new THREE.PlaneGeometry(1, 1, 1, 1);
     this.uniforms = {
-      uOriginalImage: { value: loader.load(originalImage) },
-      uDepthImage: { value: loader.load(fireDepthImage) },
-      uMouse: { value: new THREE.Vector2(this.x, this.y) },
-      uResolution: { value: new THREE.Vector2(this.w, this.h) },
+      uDisplacement: { value: loader.load(displacement) },
+      uTexture: { value: loader.load(face) },
+      uTextureSize: {
+        value: new THREE.Vector2(
+          this.image.naturalWidth,
+          this.image.naturalHeight
+        ),
+      },
+      uPlaneSize: {
+        value: new THREE.Vector2(
+          this.image.clientWidth,
+          this.image.clientHeight
+        ),
+      },
+      uMouse: { value: new THREE.Vector2(0, 0) },
+      uTime: { value: this.time },
     };
     this.material = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
@@ -70,26 +84,12 @@ export class Webgl {
     this.scene.add(this.mesh);
   }
 
-  _setEffectMesh() {
-    const element = document.querySelector(".card");
-    const loader = new THREE.TextureLoader();
-    this.geometry = new THREE.PlaneGeometry(
-      element?.clientWidth,
-      element?.clientHeight
-    );
-    this.uniforms = {
-      uTime: { value: 0 },
-      uEffectImage: { value: loader.load(effectImage) },
-      uMouse: { value: new THREE.Vector2(this.x, this.y) },
-      uResolution: { value: new THREE.Vector2(this.w, this.h) },
-    };
-    this.material = new THREE.ShaderMaterial({
-      uniforms: this.uniforms,
-      vertexShader,
-      fragmentShader: effectFragmentShader,
-    });
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.scene.add(this.mesh);
+  _setMeshScale() {
+    if(!this.mesh) return;
+    this.mesh.scale.x = this.image.clientWidth;
+    this.mesh.scale.y = this.image.clientHeight;
+    (this.mesh.material as any).uniforms.uPlaneSize.value.x = this.image.clientWidth;
+    (this.mesh.material as any).uniforms.uPlaneSize.value.y = this.image.clientHeight;
   }
 
   _setHelper() {
@@ -103,37 +103,50 @@ export class Webgl {
   }
 
   _setMouse() {
-    const element = document.querySelector<HTMLElement>(".card")!;
-    element.addEventListener("mousemove", (e: MouseEvent) => {
+    window.addEventListener("mousemove", (e: MouseEvent) => {
       if (!this.mesh) return;
       const { x, y } = mouseCoordinate(e);
-      (this.mesh.material as any).uniforms.uMouse.value = { x, y };
-      this.mesh?.rotation.set(y, -x, 0);
-    });
 
-    element?.addEventListener("mouseleave", () => {
-      if (!this.mesh) return;
-      (this.mesh.material as any).uniforms.uMouse.value.x = 0;
-      (this.mesh.material as any).uniforms.uMouse.value.y = 0;
-      this.mesh?.rotation.set(0, 0, 0);
+      gsap.to((this.mesh.material as any).uniforms.uMouse.value, {
+        duration: 1,
+        ease: "power1.out",
+        x,
+        y,
+      });
+    });
+  }
+
+  _setResize() {
+    window.addEventListener("resize", () => {
+      if (!this.camera) return;
+      this.renderer?.setPixelRatio(window.devicePixelRatio);
+      this.renderer?.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera?.updateProjectionMatrix();
+
+      this._setMeshScale();
     });
   }
 
   init() {
     this._setCanvas();
     this._setCamera();
-    // this._setMesh();
-    this._setEffectMesh();
+    this._setMesh();
+    this._setMeshScale();
     this._setHelper();
     this._setMouse();
+    this._setResize();
   }
 
   render() {
-    if (!this.camera) return;
+    if (!this.camera || !this.material) return;
     this.renderer?.render(this.scene, this.camera);
 
-    (this.mesh?.material as any).uniforms.uTime.value++;
-    
+    this.elapsedTime = this.clock.getElapsedTime();
+    this.deltaTime = this.clock.getDelta();
+
+    this.material.uniforms.uTime.value = this.elapsedTime;
+
     requestAnimationFrame(this.render);
   }
 }
