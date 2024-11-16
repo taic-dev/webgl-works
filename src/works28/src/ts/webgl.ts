@@ -133,7 +133,7 @@ export class Webgl {
     this._setCamera();
     this._setMesh();
     this._setMeshScale();
-    this._setHelper();
+    // this._setHelper();
     this._setMouse();
     this._setResize();
   }
