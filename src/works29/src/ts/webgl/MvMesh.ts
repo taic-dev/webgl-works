@@ -32,8 +32,6 @@ export class MvMesh {
   }
 
   setUniforms(info: ElementPositionAndSize) {
-    const loader = this.setup.loader;
-
     const commonUniforms = {
       uResolution: {
         value: new THREE.Vector2(PARAMS.WINDOW.W, PARAMS.WINDOW.H),
