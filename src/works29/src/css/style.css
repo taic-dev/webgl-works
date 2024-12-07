@@ -32,21 +32,14 @@ h1 {
   margin: 15px;
   font-size: 2rem;
   font-family: "Secular One", sans-serif;
-  color: #000;
+  color: #fff;
+}
+
+.title__wrapper {
   mix-blend-mode: difference;
 }
 
-.text__wrapper {
+.effect {
   width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.text__image {
-  width: 400px;
-  height: 400px;
-  opacity: 0;
-  visibility: hidden;
+  height: 100svh;
 }
