@@ -10,6 +10,7 @@ import manzu6 from "../model/manzu/manzu6.glb";
 import manzu7 from "../model/manzu/manzu7.glb";
 import manzu8 from "../model/manzu/manzu8.glb";
 import manzu9 from "../model/manzu/manzu9.glb";
+import manzu10 from "../model/manzu/manzu10.glb";
 
 import pinzu1 from "../model/pinzu/pinzu1.glb";
 import pinzu2 from "../model/pinzu/pinzu2.glb";
@@ -20,6 +21,7 @@ import pinzu6 from "../model/pinzu/pinzu6.glb";
 import pinzu7 from "../model/pinzu/pinzu7.glb";
 import pinzu8 from "../model/pinzu/pinzu8.glb";
 import pinzu9 from "../model/pinzu/pinzu9.glb";
+import pinzu10 from "../model/pinzu/pinzu10.glb";
 
 import sozu1 from "../model/sozu/sozu1.glb";
 import sozu2 from "../model/sozu/sozu2.glb";
@@ -30,6 +32,7 @@ import sozu6 from "../model/sozu/sozu6.glb";
 import sozu7 from "../model/sozu/sozu7.glb";
 import sozu8 from "../model/sozu/sozu8.glb";
 import sozu9 from "../model/sozu/sozu9.glb";
+import sozu10 from "../model/sozu/sozu10.glb";
 
 import zihai1 from "../model/zihai/zihai1.glb";
 import zihai2 from "../model/zihai/zihai2.glb";
@@ -79,6 +82,7 @@ export const MODEL: { [key: string]: { [key: number]: any } } = {
     7: manzu7,
     8: manzu8,
     9: manzu9,
+    10: manzu10
   },
   PINZU: {
     1: pinzu1,
@@ -90,6 +94,7 @@ export const MODEL: { [key: string]: { [key: number]: any } } = {
     7: pinzu7,
     8: pinzu8,
     9: pinzu9,
+    10: pinzu10
   },
   SOZU: {
     1: sozu1,
@@ -101,6 +106,7 @@ export const MODEL: { [key: string]: { [key: number]: any } } = {
     7: sozu7,
     8: sozu8,
     9: sozu9,
+    10: sozu10,
   },
   ZIHAI: {
     1: zihai1,

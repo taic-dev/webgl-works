@@ -1,179 +1,132 @@
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { MODEL, PARAMS } from "./constants";
-import { randomNum } from "./utils";
-import { firstAnimation, vomitAnimation } from "./animation";
+import { mouseCoordinate } from "./utils";
+import GUI from "lil-gui";
 
 export class Webgl {
+  w: number;
+  h: number;
+  aspect: number;
   renderer: THREE.WebGLRenderer | undefined;
-  camera: THREE.PerspectiveCamera | undefined;
   scene: THREE.Scene;
-  controls: OrbitControls | undefined;
-  models: THREE.Group[];
+  camera: THREE.PerspectiveCamera | undefined;
   uniforms: any;
   material: THREE.ShaderMaterial | undefined;
-  modelSize: { x: number; y: number; z: number };
-  inhaleElement: HTMLElement | null;
-  vomitElement: HTMLElement | null;
-  isAnimated: boolean
+  geometry: THREE.PlaneGeometry | undefined;
+  mesh: THREE.Mesh | undefined;
+  controls: OrbitControls | undefined;
+  x: number;
+  y: number;
+  guiValue: any;
 
   constructor() {
-    this.camera;
+    this.w = window.innerWidth;
+    this.h = window.innerHeight;
+    this.x = 0;
+    this.y = 0;
+    this.aspect = this.w / this.h;
     this.scene = new THREE.Scene();
     this.render = this.render.bind(this);
-    this.models = [];
-    this.modelSize = { x: 0, y: 0, z: 0 };
-
-    this.inhaleElement = document.getElementById("inhale");
-    this.vomitElement = document.getElementById("vomit");
-    this.isAnimated = false
   }
 
-  setCanvas() {
+  _setCanvas() {
     const element = document.querySelector(".webgl");
-    this.renderer = new THREE.WebGLRenderer();
-    this.renderer.setClearColor('#008036')
-    this.renderer.setSize(PARAMS.WINDOW.W, PARAMS.WINDOW.H);
-    this.renderer.setPixelRatio(PARAMS.WINDOW.PIXEL_RATIO);
+    this.renderer = new THREE.WebGLRenderer({ alpha: true });
+    this.renderer.setSize(this.w, this.h);
+    this.renderer.setPixelRatio(window.devicePixelRatio);
     element?.appendChild(this.renderer.domElement);
   }
 
-  setCamera() {
-    this.camera = new THREE.PerspectiveCamera(
-      PARAMS.CAMERA.FOV,
-      PARAMS.CAMERA.ASPECT,
-      PARAMS.CAMERA.NEAR,
-      PARAMS.CAMERA.FAR
-    );
-
-    this.camera.position.set(0, 0, 15);
+  _setCamera() {
+    this.camera = new THREE.PerspectiveCamera(60, this.aspect, 1, 1000);
+    const fovRad = (60 / 2) * (Math.PI / 180);
+    const dist = this.h / 2 / Math.tan(fovRad);
+    this.camera.position.set(0, 0, dist);
   }
 
-  setLight() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    this.scene.add(ambientLight);
-
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    this.scene.add(directionalLight);
-    directionalLight.position.set(3, 3, 3);
+  _setEffectMesh() {
+    this.geometry = new THREE.PlaneGeometry(this.w, this.h);
+    this.uniforms = {
+      uTime: { value: 0 },
+      uMouse: { value: new THREE.Vector2(this.x, this.y) },
+      uResolution: { value: new THREE.Vector2(this.w, this.h) },
+      uColor: { value: false },
+      uSize: { value: 5.0 },
+      uSpeed: { value: 0.0001 },
+    };
+    this.material = new THREE.ShaderMaterial({
+      uniforms: this.uniforms,
+      vertexShader,
+      fragmentShader,
+      side: THREE.DoubleSide,
+    });
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.scene.add(this.mesh);
   }
 
-  setMesh() {
-    for (let m = 1; m <= 4; m++) {
-      for (let i = 1; i <= Object.keys(MODEL.MANZU).length; i++) {
-        this.initMesh(MODEL.MANZU[i]);
-      }
-      for (let i = 1; i <= Object.keys(MODEL.PINZU).length; i++) {
-        this.initMesh(MODEL.PINZU[i]);
-      }
-      for (let i = 1; i <= Object.keys(MODEL.SOZU).length; i++) {
-        this.initMesh(MODEL.SOZU[i]);
-      }
-      for (let i = 1; i <= Object.keys(MODEL.ZIHAI).length; i++) {
-        this.initMesh(MODEL.ZIHAI[i]);
-      }
-    }
-  }
-
-  initMesh(model: any) {
-    const loader = new GLTFLoader();
-    loader.load(
-      model,
-      async (gltf) => {
-        this.scene.add(gltf.scene);
-        this.models.push(gltf.scene);
-        this.modelSize = {
-          x: gltf.scene.scale.x,
-          y: gltf.scene.scale.y,
-          z: gltf.scene.scale.z,
-        };
-        gltf.scene.scale.set(0, 0, 0);
-        gltf.scene.rotation.set(0, 0, randomNum(10, 0));
-        gltf.scene.position.set(
-          randomNum(20, 20),
-          randomNum(25, 25),
-          randomNum(10, 10)
-        );
-
-        this.uniforms = {
-          resolution: this.modelSize,
-          uTexture: { value: (gltf.scene.children[1] as any).material.map }
-        }
-    
-        this.material = new THREE.ShaderMaterial({
-          uniforms: this.uniforms,
-          vertexShader,
-          fragmentShader
-        })
-      },
-      undefined,
-      function (error) {
-        console.error(error);
-      }
-    );
-  }
-
-  setHelper() {
+  _setHelper() {
     if (!this.camera) return;
     // OrbitControls
     this.controls = new OrbitControls(this.camera, this.renderer?.domElement);
-    this.controls.enableDamping = true;
-    this.controls.dampingFactor = 0.2;
 
     // AxesHelper
     const axesHelper = new THREE.AxesHelper(2000);
     this.scene.add(axesHelper);
   }
 
-  animation() {
-    window.addEventListener("load", () => {
-      setTimeout(() => {
-        this.models.forEach((model) => {
-          firstAnimation(model, this.modelSize);
-        });
-      }, 1000);
-    });
+  _setGui() {
+    const gui = new GUI();
+    this.guiValue = {
+      color: false,
+      size: 5,
+      speed: 0.0005,
+    };
+    gui.add(this.guiValue, "color");
+    gui.add(this.guiValue, "size", 1, 10, 0.1);
+    gui.add(this.guiValue, "speed", 0.00001, 0.005, 0.00001);
+  }
 
-    this.vomitElement?.addEventListener('click', () => {
-      this.models.forEach((model) => {
-        vomitAnimation(model);
-      });
-    })
+  _setMouse() {
+    window.addEventListener("mousemove", (e: MouseEvent) => {
+      if (!this.mesh) return;
+      const { x, y } = mouseCoordinate(e);
+      (this.mesh.material as any).uniforms.uMouse.value = { x, y };
+    });
+  }
+
+  _setResize() {
+    window.addEventListener("resize", () => {
+      setTimeout(() => {
+        if(!this.camera) return
+        this.renderer?.setPixelRatio(window.devicePixelRatio);
+        this.renderer?.setSize(window.innerWidth, window.innerHeight);
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera?.updateProjectionMatrix();
+        this.mesh?.scale.set(window.innerWidth, window.innerHeight, 0);
+      }, 500)
+    });
   }
 
   init() {
-    this.setCanvas();
-    this.setCamera();
-    this.setLight();
-    // this.setHelper();
-    this.setMesh();
-    this.animation();
-    this.render();
+    this._setCanvas();
+    this._setCamera();
+    this._setEffectMesh();
+    this._setGui();
+    this._setResize();
+    // this._setMouse();
+    // this._setHelper();
   }
 
   render() {
-    if (!this.camera) return;
-    const modelNum = 34;
-    let degree = 0;
-    let deg = 360 / modelNum;
-
+    if (!this.camera || !this.material) return;
     this.renderer?.render(this.scene, this.camera);
 
-    this.models.forEach((model, i) => {
-      degree += deg;
-
-      model.rotation.y += 0.002 * (i * 0.01);
-      model.rotation.z -= 0.001 * (i * 0.01);
-
-      if (model.position.y <= -25) {
-        model.position.setY(25);
-      } else {
-        model.position.setY((model.position.y += -0.01));
-      }
-    });
+    (this.mesh?.material as any).uniforms.uTime.value++;
+    this.material.uniforms.uColor.value = this.guiValue.color;
+    this.material.uniforms.uSize.value = this.guiValue.size;
+    this.material.uniforms.uSpeed.value = this.guiValue.speed;
 
     requestAnimationFrame(this.render);
   }
