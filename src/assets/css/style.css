@@ -21,7 +21,15 @@ header {
   color: #fff;
 }
 .header__title {
+  position: relative;
   font-size: 32px;
+  margin-top: 24px;
+}
+.header__title__number {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  font-size: 16px;
 }
 .header__list {
   display: flex;
