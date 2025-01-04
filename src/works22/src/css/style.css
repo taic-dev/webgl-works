@@ -2,47 +2,105 @@
   margin: 0;
   padding: 0;
 }
-@font-face {
-  font-family: "Nagoda";
-  src: url(../fonts/Nagoda.ttf);
+
+html,body {
+  overflow: hidden;
 }
-html,
-body {
-  overflow-x: hidden;
-  width: 100%;
-  height: 100vh;
-  overscroll-behavior: none;
-}
+
 canvas {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
 }
+
 h1 {
-  position: fixed;
-  z-index: 2;
-  color: #fff;
+  position: absolute;
+  z-index: 1;
   margin: 15px;
   font-size: 2rem;
   font-family: "Secular One", sans-serif;
+  color: #000;
+  mix-blend-mode: difference;
 }
-.slider-button {
-  position: absolute;
-  bottom: 0;
-  z-index: 1;
+
+.header__logo h1 {
+  font-size: 40px;
+  font-weight: 600;
+}
+
+main {
+  padding: 10rem 5rem;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3vw;
+}
+
+.item {
+  width: calc(33.3333% - 2vw);
+}
+
+.item-image {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+}
+
+.item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1;
+  padding: 10rem 5rem;
 
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  gap: 2rem;
 
-  width: 100%;
-  padding: 15px;
+  opacity: 0;
 }
-.prev,
-.next {
-  font-size: 2rem;
-  font-weight: 600;
-  color: #fff;
+
+.modal.is-show {
+  z-index: 99;
+  opacity: 1;
+  transition: 1s 2s;
+}
+
+.modal-image {
+  max-width: 400px;
+  min-width: 400px;
+  width: 100%;
+  height: 100%;
+}
+
+.modal-desc h3 {
+  font-size: 3vw;
+  font-family: "Secular One", sans-serif;
+  margin-bottom: 2rem;
+}
+
+.modal-desc > p {
+  line-height: 1.5;
+}
+
+.modal-close p {
+  margin-top: 2rem;
+  margin-left: auto;
+  width: fit-content;
+  font-size: 3vw;
   font-family: "Secular One", sans-serif;
   cursor: pointer;
 }

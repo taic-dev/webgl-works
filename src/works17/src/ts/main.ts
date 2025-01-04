@@ -1,7 +1,7 @@
-import { Webgl } from "../../../works17/src/ts/webgl"
+import { Webgl } from "./webgl";
 
 window.addEventListener('DOMContentLoaded', () => {
-  const webgl = new Webgl()
+  const webgl = new Webgl();
   webgl.init();
   webgl.render();
-})
+});

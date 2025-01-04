@@ -1,9 +1,8 @@
-import { gsap } from "gsap";
 import * as THREE from "three";
-// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import Texture from "./images/texture.jpg";
-import Vertex from "./shader/vertex.glsl";
-import Fragment from "./shader/fragment.glsl";
+import vertex from "./shader/vertex.glsl";
+import fragment from "./shader/fragment.glsl";
+import brush from "./images/burash.png";
+import ocean from "./images/ocean.png";
 
 export class WebGL {
   [x: string]: any;
@@ -23,7 +22,7 @@ export class WebGL {
       far: 1000.0,
       x: 0.0,
       y: 0.0,
-      z: 30.0,
+      z: 2.0,
       lookAt: new THREE.Vector3(),
     };
   }
@@ -40,19 +39,46 @@ export class WebGL {
 
   static get AMBIENT_LIGHT_PARAM() {
     return {
-      color: 0xffffff,
+      color: 0x000000,
       intensity: 1,
     };
   }
 
   constructor() {
+    this.canvas;
     this.renderer;
     this.scene;
+    this.scene1;
     this.camera;
     this.directionalLight;
     this.ambientLight;
+
+    this.max = 100;
+
+    this.geometry;
+    this.material;
+    this.mesh;
+    this.meshes = [];
     this.plane;
-    this.flag = false;
+    this.quad;
+
+    this.oceanGeo;
+    this.oceanGeoFS;
+    this.material;
+
+    this.mouse = new THREE.Vector2(0, 0);
+    this.prevMouse = new THREE.Vector2(0, 0);
+    this.currentWave = 0;
+
+    this.baseTexture = new THREE.WebGLRenderTarget(
+      window.innerWidth,
+      window.innerHeight,
+      {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat,
+      }
+    );
 
     this.controls;
     this.axesHelper;
@@ -61,40 +87,9 @@ export class WebGL {
 
     this.raycaster = new THREE.Raycaster();
 
-    window.addEventListener("click", () => {
-      const intersects = this.raycaster.intersectObject(this.plane);
-
-      if (intersects.length > 0) {
-        const object = intersects[0].object;
-        let Hold = 0;
-        if (!this.flag) {
-          this.flag = true;
-          gsap.to(object.material, 3.5, {
-            onStart: function () {},
-            onUpdate: function () {
-              const add = (1.0 * this.progress() - Hold) * -1;
-              Hold = 1.0 * this.progress();
-              object.material.uniforms.uInfluence.value += add * 100;
-              object.material.uniforms.uStep.value += add;
-            },
-            onRepeat: function () {},
-            onComplete: function () {},
-          });
-        } else {
-          this.flag = false;
-          gsap.to(object.material, 3.5, {
-            onStart: function () {},
-            onUpdate: function () {
-              const add = 1.0 * this.progress() - Hold;
-              Hold = 1.0 * this.progress();
-              object.material.uniforms.uInfluence.value += add * 10;
-              object.material.uniforms.uStep.value += add;
-            },
-            onRepeat: function () {},
-            onComplete: function () {},
-          });
-        }
-      }
+    window.addEventListener("mousemove", (event) => {
+      this.mouse.x = (event.clientX / window.innerWidth) * 2.0 - 1.0;
+      this.mouse.y = (event.clientY / window.innerHeight) * 2.0 - 1.0;
     });
   }
 
@@ -110,9 +105,11 @@ export class WebGL {
     );
     const wrapper = document.querySelector(".webgl");
     wrapper?.appendChild(this.renderer.domElement);
+    this.canvas = wrapper?.firstElementChild;
 
     // シーン
     this.scene = new THREE.Scene();
+    this.scene1 = new THREE.Scene();
 
     // カメラ
     this.camera = new THREE.PerspectiveCamera(
@@ -150,27 +147,47 @@ export class WebGL {
     this.scene.add(this.ambientLight);
 
     // plane
-    const planeGeometry = new THREE.PlaneGeometry(10, 10, 500, 500);
-    const planeMaterial = new THREE.ShaderMaterial({
-      uniforms: {
-        uPixelRation: { value: Math.min(window.devicePixelRatio, 2.0) },
-        uResolution: {
-          value: new THREE.Vector2(window.innerWidth, window.innerHeight),
-        },
-        uTime: { value: 0.0 },
-        uSize: { value: 0.01 },
-        uStep: { value: 1.0 },
-        uInfluence: { value: 10.0 },
-        udisplayment: { value: new THREE.TextureLoader().load(Texture) },
-      },
-      vertexShader: Vertex,
-      fragmentShader: Fragment,
-      blending: THREE.NormalBlending,
-      transparent: true,
+    this.geometry = new THREE.PlaneGeometry(0.05, 0.05);
+
+    for (let i = 0; i < this.max; i++) {
+      let n = new THREE.MeshBasicMaterial({
+        map: new THREE.TextureLoader().load(brush),
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthTest: false,
+        depthWrite: false,
+      });
+
+      let mesh = new THREE.Mesh(this.geometry, n);
+
+      mesh.visible = false;
+      mesh.rotation.z = 2 * Math.PI * Math.random();
+      this.scene.add(mesh);
+      this.meshes.push(mesh);
+    }
+
+    // Ocean Plane
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load(ocean);
+
+    this.uniforms = {
+      uTexture: { value: texture },
+      uDisplacement: { value: null },
+    };
+
+    this.oceanGeo = new THREE.PlaneGeometry(4, 2, 100, 100);
+    this.oceanGeoFS = new THREE.PlaneGeometry(4, 2, 100, 100);
+
+    this.material = new THREE.ShaderMaterial({
+      side: THREE.DoubleSide,
+      uniforms: this.uniforms,
+      vertexShader: vertex,
+      fragmentShader: fragment,
     });
-    this.plane = new THREE.Points(planeGeometry, planeMaterial);
-    this.plane.position.set(0, 0, 0);
-    this.scene.add(this.plane);
+    this.quad = new THREE.Mesh(this.oceanGeoFS, this.material);
+    this.scene1.add(this.quad);
+
+    this.plane = new THREE.Mesh(this.oceanGeo, this.material);
 
     // 画面のリサイズ
     window.addEventListener("resize", () => {
@@ -181,8 +198,46 @@ export class WebGL {
     });
   }
 
+  setNewWave(x: number, y: number, index: number) {
+    let meshe = this.meshes[index];
+    meshe.visible = true;
+    meshe.position.x = x;
+    meshe.position.y = -y;
+    meshe.scale.x = meshe.scale.y = 1;
+    meshe.material.opacity = 1;
+  }
+
+  trackMousePos() {
+    if (
+      Math.abs(this.mouse.x - this.prevMouse.x) < 0.005 &&
+      Math.abs(this.mouse.y - this.prevMouse.y) < 0.005
+    ) {
+    } else {
+      this.setNewWave(this.mouse.x, this.mouse.y, this.currentWave);
+      this.currentWave = (this.currentWave + 1) % this.max;
+    }
+
+    this.prevMouse.x = this.mouse.x;
+    this.prevMouse.y = this.mouse.y;
+  }
+
   render() {
+    this.trackMousePos();
     requestAnimationFrame(this.render);
+    this.renderer.setRenderTarget(this.baseTexture);
     this.renderer.render(this.scene, this.camera);
+    this.material.uniforms.uDisplacement.value = this.baseTexture.texture;
+    this.renderer.setRenderTarget(null);
+    this.renderer.clear();
+    this.renderer.render(this.scene1, this.camera);
+
+    this.meshes.forEach((meshe: any) => {
+      // meshe.position.x = this.mouse.x;
+      // meshe.position.y = -this.mouse.y;
+      meshe.rotation.z += 0.05;
+      meshe.material.opacity *= 0.98;
+      meshe.scale.x = 0.98 * meshe.scale.x + 0.15;
+      meshe.scale.y = meshe.scale.x;
+    });
   }
 }

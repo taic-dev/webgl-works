@@ -1,7 +1,6 @@
 import * as THREE from "three";
-import { gsap } from "gsap";
+import { gsap, ScrollTrigger } from "gsap/all";
 import { PARAMS } from "./params";
-import displacement from "../image/displacement.png";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
 
@@ -9,26 +8,49 @@ export class Webgl {
   [x: string]: any;
 
   constructor() {
-    this.renderer = null;
+    this.renderer;
     this.camera;
-    this.scene;
+    this.scene = new THREE.Scene();
     this.geometry;
     this.material;
+    this.uniforms;
     this.mesh;
-
-    this.isAnimation = true;
-    this.imgArray = document.querySelectorAll(".gallery-item img");
-    this.textureArray = [];
-    this.planeArray = [];
-    this.workButtonArray = document.querySelectorAll(".work-item");
-    this.current = 0;
     this.clock = new THREE.Clock();
 
-    this.tl = gsap.timeline();
-
     this.render = this.render.bind(this);
+    this.imgArray = document.querySelectorAll(".image-wrapper img");
+    this.planeArray = [];
   }
 
+  // Renderer
+  createRenderer() {
+    this.renderer = new THREE.WebGLRenderer({ alpha: true });
+    this.renderer.setPixelRatio(PARAMS.WINDOW.DEVICE_PIXEL_RATIO);
+    this.renderer.setSize(PARAMS.WINDOW.W, PARAMS.WINDOW.H);
+
+    const webgl = document.querySelector(".webgl");
+    webgl?.appendChild(this.renderer.domElement);
+  }
+
+  // Camera
+  createCamera() {
+    this.camera = new THREE.PerspectiveCamera(
+      PARAMS.CAMERA.FOV,
+      PARAMS.CAMERA.ASPECT,
+      PARAMS.CAMERA.NEAR,
+      PARAMS.CAMERA.FAR
+    );
+    const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
+    const dist = PARAMS.WINDOW.H / 2 / Math.tan(fovRad);
+
+    this.camera.position.set(
+      PARAMS.CAMERA.POSITION.X,
+      PARAMS.CAMERA.POSITION.Y,
+      dist
+    );
+  }
+
+  // Mesh
   createMesh(img: HTMLImageElement) {
     this.geometry = new THREE.PlaneGeometry(
       PARAMS.PLANE_GEOMETRY.X,
@@ -38,23 +60,19 @@ export class Webgl {
     );
 
     const loader = new THREE.TextureLoader();
+    const texture = loader.load(img.src);
 
     this.uniforms = {
-      uTexture1: { value: this.textureArray[0] },
-      uTexture2: { value: this.textureArray[1] },
-      uDisplacementTexture: { value: loader.load(displacement) },
+      uTexture: { value: texture },
       uImageAspect: { value: img.naturalWidth / img.naturalHeight },
       uPlaneAspect: { value: img.clientWidth / img.clientHeight },
-      uOffset: { value: 0.0 },
-      uTime: { value: 0.0 },
-      uNoiseAmp: { value: 0.0 },
+      uProgress: { value: 0 },
     };
 
     this.material = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
-      side: THREE.DoubleSide,
     });
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
@@ -72,90 +90,62 @@ export class Webgl {
     mesh.position.set(x, y, mesh.position.z);
   }
 
-  updateImagePlane(img: HTMLImageElement, mesh: any) {
-    this.setImagePlane(img, mesh);
-    mesh.material.uniforms.uTime.value = this.clock.getElapsedTime() * 0.3;
+  _noiseAnimation(img:HTMLImageElement, mesh: any) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.to(mesh.material.uniforms.uProgress, {
+      value: 1.0,
+      duration: 1.5,
+      ease: "power3.inOut",
+      scrollTrigger: {
+        trigger: img,
+        start: "bottom bottom",
+      }
+    });
+    
+    mesh.material.uniforms.uProgress.value = Math.abs(
+      Math.sin(this.clock.getElapsedTime())
+    );
   }
 
-  init() {
-    this.renderer = new THREE.WebGLRenderer({ alpha: true });
-    this.renderer.setPixelRatio(PARAMS.WINDOW.PIXEL_RATIO);
-    this.renderer.setSize(PARAMS.WINDOW.W, PARAMS.WINDOW.H);
+  _waveAnimation(mesh: any) {
+    const position = mesh.geometry.attributes.position;
+    for (let i = 0; i < position.count; i++) {
 
-    const webglDom = document.querySelector(".webgl");
-    webglDom?.appendChild(this.renderer.domElement);
+      const x = position.getX(i);
+      const y = position.getY(i);
+      const nextZ = Math.sin(x * 1 + y * 5 + Date.now() * 0.003) * 50;
 
-    this.camera = new THREE.PerspectiveCamera(
-      PARAMS.CAMERA.FOV,
-      PARAMS.CAMERA.ASPECT,
-      PARAMS.CAMERA.NEAR,
-      PARAMS.CAMERA.FAR
-    );
-
-    const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
-    const dist = PARAMS.WINDOW.H / 2 / Math.tan(fovRad);
-
-    this.camera.position.set(
-      PARAMS.CAMERA.POSITION.X,
-      PARAMS.CAMERA.POSITION.Y,
-      dist
-    );
-
-    this.scene = new THREE.Scene();
-    const loader = new THREE.TextureLoader();
-
-    for (const img of PARAMS.IMAGE.VALUE) {
-      this.textureArray.push(loader.load(img));
+      position.setZ(i, nextZ);
     }
 
-    this.mesh = this.createMesh(this.imgArray[0]);
-    this.scene.add(this.mesh);
-    this.setImagePlane(this.imgArray[0], this.mesh);
-    this.planeArray.push({ img: this.imgArray[0], mesh: this.mesh });
+    position.needsUpdate = true;
+  }
 
-    this.workButtonArray.forEach((workButton: HTMLElement) => {
-      workButton.addEventListener("click", () => {
-        if (!this.isAnimation) return;
-        this.isAnimation = false;
-        const index = (workButton.id as unknown as number) - 1;
-        this.uniforms.uTexture2.value = this.textureArray[this.current];
-        this.uniforms.uOffset.value = 1.0;
+  updateImagePlane(img: HTMLImageElement, mesh: any) {
+    this.setImagePlane(img, mesh);
+  }
 
-        gsap.to(this.uniforms.uOffset, {
-          duration: 1.5,
-          value: 0.0,
-          ease: "power2.inOut",
-          onStart: () => {
-            this.uniforms.uTexture1.value = this.textureArray[index];
-          },
-          onComplete: () => {
-            this.current = index;
-            this.uniforms.uOffset.value = 0.0;
-          },
-        });
-
-        this.tl
-          .to(this.uniforms.uNoiseAmp, {
-            duration: 0.7,
-            value: 150.0,
-            ease: "power3.inOut",
-          })
-          .to(this.uniforms.uNoiseAmp, {
-            duration: 0.7,
-            value: 0.0,
-            ease: "power3.inOut",
-          });
-
-        setTimeout(() => {
-          this.isAnimation = true;
-        }, 1500);
-      });
-    });
+  onResize() {
+    this.camera.aspect = PARAMS.WINDOW.W / PARAMS.WINDOW.H;
+    this.camera.updateProjectMatrix();
+    this.renderer.setSize(PARAMS.WINDOW.W, PARAMS.WINDOW.H);
+    this.renderer.setPixelRatio(Math.min(PARAMS.WINDOW.DEVICE_PIXEL_RATIO, 2));
   }
 
   render() {
+    window.addEventListener("load", () => {
+      for (const img of this.imgArray) {
+        const mesh = this.createMesh(img);
+        this.scene.add(mesh);
+        this.setImagePlane(img, mesh);
+        this.planeArray.push({ img, mesh });
+        this._noiseAnimation(img, mesh);
+      }
+    });
+
     for (const plane of this.planeArray) {
       this.updateImagePlane(plane.img, plane.mesh);
+      this._waveAnimation(plane.mesh);
     }
 
     this.renderer.render(this.scene, this.camera);

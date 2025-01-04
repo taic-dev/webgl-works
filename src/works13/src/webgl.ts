@@ -1,7 +1,6 @@
 import * as THREE from "three";
-import GUI from "lil-gui";
-import vertex from "../src/shader/vertex.glsl";
-import fragment from "../src/shader/fragment.glsl";
+import vertex from "./shader/vertex.glsl";
+import fragment from "./shader/fragment.glsl";
 
 export class WebGL {
   [x: string]: any;
@@ -52,10 +51,6 @@ export class WebGL {
     this.plane;
     this.material;
     this.time = 0;
-    this.effect1Number = 0.0;
-    this.effect2Number = 0.0;
-    this.effect3Number = 0.01;
-    this.guiValue;
     this.x;
     this.y;
 
@@ -141,9 +136,8 @@ export class WebGL {
     this.material = new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0.0 },
-        effect1Number: { value: this.effect1Number },
-        effect2Number: { value: this.effect2Number },
-        effect3Number: { value: this.effect3Number },
+        mouseX: { value: 0.0 },
+        mouseY: { value: 0.0 },
         resolution: { value: { x: window.innerWidth, y: window.innerHeight } },
       },
       vertexShader: vertex,
@@ -153,22 +147,11 @@ export class WebGL {
     this.plane.position.set(0, 0, 0);
     this.scene.add(this.plane);
 
-    const gui = new GUI();
-    this.guiValue = {
-      effect1: this.effect1Number,
-      effect2: this.effect2Number,
-      effect3: this.effect3Number,
-    };
-    gui.add(this.guiValue, "effect1", 0, 1);
-    gui.add(this.guiValue, "effect2", 0, 100000.0);
-    gui.add(this.guiValue, "effect3", 0.01, 1);
-
     // 画面のリサイズ
     window.addEventListener("resize", () => {
       this.renderer?.setSize(window.innerWidth, window.innerHeight);
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera?.updateProjectionMatrix();
-      this.mesh?.scale.set(window.innerWidth, window.innerHeight, 0);
       this.material.uniforms.resolution.value = { x: window.innerWidth, y: window.innerHeight }
     });
   }
@@ -177,9 +160,6 @@ export class WebGL {
     requestAnimationFrame(this.render);
     this.time += 0.01;
     this.material.uniforms.time.value = this.time;
-    this.material.uniforms.effect1Number.value = this.guiValue.effect1;
-    this.material.uniforms.effect2Number.value = this.guiValue.effect2;
-    this.material.uniforms.effect3Number.value = this.guiValue.effect3;
     this.renderer.render(this.scene, this.camera);
   }
 }

@@ -14,19 +14,5 @@ canvas {
 h1 {
   font-size: 2rem;
   margin: 15px;
-}
-.container {
-  width: 80vw;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-.item {
-  width: 100%;
-}
-.item:not(:first-of-type) {
-  margin-top: 100px;
-}
-.item img {
-  width: 100%;
-  opacity: 0;
+  color: #fff;
 }

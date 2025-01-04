@@ -1,181 +1,306 @@
 import * as THREE from "three";
-import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import displacement from "../img/displacement.jpg";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
-import { PARAMS, POSITION_NAME, PERCENTS } from "./constants";
-import { scaleAnimation, sliderAnimation } from "./animation";
+import gsap from "gsap";
+import { clientRectCoordinate, lerp } from "./utils";
+import { lenisLib } from "./lenis";
+import { ACCESSORY_DATA } from "./constants";
 
 export class Webgl {
-  [x: string]: any;
+  renderer: THREE.WebGLRenderer | undefined;
+  camera: THREE.PerspectiveCamera | undefined;
+  scene: THREE.Scene;
+  geometry: THREE.PlaneGeometry | undefined;
+  material: THREE.ShaderMaterial | undefined;
+  mesh: THREE.Mesh | undefined;
+  clock: THREE.Clock | undefined;
+  elapsed: number | undefined;
+  uniforms: any;
+  targetScrollY: number;
+  currentScrollY: number;
+  scrollOffset: number;
+  offset: number;
+  amplitude: number;
+  time: number;
+  isAnimation: boolean;
+  isOpen: boolean;
+  images: HTMLImageElement[];
+  tl: gsap.core.Timeline;
+  modal: HTMLElement | null;
+  modalDescTitle: HTMLElement | null;
+  modalDescText: HTMLElement | null;
+  modalImage: HTMLElement | null;
+  close: HTMLElement | null;
+  planeArray: { image: HTMLImageElement; mesh: THREE.Mesh }[];
 
   constructor() {
-    this.render = this.render.bind(this);
+    this.renderer;
     this.camera;
     this.scene = new THREE.Scene();
-    this.group = new THREE.Group();
-    this.scene.add(this.group);
+    this.geometry;
+    this.material;
     this.mesh;
+    this.clock = new THREE.Clock(false);
+    this.elapsed = 0;
+    this.uniforms;
+    this.targetScrollY = 0;
+    this.currentScrollY = 0;
+    this.scrollOffset = -2500;
+    this.offset = -2500;
+    this.amplitude = 0;
+    this.time = 80;
+    this.isAnimation = false;
+    this.isOpen = false;
 
-    this.turn = {
-      x: 0.005,
-      y: 0.005,
-    };
+    this.render = this.render.bind(this);
 
-    this.prev = document.querySelector(".prev");
-    this.next = document.querySelector(".next");
-    this.current = { value: 0 };
+    this.tl = gsap.timeline();
+    this.modal = document.querySelector(".modal");
+    this.modalDescTitle = document.querySelector(".modal-desc h3");
+    this.modalDescText = document.querySelector(".modal-desc p");
+    this.modalImage = document.querySelector(".modal-image");
+    this.images = [
+      ...document.querySelectorAll(".item-image img"),
+    ] as HTMLImageElement[];
+    this.close = document.querySelector(".close");
+    this.planeArray = [];
   }
 
-  _setRenderer() {
-    this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    this.renderer.setSize(PARAMS.WINDOW.W, PARAMS.WINDOW.H);
-    this.renderer.setClearColor({ color: 0x333333 });
-    this.renderer.setPixelRatio(PARAMS.WINDOW.PIXEL_RATIO);
-    const element = document.querySelector(".webgl");
-    element?.appendChild(this.renderer.domElement);
+  setCanvas() {
+    const webgl = document.querySelector(".webgl");
+    this.renderer = new THREE.WebGLRenderer({ alpha: true });
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    webgl?.appendChild(this.renderer.domElement);
   }
 
-  _setCamera() {
+  setCamera() {
     this.camera = new THREE.PerspectiveCamera(
-      PARAMS.CAMERA.FOV,
-      PARAMS.CAMERA.ASPECT,
-      PARAMS.CAMERA.NEAR,
-      PARAMS.CAMERA.FAR
+      60,
+      window.innerWidth / window.innerHeight,
+      1,
+      1000
     );
 
-    this.camera.position.set(
-      PARAMS.CAMERA.POSITION.X,
-      PARAMS.CAMERA.POSITION.Y,
-      PARAMS.CAMERA.POSITION.Z
-    );
+    const fovRad = (60 / 2) * (Math.PI / 180);
+    const dist = window.innerHeight / 2 / Math.tan(fovRad);
 
-    this.camera.lookAt(0, 0, 0);
+    this.camera.position.set(0, 0, dist);
   }
 
-  _getGeometryPosition(index: number) {
-    const mesh = new THREE.Mesh(PARAMS.GEOMETRY[index]);
-    this.sampler = new MeshSurfaceSampler(mesh).build();
+  setMesh(image: HTMLImageElement) {
+    this.geometry = new THREE.PlaneGeometry(1, 1, 100, 100);
 
-    const vertices = [];
-    const randVertices = [];
-    const tempPosition = new THREE.Vector3();
-
-    for (let i = 0; i < 15000; i++) {
-      this.sampler.sample(tempPosition);
-      vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
-      randVertices.push(
-        (Math.random() - 1.0) * 2.0,
-        (Math.random() - 1.0) * 2.0,
-        (Math.random() - 1.0) * 2.0
-      );
-    }
-
-    return vertices;
-  }
-
-  _setGeometryPosition(
-    pointGeometry: THREE.BufferGeometry,
-    name: string,
-    position: number[]
-  ) {
-    pointGeometry.setAttribute(
-      name,
-      new THREE.Float32BufferAttribute(position, 3)
-    );
-  }
-
-  _setMesh() {
-    this.pointGeometry = new THREE.BufferGeometry();
-
-    POSITION_NAME.forEach((name, index) => {
-      const positionNumber = this._getGeometryPosition(index);
-      this._setGeometryPosition(this.pointGeometry, name, positionNumber);
-    });
+    const loader = new THREE.TextureLoader();
 
     this.uniforms = {
-      uTime: { value: 0 },
-      uAnimation: { value: 0 },
-      uPercents: { value: PERCENTS },
+      uTexture: { value: loader.load(image.src) },
+      uDisplacement: { value: loader.load(displacement) },
+      uImageAspect: { value: image.naturalWidth / image.naturalHeight },
+      uPlaneAspect: { value: image.clientWidth / image.clientHeight },
+      uOffset: { value: this.offset },
+      uTime: { value: this.time },
+      uAmplitude: { value: this.amplitude },
     };
 
-    this.pointMaterial = new THREE.ShaderMaterial({
+    this.material = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
+      side: THREE.DoubleSide,
     });
-    this.points = new THREE.Points(this.pointGeometry, this.pointMaterial);
-    this.group.add(this.points);
+
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    return this.mesh;
   }
 
-  _setAnimation() {
-    scaleAnimation({
-      turn: this.turn,
-      uAnimation: this.uniforms.uAnimation,
+  initMesh() {
+    this.images.forEach((image) => {
+      const mesh = this.setMesh(image);
+      this.scene.add(mesh);
+      this.setMeshPosition(image, mesh);
+      this.planeArray.push({ image, mesh });
     });
   }
 
-  _sliderAnimation() {
-    this.prev.addEventListener("click", () => {
-      const index =
-        (this.current.value - 1 + PARAMS.GEOMETRY.length) %
-        PARAMS.GEOMETRY.length;
+  setMeshPosition(img: HTMLImageElement, mesh: THREE.Mesh) {
+    const rect = img.getBoundingClientRect();
+    const { x, y } = clientRectCoordinate(rect);
 
-      sliderAnimation({
-        turn: this.turn,
-        uAnimation: this.uniforms.uAnimation,
-        uPercents: this.uniforms.uPercents,
-        index,
+    mesh.position.set(x, y, 1);
+
+    mesh.scale.x = rect.width;
+    mesh.scale.y = rect.height;
+
+    (mesh.material as any).uniforms.uOffset.value = this.offset;
+  }
+
+  setModalPosition(mesh: THREE.Mesh) {
+    const rect = this.modalImage?.getBoundingClientRect();
+    if (!rect) return;
+
+    const { x, y } = clientRectCoordinate(rect);
+
+    gsap.to(mesh.position, {
+      x,
+      y,
+      z: 1,
+      duration: 1.5,
+      delay: 1,
+      ease: "power2.easeOut",
+    });
+
+    gsap.to(mesh.scale, {
+      x: rect.width,
+      y: rect.height,
+      duration: 1.5,
+      delay: 1,
+      ease: "power2.easeOut",
+    });
+
+    gsap.fromTo(
+      (mesh.material as any).uniforms.uAmplitude,
+      {
+        value: 35,
+      },
+      {
+        value: 0,
+        duration: 3,
+        yoyo: true,
+        yoyoEase: "sine.out",
+        ease: "power1.easeInOut",
+      }
+    );
+  }
+
+  openModalEvent() {
+    this.planeArray.forEach((plane, index) => {
+      plane.image.addEventListener("click", () => {
+        if (!this.modalDescTitle || !this.modalDescText) return;
+
+        plane.image.classList.add("is-show");
+        this.modal?.classList.add("is-show");
+        this.modalDescTitle.innerHTML = ACCESSORY_DATA[index].TITLE;
+        this.modalDescText.innerHTML = ACCESSORY_DATA[index].TEXT;
+        this.isAnimation = true;
+        this.isOpen = true;
+        lenisLib.lenis.stop();
+
+        this.hideImageAnimation(true);
+        this.setModalPosition(plane.mesh);
+
+        setTimeout(() => {
+          this.isAnimation = false
+        }, 3000)
       });
-
-      this.current.value = index;
     });
+  }
 
-    this.next.addEventListener("click", () => {
-      const index =
-        (this.current.value + 1 + PARAMS.GEOMETRY.length) %
-        PARAMS.GEOMETRY.length;
+  closeModalEvent() {
+    this.close?.addEventListener("click", () => {
+      this.hideImageAnimation(false);
+      this.modal?.classList.remove("is-show");
+      lenisLib.lenis.start();
 
-      sliderAnimation({
-        turn: this.turn,
-        uAnimation: this.uniforms.uAnimation,
-        uPercents: this.uniforms.uPercents,
-        index,
+      setTimeout(() => {
+        this.isOpen = false;
+        this.isAnimation = false;
+        this.offset = -2500;
+        this.showImageAnimation();
+      }, 1000);
+
+      this.planeArray.forEach((plane) => {
+        plane.image.classList.remove("is-show");
       });
-
-      this.current.value = index;
     });
   }
 
-  _setControl() {
-    const controls = new OrbitControls(this.camera, this.renderer.domElement);
-    controls.enableDamping = true;
+  hideImageAnimation(isMultiple: boolean) {
+    this.planeArray.forEach((plane) => {
+      const target = (plane.mesh.material as any).uniforms.uOffset;
+      if (isMultiple) {
+        if (!plane.image.classList.contains("is-show")) {
+          gsap.to(target, {
+            value: -2500,
+            duration: 1.5,
+            ease: "power1.inOut",
+          });
+
+          gsap.to(plane.mesh.position, {
+            z: -100,
+            ease: "power1.inOut",
+          });
+        }
+      } else {
+        if (plane.image.classList.contains("is-show")) {
+          gsap.to(target, {
+            value: -2500,
+            duration: 1.5,
+            ease: "power1.inOut",
+          });
+        }
+      }
+    });
   }
 
-  _onResize() {
-    setTimeout(() => {
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
-      this.camera.aspect = window.innerWidth / window.innerHeight;
-      this.camera.updateProjectionMatrix();
-    }, 500);
+  showImageAnimation() {
+    this.planeArray.forEach((plane) => {
+      const target = (plane.mesh.material as any).uniforms.uOffset;
+
+      gsap.to(target, {
+        value: 0,
+        duration: 1.5,
+        ease: "power1.inOut",
+      });
+    });
+  }
+
+  scrollAnimation() {
+    this.targetScrollY = document.documentElement.scrollTop;
+    this.currentScrollY = lerp(this.currentScrollY, this.targetScrollY, 0.1);
+    this.scrollOffset = this.targetScrollY - this.currentScrollY;
+    this.offset = this.scrollOffset;
+  }
+
+  onResize() {
+    if (!this.camera || !this.renderer) return;
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   }
 
   init() {
-    this._setRenderer();
-    this._setCamera();
-    this._setMesh();
-    this._setAnimation();
-    this._sliderAnimation();
-    this._setControl();
+    this.setCanvas();
+    this.setCamera();
+    this.initMesh();
+    this.render();
+
+    this.openModalEvent();
+    this.closeModalEvent();
+    this.showImageAnimation();
   }
 
   render() {
-    requestAnimationFrame(this.render);
-    this.renderer.render(this.scene, this.camera);
-    this.group.rotation.x += this.turn.x;
-    this.group.rotation.y += this.turn.y;
-    this.group.rotation.z += 0.001;
+    if (!this.camera) return;
+    this.renderer?.render(this.scene, this.camera);
 
-    this.uniforms.uTime.value++;
+    this.planeArray.forEach((plane) => {
+      if (!this.isOpen) {
+        this.setMeshPosition(plane.image, plane.mesh);
+      }
+
+      if (this.isAnimation) { 
+        (plane.mesh.material as any).uniforms.uTime.value++
+      } else {
+        (plane.mesh.material as any).uniforms.uTime.value = 80
+      }
+
+    });
+
+    this.scrollAnimation();
+
+    requestAnimationFrame(this.render);
   }
 }

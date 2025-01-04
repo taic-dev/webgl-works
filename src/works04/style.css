@@ -1,106 +1,67 @@
-* {
-  margin: 0;
-  padding: 0;
-  font-family: "Secular One", sans-serif;
-}
-html,
-body {
-  font-family: "PT Serif", serif;
-  overflow-x: hidden;
-}
-header {
+* { margin: 0; padding: 0; font-family: 'PT Serif', serif; text-decoration: none; }
+html, body { font-family: 'PT Serif', serif; overflow-x: hidden; }
+
+.header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  padding: 15px;
-  height: 40px;
-}
-main {
-  position: relative;
-  height: 100vh;
-}
-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
+  height: 70px;
 }
 
-.main__wrapper {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  padding: 0 15px;
-  width: 45%;
-  height: 100vh;
-
+.header__item {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background-color: rgba(0,0,0,0.8);
+  align-items: center;
+  justify-content: right;
+
+  height: 70px;
+  margin-right: 20px;
 }
 
-.main__wrapper span {
-  position: absolute;
-  top: 30px;
-  right: 30px;
-  transform: translateY(-50%);
-  font-size: 50px;
-  cursor: pointer;
+.header__item a {
+  color: #000;
 }
 
-.main__title {
+.fv {
   position: relative;
-  font-size: 70px;
-  letter-spacing: 8px;
-  line-height: 1;
-  margin-bottom: 10px;
+  margin-top: 70px;
+  height: calc(100vh - 70px);
 }
 
-.main__desc {
-  margin-bottom: 10px;
-}
-
-.main__director {
-  margin-bottom: 10px;
-}
-
-.main__wiki {
-  text-decoration: none;
-}
-
-.hero {
+.fv__title {
   position: absolute;
-  top: 50%;
-  right: 50px;
-  transform: translateY(-50%);
+  left: 55%;
+  bottom: 0;
+  transform: translate(-50%, -50%);
+  font-family: 'PT Serif', serif;
+
+  width: 100%;
+  font-size: 35px;
 }
 
-.hero__title {
-  font-size: 60px;
+.fv__title span {
+  font-size: 14px;
 }
 
-.hero__title::before {
-  position: absolute;
-  top: 50%;
-  left: -30px;
-  transform: translateY(-50%);
-  width: 25px;
-  height: 4px;
-  border-radius: 1px;
-  background-color: #000;
-  content: "";
+.webgl {
+  position: relative;
+  z-index: -1;
+  width: 100%;
+  height: calc(100vh - 70px);
 }
 
-.main__wrapper,
-.main__title,
-.main__desc,
-.main__director,
-.main__wiki {
-  color: #fff;
-  transform: translateX(-10);
-  opacity: 0;
-  visibility: hidden;
+.stkr {
+  pointer-events: none;
+  position: fixed;
+  top: -20px;
+  left: -20px;
+  width: 40px;
+  height: 40px;
+  border: solid #999 1px;
+  background: transparent;
+  border-radius: 50%;
+
+  transition: transform 0.2s, top, 0.5s, left 0.5s, width .5s, height .5s, background-color .5s;
+  transition-timing-function: ease-out;
+  z-index: 999;
 }

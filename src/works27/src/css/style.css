@@ -35,18 +35,11 @@ h1 {
   color: #fff;
 }
 
-.image__wrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.title__wrapper {
+  mix-blend-mode: difference;
 }
 
-.image {
+.effect {
   width: 100%;
-  height: 100vh;
-  object-fit: cover;
-  opacity: 0;
-  visibility: hidden;
+  height: 100svh;
 }

@@ -1,52 +1,32 @@
 varying vec2 vUv;
-varying vec2 vTexCoords;
-varying vec4 finalColor;
-
 uniform float uPlaneAspect;
-uniform sampler2D uTexture1;
-uniform sampler2D uTexture2;
-uniform sampler2D uTexture3;
-uniform sampler2D uTexture4;
-
-uniform float uProgress1;
-uniform float uProgress2;
-uniform float uProgress3;
-uniform float uProgress4;
-
-uniform float uNbColumns;
-uniform float uNbLines;
-
-float circle(vec2 uv, float border) {
-  float radius = 0.5;
-  float dist = radius - distance(uv, vec2(0.5));
-  return smoothstep(0.0, border, dist);
-}
+uniform float uImageAspect;
+uniform vec2 uResolution;
+uniform sampler2D uTexture;
+uniform float uTime;
+uniform vec2 uMousePointer;
+uniform vec2 uOffset;
+uniform float uAlpha;
+uniform sampler2D uDisplacement;
 
 void main() {
 
-  vec2 uv = gl_PointCoord;
-  uv.y *= -1.;
+  vec2 ratio = vec2(
+    min(uPlaneAspect / uImageAspect, 1.0),
+    min((1.0 / uPlaneAspect) / (1.0 / uImageAspect), 1.0)
+  );
 
-  uv /= vec2(uNbColumns, uNbLines);
-  float texOffsetU = vTexCoords.x / uNbColumns;
-  float texOffsetV = vTexCoords.y / uNbLines;
-  uv = vec2(texOffsetU, texOffsetV);
-  uv += vec2(0.5);
+  // 計算結果を用いて補正後のuv値を生成
+  vec2 fixedUv = vec2(
+    (vUv.x - 0.5) * ratio.x + 0.5,
+    (vUv.y - 0.5) * ratio.y + 0.5
+  );
 
-  vec4 white = vec4(1.0, 1.0, 1.0, 1.0);
+  float r = texture2D(uTexture, fixedUv + sin(uOffset) ).r;
+  float g = texture2D(uTexture, fixedUv + sin(uOffset * 0.5) ).g ; 
+  float b = texture2D(uTexture, fixedUv + sin(uOffset) ).b ;
 
-  vec4 texture1 = texture2D(uTexture1, uv);
-  vec4 texture2 = texture2D(uTexture2, uv);
-  vec4 texture3 = texture2D(uTexture3, uv);
-  vec4 texture4 = texture2D(uTexture4, uv);
+  vec4 rgb = vec4(r, g, b, uAlpha) * uAlpha;
 
-  vec4 finalColor = (texture1 * uProgress1) + (texture2 * uProgress2) + (texture3 * uProgress3) + (texture4 * uProgress4);
-
-  if(finalColor.r < 0.2 && finalColor.g < 0.2 && finalColor.b < 0.2){
-    discard;
-  };
-
-  gl_FragColor = finalColor;
-
-  gl_FragColor.a *= circle(gl_PointCoord, 0.1);
+  gl_FragColor = vec4(rgb);
 }

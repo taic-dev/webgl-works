@@ -3,24 +3,27 @@
   padding: 0;
   font-family: "Secular One", sans-serif;
 }
-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-}
 h1 {
   font-size: 2rem;
   margin: 15px;
-  color: #fff;
 }
-img {
-  position: absolute;
-  top: 0;
-  left: 0;
+.webgl__wrapper {
   width: 100vw;
   height: 100vh;
-  z-index: -2;
 }
+.webgl {
+  width: 500px;
+  height: 700px;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+.effect__wrapper label {
+  display: block;
+  margin-left: 15px;
+  margin-bottom: 15px;
+}
+

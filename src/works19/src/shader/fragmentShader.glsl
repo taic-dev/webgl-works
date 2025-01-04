@@ -1,23 +1,52 @@
 varying vec2 vUv;
-uniform sampler2D uTexture;
-uniform float uImageAspect;
+varying vec2 vTexCoords;
+varying vec4 finalColor;
+
 uniform float uPlaneAspect;
-uniform float uProgress;
+uniform sampler2D uTexture1;
+uniform sampler2D uTexture2;
+uniform sampler2D uTexture3;
+uniform sampler2D uTexture4;
+
+uniform float uProgress1;
+uniform float uProgress2;
+uniform float uProgress3;
+uniform float uProgress4;
+
+uniform float uNbColumns;
+uniform float uNbLines;
+
+float circle(vec2 uv, float border) {
+  float radius = 0.5;
+  float dist = radius - distance(uv, vec2(0.5));
+  return smoothstep(0.0, border, dist);
+}
 
 void main() {
-  vec2 ratio = vec2(
-    min(uPlaneAspect / uImageAspect, 1.0),
-    min((1.0 / uPlaneAspect) / (1.0 / uImageAspect), 1.0)
-  );
 
-  vec2 fixedUv = vec2(
-    (vUv.x - 0.5) * ratio.x + 0.5,
-    (vUv.y - 0.5) * ratio.y + 0.5
-  );
+  vec2 uv = gl_PointCoord;
+  uv.y *= -1.;
 
-  vec4 color1 = texture2D(uTexture, fixedUv);
-  vec4 color2 = texture2D(uTexture, vec2(uProgress, fixedUv.y));
-  vec4 final = mix(color2, color1, step(fixedUv.x, uProgress));
+  uv /= vec2(uNbColumns, uNbLines);
+  float texOffsetU = vTexCoords.x / uNbColumns;
+  float texOffsetV = vTexCoords.y / uNbLines;
+  uv = vec2(texOffsetU, texOffsetV);
+  uv += vec2(0.5);
 
-  gl_FragColor = vec4(final);
+  vec4 white = vec4(1.0, 1.0, 1.0, 1.0);
+
+  vec4 texture1 = texture2D(uTexture1, uv);
+  vec4 texture2 = texture2D(uTexture2, uv);
+  vec4 texture3 = texture2D(uTexture3, uv);
+  vec4 texture4 = texture2D(uTexture4, uv);
+
+  vec4 finalColor = (texture1 * uProgress1) + (texture2 * uProgress2) + (texture3 * uProgress3) + (texture4 * uProgress4);
+
+  if(finalColor.r < 0.2 && finalColor.g < 0.2 && finalColor.b < 0.2){
+    discard;
+  };
+
+  gl_FragColor = finalColor;
+
+  gl_FragColor.a *= circle(gl_PointCoord, 0.1);
 }

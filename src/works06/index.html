@@ -5,16 +5,25 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;600&family=Secular+One&display=swap');</style>
-  <link rel="stylesheet" href="./reset.css">
-  <link rel="stylesheet" href="./style.css">
-  <script src="./script.js" type="module"></script>
-  <title>WebGL School Practice01</title>
+  <link rel="stylesheet" href="style.css">
+  <title>Gallery Site</title>
 </head>
 <body>
-  <div id="webgl" class="webgl"></div>
-  <div class="fv">
-    <h1>The only card in the world for you!!</h1>
-  </div>
-  <section class="section"></section>
+  <header>
+    <h1>Gallery Site</h1>
+  </header>
+  <main>
+    <div class="main__wrapper">
+      <h2 class="main__title"></h2>
+      <p class="main__desc"></p>
+      <p class="main__director"></p>
+      <div class="main__wiki"><a href="">Wikipedia</a></div>
+    </div>
+    <div class="hero">
+      <h2 class="hero__title">David Fincher</h2>
+    </div>
+    <div class="webgl"></div>
+  </main>
+  <script type="module" src="script.ts"></script>
 </body>
 </html>

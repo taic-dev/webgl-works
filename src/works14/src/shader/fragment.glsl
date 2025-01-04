@@ -1,13 +1,25 @@
-precision mediump float;
-uniform float time;
-uniform vec2 resolution;
-uniform float mouseX;
-uniform float mouseY;
+precision highp float;
+uniform float uOffset;
+uniform sampler2D uTexture1;
+uniform sampler2D uTexture2;
+uniform sampler2D uDisplacementTexture;
 
-void main(void) {
-  vec2 p = (gl_FragCoord.xy * 2.0 - resolution ) / min(resolution.x, resolution.y);
-  vec2 v = vec2(0.0, 1.0);
-  float u = sin((atan(p.y, p.x) - length(p * 3.0) + time * 5.0 ) * 20.0) * 0.287;
-  float t = 0.01 / abs(0.5 + u - length(p));
-  gl_FragColor = vec4(vec3(t), 1.0);
+varying vec2 vUv;
+
+const float displacementCoef = 0.5;
+
+void main() {
+	vec4 displacementTexture = texture2D(uDisplacementTexture, vUv);
+
+	// texture1
+	float displacementForce1 = displacementTexture.r * uOffset * displacementCoef;
+	vec2 uvDisplaced1 = vec2(vUv.x + displacementForce1, vUv.y + displacementForce1); 
+	vec4 displacedTexture1 = texture2D(uTexture1, uvDisplaced1);
+
+	// texture2
+	float displacementForce2 = displacementTexture.r * (1. - uOffset) * displacementCoef;
+	vec2 uvDisplaced2 = vec2(vUv.x + displacementForce2, vUv.y + displacementForce2); 
+	vec4 displacedTexture2 = texture2D(uTexture2, uvDisplaced2);
+
+  gl_FragColor = (displacedTexture1 * (1. - uOffset) + displacedTexture2 * uOffset);
 }
