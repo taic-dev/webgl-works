@@ -1,31 +1,9 @@
 * { margin: 0; padding: 0; font-family: 'PT Serif', serif; text-decoration: none; }
 html, body { font-family: 'PT Serif', serif; overflow-x: hidden; }
 
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 70px;
-}
-
-.header__item {
-  display: flex;
-  align-items: center;
-  justify-content: right;
-
-  height: 70px;
-  margin-right: 20px;
-}
-
-.header__item a {
-  color: #000;
-}
-
 .fv {
   position: relative;
-  margin-top: 70px;
-  height: calc(100vh - 70px);
+  padding-top: 70px;
 }
 
 .fv__title {
@@ -44,8 +22,6 @@ html, body { font-family: 'PT Serif', serif; overflow-x: hidden; }
 }
 
 .webgl {
-  position: relative;
-  z-index: -1;
   width: 100%;
   height: calc(100vh - 70px);
 }
@@ -63,5 +39,5 @@ html, body { font-family: 'PT Serif', serif; overflow-x: hidden; }
 
   transition: transform 0.2s, top, 0.5s, left 0.5s, width .5s, height .5s, background-color .5s;
   transition-timing-function: ease-out;
-  z-index: 999;
+  z-index: 1;
 }
