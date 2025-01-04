@@ -12,9 +12,26 @@ canvas {
   top: 0;
   z-index: -1;
 }
-h1 {
-  margin: 10px;
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 8px;
+  mix-blend-mode: difference;
+  color: #fff;
 }
+.header__title {
+  font-size: 32px;
+}
+.header__list {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+.header__link {
+  text-decoration: underline;
+}
+
 h2 {
   margin-left: 15px;
 }
