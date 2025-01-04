@@ -23,13 +23,14 @@ header {
 .header__title {
   position: relative;
   font-size: 32px;
-  margin-top: 24px;
+  margin-top: 28px;
 }
 .header__title__number {
   position: absolute;
-  top: -20px;
+  top: -26px;
   left: 0;
   font-size: 16px;
+  font-weight: normal;
 }
 .header__list {
   display: flex;
