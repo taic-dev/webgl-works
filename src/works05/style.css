@@ -1,19 +1,9 @@
-* { margin: 0; padding: 0; font-family: 'Secular One', sans-serif; }
-html, body { font-family: 'Secular One', sans-serif; }
-
-.webgl canvas{
-  position: absolute;
-  top: 0;
-  z-index: -1;
-}
-
 .fv {
   position: relative;
+  padding-top: 150px;
 }
 
 .fv h1 {
-  margin-top: 100px;
-
   width: 100%;
   text-align: center;
   font-size: 50px;
