@@ -20,13 +20,7 @@ canvas {
   top: 0;
   left: 0;
   z-index: 1;
-}
-h1 {
-  position: fixed;
-  margin: 15px;
-  font-size: 2rem;
-  font-family: "Secular One", sans-serif;
-  color: #D3A955;
+  background-color: #3657BD;
 }
 
 main {
@@ -45,11 +39,11 @@ main {
   font-weight: 600;
   font-family: "Nagoda", sans-serif;
 }
-.list {
+.movie-list {
   cursor: pointer;
 }
 
-.item {
+.movie-item {
   position: relative;
   padding: 80px 30px;
   border-bottom: dashed 2px #D3A955;
@@ -66,11 +60,11 @@ main {
   font-size: 12px;
 }
 
-.item > img {
+.movie-item > img {
   display: none;
 }
 
-.item > video {
+.movie-item > video {
   display: none;
 }
 

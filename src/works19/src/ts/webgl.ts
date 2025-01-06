@@ -24,8 +24,8 @@ export class Webgl {
     this.hovered = false;
     this.isClick = false;
 
-    this.list = [...document.querySelectorAll(".item")];
-    this.movieList = [...document.querySelectorAll(".item video")];
+    this.list = [...document.querySelectorAll(".movie-item")];
+    this.movieList = [...document.querySelectorAll(".movie-item video")];
     this.modal = document.querySelector(".modal");
     this.modalTitle = document.querySelector(".modal-title p");
     this.modalDirector = document.querySelector(".modal-title span");
