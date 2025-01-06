@@ -21,15 +21,11 @@ canvas {
   height: 100vh;
   z-index: -1;
 }
-h1 {
-  font-size: 2rem;
-  margin: 15px;
-  color: #fff;
-}
 
 h2 {
   font-family: SixCaps;
   font-size: 60rem;
   color: #000;
   opacity: 0.4;
+  margin-top: 50px;
 }
