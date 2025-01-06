@@ -16,14 +16,6 @@ canvas {
   z-index: -1;
   background-color: #333;
 }
-h1 {
-  position: fixed;
-  margin: 15px;
-  font-size: 2rem;
-  font-family: "Secular One", sans-serif;
-  color: #fff;
-  mix-blend-mode: difference;
-}
 .container {
   max-width: 1000px;
   margin: 100px auto;

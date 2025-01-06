@@ -1,4 +1,4 @@
-import { Webgl } from "../../../works16/src/ts/webgl"
+import { Webgl } from "../../../works15/src/ts/webgl"
 
 window.addEventListener('DOMContentLoaded', () => {
   const webgl = new Webgl()
