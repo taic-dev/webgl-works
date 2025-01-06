@@ -25,7 +25,7 @@ export class Webgl {
     this.scene = new THREE.Scene();
 
     this.planeArray = [];
-    this.images = [...document.querySelectorAll<HTMLElement>(".item__img")];
+    this.images = [...document.querySelectorAll<HTMLElement>(".image-item__img")];
 
     this.render = this.render.bind(this);
   }

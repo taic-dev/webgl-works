@@ -4,7 +4,7 @@ import { Webgl } from "./webgl";
 const ROW = 4
 const COLUMN = 5
 const GAP = 50
-const items = [...document.querySelectorAll<HTMLElement>(".item")];
+const items = [...document.querySelectorAll<HTMLElement>(".image-item")];
 const itemWidth = items[0].clientWidth;
 const itemHeight = items[0].clientHeight;
 const clientRectCoordinateArray: { x: number; y: number }[] = [];
