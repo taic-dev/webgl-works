@@ -1,60 +1,56 @@
 uniform vec2 uResolution;
-uniform sampler2D uFrontTexture;
-uniform sampler2D uTextureBack;
-uniform sampler2D uEffectTexture1;
-uniform sampler2D uEffectTexture2;
-uniform float uImageAspect;
-uniform float uPlaneAspect;
 uniform vec2 uMouse;
 uniform float uTime;
-uniform float uIndex;
+uniform bool uColor;
+uniform float uSize;
+uniform float uSpeed;
 
 varying vec2 vUv;
 
-// ノイズ
-float noise(vec2 xy) {
-  return fract(sin(dot(xy, vec2(12.9898, 78.2323))) * 43758.5453123 + (uMouse.x + uMouse.y) * 2.5);
+#pragma glslify: noise2d = require('glsl-noise/simplex/2d');
+#pragma glslify: noise3d = require('glsl-noise/simplex/3d');
+
+float noise(vec2 p) {
+  return noise3d(vec3(p.y * uSize + uMouse.y * 2., p.x, uSpeed));
 }
 
-// 加算ブレンド
+mat2 rotate2d(float _angle){
+  return mat2(cos(_angle),-sin(_angle),sin(_angle),cos(_angle));
+}
+
 vec3 overlay(vec3 base, vec3 blend) {
-    return mix(2.0 * base * blend, 1.0 - 2.0 * (1.0 - base) * (1.0 - blend), step(0.5, base));
+  return mix(2.0 * base * blend, 1.0 - 2.0 * (1.0 - base) * (1.0 - blend), step(0.5, base));
+}
+
+vec3 palette(float t) {
+  vec3 a = vec3(0.3098, 0.7608, 0.0667);
+  vec3 b = vec3(-1.100, -1.100, 0.858);
+  vec3 c = vec3(1.0, 1.0, 1.0);
+  vec3 d = vec3(0.6667, 0.0, 0.0);
+
+  return a+b*cos(6.28318*(c*t+d));
+}
+
+vec4 effect1(float uSize, float uSpeed) {
+  vec2 st = gl_FragCoord.xy/uResolution.xy;
+  vec2 p = vec2(st * uSize);
+  p = rotate2d(noise2d(p)) * vec2((noise2d(vec2(uTime * uSpeed))));
+  float n = noise(p);
+
+  return vec4(palette(n), 1.);
+}
+
+vec4 effect2(float uSize, float uSpeed) {
+  vec2 st = gl_FragCoord.xy/uResolution.xy;
+  vec2 p = vec2(st * uSize);
+  p = rotate2d(noise2d(p)) * vec2((noise2d(vec2(uTime * uSpeed))));
+  float n = noise(p);
+
+  return vec4(overlay(vec3(n), vec3(n)), 1.);
 }
 
 void main() {
-  vec2 ratio = vec2(
-    min(uPlaneAspect / uImageAspect, 1.0),
-    max((1.0 / uPlaneAspect) / (1.0 / uImageAspect), 1.0)
-  );
+  vec4 effect = uColor ? effect1(uSize, uSpeed) : effect2(uSize, uSpeed);
 
-  vec2 textureUv = vec2(
-    (vUv.x - 0.5) * ratio.x + 0.5,
-    (vUv.y - 0.5) * ratio.y + 0.5
-  );
-
-  vec2 pos = gl_FragCoord.xy;
-  pos += floor(60.0);
-  vec3 customNoise = vec3(noise(pos.xy / uResolution));
-
-  vec4 frontTexture = texture2D(uFrontTexture, textureUv);
-  
-  vec4 frontColor;
-  if(uIndex == 1.) {
-    frontColor = frontTexture;
-  } else if(uIndex == 2.) {
-    vec4 effectTexture1 = texture2D(uEffectTexture1, vec2(textureUv.x * 15., textureUv.y * 10.));
-    vec3 se_effect = overlay(effectTexture1.rgb, customNoise * 2.5);
-    vec3 blendedColor1 = overlay(frontTexture.rgb, se_effect.rgb);
-    frontColor = mix(frontTexture, vec4(blendedColor1, 1.), abs(uMouse.x * 2.));
-  } else if(uIndex == 3.) {
-    vec4 effectTexture2 = texture2D(uEffectTexture2, textureUv + abs(uMouse.x) );
-    vec3 blendedColor2 = overlay(frontTexture.rgb, effectTexture2.rgb);
-    frontColor = mix(frontTexture, vec4(blendedColor2, 1.0), abs(uMouse.y * 1.5));
-  }
-
-  vec4 backColor = texture2D(uTextureBack, textureUv);
-
-  vec4 finalColor = gl_FrontFacing ? frontColor : backColor;
-
-  gl_FragColor = vec4(finalColor);
+  gl_FragColor = effect;
 }

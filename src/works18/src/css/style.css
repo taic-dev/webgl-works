@@ -8,46 +8,44 @@ body {
   width: 100%;
   height: 100vh;
   overscroll-behavior: none;
+  background-color: #000;
 }
 canvas {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: -1;
+  z-index: 1;
 }
 h1 {
   position: fixed;
   margin: 15px;
   font-size: 2rem;
   font-family: "Secular One", sans-serif;
-  color: #000;
+  color: #fff;
   mix-blend-mode: difference;
 }
-.container {
-  max-width: 1000px;
-  margin: 100px auto;
-}
-.image-item {
-  width: 50%;
-  height: auto;
-}
-.image-item:nth-child(odd) {
-  margin: 0 0 0 auto;
-}
-.image-item:not(:last-child) {
-  margin-bottom: 100px;
-}
-.image-item img {
+.img-wrapper img {
   width: 100%;
-  height: 500px;
+  height: 100vh;
   object-fit: cover;
   opacity: 0;
 }
-@media screen and (max-width:1000px) {
-  .container {
-    margin: 100px 15px;
-  }
-  .image-item {
-    width: 100%;
-  }
+.slider-button {
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+
+  display: flex;
+  justify-content: space-around;
+
+  width: 100%;
+  padding: 15px;
+}
+.prev,
+.next {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #fff;
+  font-family: "Secular One", sans-serif;
+  cursor: pointer;
 }

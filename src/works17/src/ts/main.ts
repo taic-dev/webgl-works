@@ -1,7 +1,8 @@
-import { Webgl } from "./webgl";
+import { Webgl } from "./webgl"
 
 window.addEventListener('DOMContentLoaded', () => {
   const webgl = new Webgl();
-  webgl.init();
+  webgl.createRenderer();
+  webgl.createCamera();
   webgl.render();
-});
+})

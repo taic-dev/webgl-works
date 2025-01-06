@@ -1,56 +1,31 @@
-uniform vec2 uResolution;
-uniform vec2 uMouse;
+uniform sampler2D uDisplacement;
+uniform sampler2D uTexture;
+uniform vec2 uTextureSize;
+uniform vec2 uPlaneSize;
 uniform float uTime;
-uniform bool uColor;
-uniform float uSize;
-uniform float uSpeed;
+uniform vec2 uMouse;
 
 varying vec2 vUv;
 
-#pragma glslify: noise2d = require('glsl-noise/simplex/2d');
-#pragma glslify: noise3d = require('glsl-noise/simplex/3d');
-
-float noise(vec2 p) {
-  return noise3d(vec3(p.y * uSize + uMouse.y * 2., p.x, uSpeed));
-}
-
-mat2 rotate2d(float _angle){
-  return mat2(cos(_angle),-sin(_angle),sin(_angle),cos(_angle));
-}
-
-vec3 overlay(vec3 base, vec3 blend) {
-  return mix(2.0 * base * blend, 1.0 - 2.0 * (1.0 - base) * (1.0 - blend), step(0.5, base));
-}
-
-vec3 palette(float t) {
-  vec3 a = vec3(0.3098, 0.7608, 0.0667);
-  vec3 b = vec3(-1.100, -1.100, 0.858);
-  vec3 c = vec3(1.0, 1.0, 1.0);
-  vec3 d = vec3(0.6667, 0.0, 0.0);
-
-  return a+b*cos(6.28318*(c*t+d));
-}
-
-vec4 effect1(float uSize, float uSpeed) {
-  vec2 st = gl_FragCoord.xy/uResolution.xy;
-  vec2 p = vec2(st * uSize);
-  p = rotate2d(noise2d(p)) * vec2((noise2d(vec2(uTime * uSpeed))));
-  float n = noise(p);
-
-  return vec4(palette(n), 1.);
-}
-
-vec4 effect2(float uSize, float uSpeed) {
-  vec2 st = gl_FragCoord.xy/uResolution.xy;
-  vec2 p = vec2(st * uSize);
-  p = rotate2d(noise2d(p)) * vec2((noise2d(vec2(uTime * uSpeed))));
-  float n = noise(p);
-
-  return vec4(overlay(vec3(n), vec3(n)), 1.);
+vec2 mirrored(vec2 v) {
+  vec2 m = mod(v, 2.0);
+  return mix(m, 2.0 - m, step(1.0, m));
 }
 
 void main() {
-  vec4 effect = uColor ? effect1(uSize, uSpeed) : effect2(uSize, uSpeed);
+  vec2 uv = vUv;
 
-  gl_FragColor = effect;
+  vec2 ratio = vec2(
+    min((uPlaneSize.x / uPlaneSize.y) / (uTextureSize.x / uTextureSize.y), 1.0),
+    min((uPlaneSize.y / uPlaneSize.x) / (uTextureSize.y / uTextureSize.x), 1.0)
+  );
+
+  uv += -0.5;
+  uv *= ratio;
+  uv += 0.5;
+
+  vec4 depthTexture = texture2D(uDisplacement, uv);
+  vec4 originalTexture = texture2D(uTexture, mirrored(uv + uMouse * 0.03 * (depthTexture.r - 0.5)));
+
+  gl_FragColor = vec4(originalTexture.r, originalTexture.g, originalTexture.b, 1.0);
 }

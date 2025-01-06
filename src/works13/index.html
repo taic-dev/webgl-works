@@ -5,13 +5,52 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;600&family=Secular+One&display=swap');</style>
+  <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="./src/css/reset.css">
   <link rel="stylesheet" href="./src/css/style.css">
-  <title>GLSL</title>
+  <title>WebGL Works | 013 | Hover Transition</title>
 </head>
 <body>
-  <h1>GLSL</h1>
-  <div class="webgl"></div>
+  <header class="header">
+    <h1 class="header__title"><span class="header__title__number">013</span>Hover Transition</h1>
+    <ul class="header__list">
+      <li class="header__item"><a href="https://github.com/taic-dev/webgl-works/tree/main/src/works08" class="header__link" target="_blank" rel="noopener noreferrer">Github</a></li>
+      <li class="header__item"><a href="https://x.com/taic_dev_/status/1844774151631905058" class="header__link" target="_blank" rel="noopener noreferrer">X</a></li>
+    </ul>
+  </header>
+    <div class="webgl__wrapper">
+      <div class="effect__wrapper">
+        <label for="effect1">
+          effect1
+          <input id="effect1" type="radio" name="effect" value="effect1" checked>
+        </label>
+        <label for="effect2">
+          effect2
+          <input id="effect2" type="radio" name="effect" value="effect2">
+        </label>
+        <label for="effect3">
+          effect3
+          <input id="effect3" type="radio" name="effect" value="effect3">
+        </label>
+        <label for="effect4">
+          effect4
+          <input id="effect4" type="radio" name="effect" value="effect4">
+        </label>
+        <label for="effect5">
+          effect5
+          <input id="effect5" type="radio" name="effect" value="effect5">
+        </label>
+        <label for="effect6">
+          effect6
+          <input id="effect6" type="radio" name="effect" value="effect6">
+        </label>
+        <label for="effect7">
+          effect7
+          <input id="effect7" type="radio" name="effect" value="effect7">
+        </label>
+      </div>
+      <div class="webgl"></div>
+    </div>
   </main>
   <script type="module" src="./src/main.ts"></script>
 </body>

@@ -3,7 +3,11 @@
   padding: 0;
 }
 
-html,body {
+html,
+body,
+main {
+  width: 100%;
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -17,7 +21,7 @@ canvas {
 }
 
 h1 {
-  position: absolute;
+  position: fixed;
   z-index: 1;
   margin: 15px;
   font-size: 2rem;
@@ -26,81 +30,49 @@ h1 {
   mix-blend-mode: difference;
 }
 
-.header__logo h1 {
-  font-size: 40px;
-  font-weight: 600;
-}
-
-main {
-  padding: 10rem 5rem;
-}
-
 .list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3vw;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  display: grid;
+  justify-content: center;
+  gap: 50px;
+  grid-template-columns: repeat(auto-fit, calc(calc(150vw / 4) - (150px / 3)));
+  width: 150vw;
+  height:  250vh;
 }
 
 .item {
-  width: calc(33.3333% - 2vw);
-}
-
-.item-image {
-  width: 100%;
-  aspect-ratio: 2 / 3;
-}
-
-.item-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-}
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  z-index: -1;
-  padding: 10rem 5rem;
-
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-
-  opacity: 0;
-}
-
-.modal.is-show {
-  z-index: 99;
-  opacity: 1;
-  transition: 1s 2s;
-}
-
-.modal-image {
-  max-width: 400px;
-  min-width: 400px;
   width: 100%;
   height: 100%;
 }
 
-.modal-desc h3 {
-  font-size: 3vw;
-  font-family: "Secular One", sans-serif;
-  margin-bottom: 2rem;
+.item__img {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: top;
+  opacity: 0;
 }
 
-.modal-desc > p {
-  line-height: 1.5;
-}
-
-.modal-close p {
-  margin-top: 2rem;
-  margin-left: auto;
-  width: fit-content;
-  font-size: 3vw;
-  font-family: "Secular One", sans-serif;
-  cursor: pointer;
-}
+.item:nth-child(1) .item__img {background-image: url('../img/image1.jpg');}
+.item:nth-child(2) .item__img {background-image: url('../img/image2.jpg');}
+.item:nth-child(3) .item__img {background-image: url('../img/image3.jpg');}
+.item:nth-child(4) .item__img {background-image: url('../img/image4.jpg');}
+.item:nth-child(5) .item__img {background-image: url('../img/image5.jpg');}
+.item:nth-child(6) .item__img {background-image: url('../img/image6.jpg');}
+.item:nth-child(7) .item__img {background-image: url('../img/image7.jpg');}
+.item:nth-child(8) .item__img {background-image: url('../img/image8.jpg');}
+.item:nth-child(9) .item__img {background-image: url('../img/image9.jpg');}
+.item:nth-child(10) .item__img {background-image: url('../img/image10.jpg');}
+.item:nth-child(11) .item__img {background-image: url('../img/image11.jpg');}
+.item:nth-child(12) .item__img {background-image: url('../img/image12.jpg');}
+.item:nth-child(13) .item__img {background-image: url('../img/image13.jpg');}
+.item:nth-child(14) .item__img {background-image: url('../img/image14.jpg');}
+.item:nth-child(15) .item__img {background-image: url('../img/image15.jpg');}
+.item:nth-child(16) .item__img {background-image: url('../img/image16.jpg');}
+.item:nth-child(17) .item__img {background-image: url('../img/image17.jpg');}
+.item:nth-child(18) .item__img {background-image: url('../img/image18.jpg');}
+.item:nth-child(19) .item__img {background-image: url('../img/image19.jpg');}
+.item:nth-child(20) .item__img {background-image: url('../img/image20.jpg');}

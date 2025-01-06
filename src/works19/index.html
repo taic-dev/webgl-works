@@ -8,17 +8,88 @@
     </style>
     <link rel="stylesheet" href="./src/css/reset.css" />
     <link rel="stylesheet" href="./src/css/style.css" />
-    <title>works20</title>
+    <title>works21</title>
   </head>
   <body>
-    <h1>works20</h1>
-    <div>
-      <div class="webgl"></div>
-      <div class="slider-button">
-        <div class="prev">Prev</div>
-        <div class="next">Next</div>
+    <h1>works21</h1>
+    <div class="webgl"></div>
+    <main>
+      <section class="wrapper">
+        <div class="title">
+          <h2>Fake Movie!!!!!!!!!!</h2>
+        </div>
+        <ul class="list">
+          <li class="item" data-list-no="1">
+            <div class="item-text movie-title">
+              <p>Echoes of Eternity</p>
+              <span>Sebastian Grey</span>
+            </div>
+            <video loop crossorigin="anonymous" playsinline muted>
+              <source
+                src="./src/movie/Echoes_of_Eternity.mp4"
+                type="video/mp4;"
+              />
+            </video>
+          </li>
+          <li class="item" data-list-no="2">
+            <div class="item-text movie-title">
+              <p>Whispers in the Wind</p>
+              <span>Isabella Moon</span>
+            </div>
+            <video loop crossorigin="anonymous" playsinline muted>
+              <source
+                src="./src/movie/Whispers_in_the_Wind.mp4"
+                type="video/mp4;"
+              />
+            </video>
+          </li>
+          <li class="item" data-list-no="3">
+            <div class="item-text movie-title">
+              <p>Shadow's Embrace</p>
+              <span>Gabriel Steele</span>
+            </div>
+            <video loop crossorigin="anonymous" playsinline muted>
+              <source src="./src/movie/Shadows_Embrace.mp4" type="video/mp4;" />
+            </video>
+          </li>
+          <li class="item" data-list-no="4">
+            <div class="item-text movie-title">
+              <p>Silent Serenade</p>
+              <span>Evelyn Cross</span>
+            </div>
+            <video loop crossorigin="anonymous" playsinline muted>
+              <source src="./src/movie/Silent_Serenade.mp4" type="video/mp4;" />
+            </video>
+          </li>
+          <li class="item" data-list-no="5">
+            <div class="item-text movie-title">
+              <p>Eternal Reverie</p>
+              <span>Amelia Rivers</span>
+            </div>
+            <video loop crossorigin="anonymous" playsinline muted>
+              <source src="./src/movie/Eternal_Reverie.mp4" type="video/mp4;" />
+            </video>
+          </li>
+        </ul>
+      </section>
+      <div class="modal">
+        <div class="modal-wrapper">
+          <div class="modal-image"></div>
+          <div class="modal-text">
+            <div class="modal-title movie-title">
+              <p></p>
+              <span></span>
+            </div>
+            <div class="modal-desc">
+              <p></p>
+            </div>
+          </div>
+          <div class="modal-button">
+            <button>Close</button>
+          </div>
+        </div>
       </div>
-    </div>
+    </main>
     <script type="module" src="./src/ts/main.ts"></script>
   </body>
 </html>

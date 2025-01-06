@@ -1,7 +1,7 @@
-import { WebGL } from "./webgl";
+import { Slider } from './slider'
 
 window.addEventListener('DOMContentLoaded', () => {
-  const webgl = new WebGL()
-  webgl.init()
-  webgl.render()
-});
+  const slider = new Slider()
+  slider.init()
+  slider.render()
+})

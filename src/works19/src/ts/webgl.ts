@@ -1,8 +1,9 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { PARAMS } from "./params";
+import { MODAL, PARAMS } from "./constants";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { lerp } from "./utiles";
 import { gsap } from "gsap";
 
 export class Webgl {
@@ -13,26 +14,35 @@ export class Webgl {
     this.camera;
     this.geometry;
     this.material;
-    this.mesh;
-    this.uniforms;
     this.scene = new THREE.Scene();
+    this.clock = new THREE.Clock();
+    this.textureArray = [];
+    this.pointer = new THREE.Vector2(0, 0);
+    this.offset = new THREE.Vector2(0, 0);
+    this.targetX = 0;
+    this.targetY = 0;
+    this.hovered = false;
+    this.isClick = false;
 
-    this.texture = [];
-    this.textureLength = PARAMS.TEXTURE.length;
-    this.pointer = new THREE.Vector2();
-    this.raycaster = new THREE.Raycaster();
-    this.current = 0;
-    this.animating = false
-
+    this.list = [...document.querySelectorAll(".item")];
+    this.movieList = [...document.querySelectorAll(".item video")];
+    this.modal = document.querySelector(".modal");
+    this.modalTitle = document.querySelector(".modal-title p");
+    this.modalDirector = document.querySelector(".modal-title span");
+    this.modalDesc = document.querySelector(".modal-desc p");
+    this.modalImage = document.querySelector(".modal-image");
+    this.modalClose = document.querySelector(".modal-button");
+    this.wrapper = document.querySelector(".wrapper");
+    this.index = 0;
     this.render = this.render.bind(this);
   }
 
-  _setRenderer(element: Element | null) {
+  _setRenderer(element: HTMLElement | null) {
     if (!element) return;
     this.renderer = new THREE.WebGLRenderer({ alpha: true });
     this.renderer.setSize(PARAMS.WINDOW.W, PARAMS.WINDOW.H);
     this.renderer.setPixelRatio(PARAMS.WINDOW.PIXEL_RATIO);
-    element.appendChild(this.renderer.domElement);
+    element?.appendChild(this.renderer.domElement);
   }
 
   _setCamera() {
@@ -42,212 +52,225 @@ export class Webgl {
       PARAMS.CAMERA.NEAR,
       PARAMS.CAMERA.FAR
     );
+    const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
+    const dist = PARAMS.WINDOW.H / 2 / Math.tan(fovRad);
 
     this.camera.position.set(
       PARAMS.CAMERA.POSITION.X,
       PARAMS.CAMERA.POSITION.Y,
-      PARAMS.CAMERA.POSITION.Z
+      dist
     );
-
-    this.camera.lookAt(0, 0, 0);
   }
 
-  _setParticle() {
-    const geometry = new THREE.BufferGeometry();
-
-    const multiplier = 18;
-    const nbColumns = 16 * multiplier;
-    const nbLines = 9 * multiplier;
-
-    const vertices: number[] = [];
-    const rand: number[] = [];
-
-    for (let i = 0; i < nbColumns; i++) {
-      for (let j = 0; j < nbLines; j++) {
-        const points = [i, j, 0];
-        vertices.push(...points);
-        rand.push((Math.random() - 1.0) * 2.0, (Math.random() - 1.0) * 2.0);
-      }
-    }
-
-    const vertices32 = new Float32Array(vertices);
-    const rands = new THREE.BufferAttribute(new Float32Array(rand), 2);
-
-    geometry.setAttribute("position", new THREE.BufferAttribute(vertices32, 3));
-    geometry.setAttribute("rand", rands);
-    geometry.center();
-
-    const loader = new THREE.TextureLoader();
-
-    for (let i = 0; i < PARAMS.TEXTURE.length; i++) {
-      this.texture.push(loader.load(PARAMS.TEXTURE[i]));
-    }
-
+  _setMesh() {
+    this.geometry = new THREE.PlaneGeometry(1, 1, 20, 20);
     this.uniforms = {
-      uPointSize: { value: 3 },
-      uRatio: { value: 0 },
       uTime: { value: 0 },
-      uSliderAnimation: { value: 500.0 },
-      progress: { value: 0.0 },
-      uTexture1: { value: this.texture[0] },
-      uTexture2: { value: this.texture[1] },
-      uTexture3: { value: this.texture[2] },
-      uTexture4: { value: this.texture[3] },
-      uProgress1: { value: 1 },
-      uProgress2: { value: 0 },
-      uProgress3: { value: 0 },
-      uProgress4: { value: 0 },
-      uMousePosition: { value: this.pointer },
-      uNbColumns: { value: nbColumns },
-      uNbLines: { value: nbLines },
+      uPlaneAspect: { value: 1 },
+      uImageAspect: { value: 1 },
+      uResolution: { value: { x: window.innerWidth, y: window.innerHeight } },
+      uTexture: { value: this.textureArray[this.index] },
+      uMousePointer: { value: this.pointer },
+      uOffset: { value: new THREE.Vector2(0.0, 0.0) },
+      uAlpha: { value: 0 },
+      uIsClick: { value: this.isClick },
     };
 
     this.material = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
-      depthTest: false,
-      depthWrite: false,
-      transparent: true,
+      side: THREE.DoubleSide,
     });
 
-    const mesh = new THREE.Points(geometry, this.material);
-    this.scene.add(mesh);
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.scene.add(this.mesh);
+    this.mesh.scale.set(PARAMS.PLANE_GEOMETRY.X, PARAMS.PLANE_GEOMETRY.Y);
+    this.mesh.position.set(PARAMS.WINDOW.W / 2, PARAMS.WINDOW.H / 2);
   }
 
-  _setAnimation() {
-    gsap.to(this.material.uniforms.uSliderAnimation, {
-      value: 0,
-      duration: 1.5,
-      ease: "power1.inOut",
-    });
+  _loadTexture() {
+    for (const movie of this.movieList) {
+      movie.play();
+      const movieTexture = new THREE.VideoTexture(movie);
+      this.textureArray.push(movieTexture);
+    }
   }
 
-  _setAutoPlay() {
-    this._setAnimation();
+  _mouseEvent() {
+    this.list.forEach((element: HTMLElement) => {
+      element.addEventListener("mouseenter", () => {
+        this.index = Number(element.getAttribute("data-list-no")) - 1;
 
-    gsap.to(
-      {},
-      {
-        ease: "none",
-        duration: 1.5,
-        repeat: -1.0,
-        onRepeat: () => {
-          this._setAnimation();
-        },
-      }
-    );
-  }
-
-  _setSlider() {
-    this.progress = [
-      this.uniforms.uProgress1,
-      this.uniforms.uProgress2,
-      this.uniforms.uProgress3,
-      this.uniforms.uProgress4,
-    ];
-
-    const prev = document.querySelector(".prev");
-    const next = document.querySelector(".next");
-
-    prev?.addEventListener("click", () => {
-      if(this.animating) return;
-      this.animating = true;
-
-      const index =
-        (this.current - 1 + PARAMS.TEXTURE.length) % PARAMS.TEXTURE.length;
-
-      this._sliderAnimation(1000, index)
-    });
-
-    next?.addEventListener("click", () => {
-      if(this.animating) return;
-      this.animating = true;
-
-      const index =
-        (this.current + 1 + PARAMS.TEXTURE.length) % PARAMS.TEXTURE.length;
-
-      this._sliderAnimation(-1000, index)
-    });
-  }
-
-  _sliderAnimation(animationValue: number, index: number) {
-    const tl = gsap.timeline();
-    tl.to(this.material.uniforms.uSliderAnimation, {
-      value: animationValue,
-      duration: 2.5,
-    })
-      .to(
-        this.progress[index],
-        {
+        gsap.to(this.material.uniforms.uAlpha, {
           value: 1,
-          duration: 1.5,
-        },
-        "=-1.5"
-      )
-      .to(
-        this.progress[this.current],
-        {
-          value: 0,
-          duration: 1.5,
-        },
-        "<"
-      )
-      .to(this.material.uniforms.uSliderAnimation, {
-        value: 0,
-        duration: 0,
+          duration: 1,
+          ease: "power2.inOut",
+        });
       });
 
-    this.current = index;
-    this.animating = false;
+      element.addEventListener("mouseleave", () => {
+        if (!this.isClick) {
+          gsap.to(this.material.uniforms.uAlpha, {
+            value: 0,
+            duration: 0.5,
+            ease: "power2.inOut",
+          });
+        }
+      });
+
+      this.mesh.position.set(
+        this.offset.x - PARAMS.WINDOW.W / 2,
+        -this.offset.y + PARAMS.WINDOW.H / 2,
+        1
+      );
+    });
   }
 
-  _mouseAnimation() {
-    
+  _onClickEvent() {
+    const tl = gsap.timeline();
+
+    this.list.forEach((element: HTMLElement) => {
+      element.addEventListener("click", () => {
+        this.isClick = true;
+        this.modalTitle.innerHTML = MODAL[this.index].TITLE;
+        this.modalDirector.innerHTML = MODAL[this.index].DIRECTOR;
+        this.modalDesc.innerHTML = MODAL[this.index].DESC;
+
+        const { width, height, top, left } =
+          this.modalImage.getBoundingClientRect();
+
+        const x = left - PARAMS.WINDOW.W / 2 + width / 2;
+        const y = -top + PARAMS.WINDOW.H / 2 - height / 2;
+
+        gsap.to(this.mesh.position, {
+          x,
+          y,
+          duration: 1,
+          ease: "power2.inOut",
+        });
+
+        gsap.to(this.mesh.scale, {
+          x: width,
+          y: height,
+          duration: 1,
+          ease: "power2.inOut",
+        });
+
+        tl.to(this.offset, {
+          x: Math.random() * 0.1,
+          y: Math.random() * 0.1,
+          duration: 0.5,
+          ease: "power1.inOut",
+        }).to(this.offset, {
+          x: 0,
+          y: 0,
+          duration: 0.1,
+          ease: "power3.inOut",
+        });
+
+        this.wrapper.classList.toggle("is-hidden");
+        this.modal.classList.toggle("is-show");
+      });
+    });
+
+    this.modalClose.addEventListener("click", () => {
+      this.isModal = false;
+
+      gsap.to(this.material.uniforms.uAlpha, {
+        value: 0,
+        duration: 0.5,
+        ease: "power2.inOut",
+      });
+
+      gsap.to(this.mesh.scale, {
+        x: PARAMS.PLANE_GEOMETRY.X,
+        y: PARAMS.PLANE_GEOMETRY.Y,
+        duration: 1,
+        ease: "power2.inOut",
+      });
+
+      this.modal.classList.toggle("is-show");
+      setTimeout(() => {
+        this.isClick = false;
+      }, 500)
+      setTimeout(() => {
+        this.wrapper.classList.toggle("is-hidden");
+        this.modal.scroll({ top: 0 });
+      }, 1000);
+    });
   }
 
-  _setControls() {
+  _onPointerMove(event: MouseEvent) {
+    this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.pointer.y = (event.clientY / window.innerHeight) * 2 + 1;
+
+    this.targetX = event.clientX;
+    this.targetY = event.clientY;
+  }
+
+  _setControl() {
     const controls = new OrbitControls(this.camera, this.renderer.domElement);
     controls.enableDamping = true;
-  }
 
-  _setAxesHelper() {
-    const axesHelper = new THREE.AxesHelper(10);
+    const axesHelper = new THREE.AxesHelper(300);
     this.scene.add(axesHelper);
   }
 
-  init() {
-    const element = document?.querySelector(".webgl");
-    this._setRenderer(element);
-    this._setCamera();
-
-    // this._setControls();
-
-    this._setParticle();
-    this._setAutoPlay();
-
-    this._setSlider();
-  }
-
-  render() {
-    this.raycaster.setFromCamera(this.pointer, this.camera);
-    // const intersects = this.raycaster.intersectObjects(this.scene.children);
-
-    this.renderer.render(this.scene, this.camera);
-    this.material.uniforms.uTime.value += 0.05;
-    requestAnimationFrame(this.render);
-  }
-
-  onPointerMove(event: MouseEvent) {
-    this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-    this.pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
-  }
-
-  onResize() {
+  _onResize() {
     setTimeout(() => {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
+      this.material.uniforms.uResolution.value = {
+        x: window.innerWidth,
+        y: window.innerHeight,
+      };
+      this.mesh.position.set(
+        this.offset.x - PARAMS.WINDOW.W / 2,
+        -this.offset.y + PARAMS.WINDOW.H / 2,
+        1
+      );
     }, 500);
+  }
+
+  init() {
+    this._setRenderer(document?.querySelector(".webgl"));
+    this._setCamera();
+    this._loadTexture();
+    this._setMesh();
+    this._mouseEvent();
+    this._onClickEvent();
+  }
+
+  render() {
+    this.renderer.render(this.scene, this.camera);
+    this.offset.x = lerp(this.offset.x, this.targetX, 0.1);
+    this.offset.y = lerp(this.offset.y, this.targetY, 0.1);
+
+    this.uniforms.uOffset.value.set(
+      (this.targetX - this.offset.x) * 0.001,
+      -(this.targetY - this.offset.y) * 0.001
+    );
+
+    requestAnimationFrame(this.render);
+    this.material.uniforms.uTime.value += Math.abs(Math.sin(0.01));
+    this.material.uniforms.uTexture.value = this.textureArray[this.index];
+
+    if (this.isClick) {
+      setTimeout(() => {
+        const { width, height, top, left } =
+          this.modalImage.getBoundingClientRect();
+        const x = left - PARAMS.WINDOW.W / 2 + width / 2;
+        const y = -top + PARAMS.WINDOW.H / 2 - height / 2;
+        this.mesh.position.set(x, y);
+      }, 1000);
+    } else {
+      this.mesh.position.set(
+        this.offset.x - PARAMS.WINDOW.W / 2,
+        -this.offset.y + PARAMS.WINDOW.H / 2,
+        1
+      );
+    }
   }
 }

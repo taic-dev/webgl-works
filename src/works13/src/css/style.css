@@ -3,24 +3,33 @@
   padding: 0;
   font-family: "Secular One", sans-serif;
 }
+body {
+  background-color: #fff;
+}
 canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
+}
+.webgl__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 100px;
+
   width: 100vw;
   height: 100vh;
-  z-index: -1;
 }
-h1 {
-  font-size: 2rem;
-  margin: 15px;
-  color: #fff;
+.webgl {
+  width: 500px;
+  height: 700px;
 }
-img {
+/* .effect__wrapper {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -2;
+  top: 28%;
+  transform: translateY(-50%);
+} */
+.effect__wrapper label {
+  display: block;
+  margin-left: 15px;
+  margin-bottom: 15px;
 }
+
