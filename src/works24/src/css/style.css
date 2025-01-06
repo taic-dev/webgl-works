@@ -1,27 +1,21 @@
 * {
   margin: 0;
   padding: 0;
+  font-family: "Secular One", sans-serif;
 }
-
-html,
-body,
-main {
-  font-family: Nacelle;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
-
 canvas {
-  position: fixed;
-  z-index: -1;
-}
-
-h1 {
   position: absolute;
   top: 0;
-  margin: 15px;
-  font-size: 2rem;
-  font-family: "Secular One", sans-serif;
-  color: #fff;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+}
+img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -2;
 }

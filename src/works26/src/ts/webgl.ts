@@ -1,9 +1,11 @@
+import { gsap } from "gsap";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import vertexShader from "../shader/vertexShader.glsl";
 import fragmentShader from "../shader/fragmentShader.glsl";
+import face from "../image/mountain.png";
+import displacement from "../image/mountain-displacement.png";
 import { mouseCoordinate } from "./utils";
-import GUI from "lil-gui";
 
 export class Webgl {
   w: number;
@@ -17,18 +19,24 @@ export class Webgl {
   geometry: THREE.PlaneGeometry | undefined;
   mesh: THREE.Mesh | undefined;
   controls: OrbitControls | undefined;
-  x: number;
-  y: number;
-  guiValue: any;
+  image: HTMLImageElement;
+  clock: THREE.Clock;
+  elapsedTime: number;
+  deltaTime: number;
+  time: number | undefined;
 
   constructor() {
     this.w = window.innerWidth;
     this.h = window.innerHeight;
-    this.x = 0;
-    this.y = 0;
     this.aspect = this.w / this.h;
     this.scene = new THREE.Scene();
     this.render = this.render.bind(this);
+
+    this.image = document.querySelector<HTMLImageElement>(".image")!;
+    this.clock = new THREE.Clock();
+    this.elapsedTime = 0;
+    this.deltaTime = 0;
+    this.time = this.clock.getElapsedTime();
   }
 
   _setCanvas() {
@@ -46,24 +54,42 @@ export class Webgl {
     this.camera.position.set(0, 0, dist);
   }
 
-  _setEffectMesh() {
-    this.geometry = new THREE.PlaneGeometry(this.w, this.h);
+  _setMesh() {
+    const loader = new THREE.TextureLoader();
+    this.geometry = new THREE.PlaneGeometry(1, 1, 1, 1);
     this.uniforms = {
-      uTime: { value: 0 },
-      uMouse: { value: new THREE.Vector2(this.x, this.y) },
-      uResolution: { value: new THREE.Vector2(this.w, this.h) },
-      uColor: { value: false },
-      uSize: { value: 5.0 },
-      uSpeed: { value: 0.0001 },
+      uDisplacement: { value: loader.load(displacement) },
+      uTexture: { value: loader.load(face) },
+      uTextureSize: {
+        value: new THREE.Vector2(
+          this.image.naturalWidth,
+          this.image.naturalHeight
+        ),
+      },
+      uPlaneSize: {
+        value: new THREE.Vector2(
+          this.image.clientWidth,
+          this.image.clientHeight
+        ),
+      },
+      uMouse: { value: new THREE.Vector2(0, 0) },
+      uTime: { value: this.time },
     };
     this.material = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
-      side: THREE.DoubleSide,
     });
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.mesh);
+  }
+
+  _setMeshScale() {
+    if(!this.mesh) return;
+    this.mesh.scale.x = this.image.clientWidth;
+    this.mesh.scale.y = this.image.clientHeight;
+    (this.mesh.material as any).uniforms.uPlaneSize.value.x = this.image.clientWidth;
+    (this.mesh.material as any).uniforms.uPlaneSize.value.y = this.image.clientHeight;
   }
 
   _setHelper() {
@@ -76,57 +102,50 @@ export class Webgl {
     this.scene.add(axesHelper);
   }
 
-  _setGui() {
-    const gui = new GUI();
-    this.guiValue = {
-      color: false,
-      size: 5,
-      speed: 0.0005,
-    };
-    gui.add(this.guiValue, "color");
-    gui.add(this.guiValue, "size", 1, 10, 0.1);
-    gui.add(this.guiValue, "speed", 0.00001, 0.005, 0.00001);
-  }
-
   _setMouse() {
     window.addEventListener("mousemove", (e: MouseEvent) => {
       if (!this.mesh) return;
       const { x, y } = mouseCoordinate(e);
-      (this.mesh.material as any).uniforms.uMouse.value = { x, y };
+
+      gsap.to((this.mesh.material as any).uniforms.uMouse.value, {
+        duration: 1,
+        ease: "power1.out",
+        x,
+        y,
+      });
     });
   }
 
   _setResize() {
     window.addEventListener("resize", () => {
-      setTimeout(() => {
-        if(!this.camera) return
-        this.renderer?.setPixelRatio(window.devicePixelRatio);
-        this.renderer?.setSize(window.innerWidth, window.innerHeight);
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera?.updateProjectionMatrix();
-        this.mesh?.scale.set(window.innerWidth, window.innerHeight, 0);
-      }, 500)
+      if (!this.camera) return;
+      this.renderer?.setPixelRatio(window.devicePixelRatio);
+      this.renderer?.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera?.updateProjectionMatrix();
+
+      this._setMeshScale();
     });
   }
 
   init() {
     this._setCanvas();
     this._setCamera();
-    this._setEffectMesh();
-    this._setGui();
-    this._setResize();
-    // this._setMouse();
+    this._setMesh();
+    this._setMeshScale();
     // this._setHelper();
+    this._setMouse();
+    this._setResize();
   }
 
   render() {
     if (!this.camera || !this.material) return;
     this.renderer?.render(this.scene, this.camera);
 
-    (this.mesh?.material as any).uniforms.uTime.value++;
-    this.material.uniforms.uColor.value = this.guiValue.color;
-    this.material.uniforms.uSize.value = this.guiValue.size;
-    this.material.uniforms.uSpeed.value = this.guiValue.speed;
+    this.elapsedTime = this.clock.getElapsedTime();
+    this.deltaTime = this.clock.getDelta();
+
+    this.material.uniforms.uTime.value = this.elapsedTime;
 
     requestAnimationFrame(this.render);
   }
