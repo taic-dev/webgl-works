@@ -11,10 +11,6 @@ canvas {
   height: 100vh;
   z-index: -1;
 }
-h1 {
-  font-size: 2rem;
-  margin: 15px;
-}
 img {
   position: absolute;
   top: 0;
