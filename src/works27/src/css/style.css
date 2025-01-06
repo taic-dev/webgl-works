@@ -26,15 +26,6 @@ canvas {
   z-index: -1;
 }
 
-h1 {
-  position: fixed;
-  top: 0;
-  margin: 15px;
-  font-size: 2rem;
-  font-family: "Secular One", sans-serif;
-  color: #fff;
-}
-
 .title__wrapper {
   mix-blend-mode: difference;
 }
