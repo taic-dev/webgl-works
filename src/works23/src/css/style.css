@@ -21,10 +21,6 @@ main {
   overflow: hidden;
 }
 
-header {
-  color: #000;
-}
-
 canvas {
   position: fixed;
   top: 0;
@@ -119,6 +115,7 @@ canvas {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: -99;
+  background-color: #fff;
 }
 
 .text__wrapper span {
