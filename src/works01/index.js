@@ -189,7 +189,7 @@ class App3 {
     }
     gui.addColor(this.guiValue, 'DodecahedronColor');
     gui.addColor(this.guiValue, 'BoxColor');
-
+    gui.close();
     // ヘルパー
     // const axesBarLength = 5.0;
     // this.axesHelper = new THREE.AxesHelper(axesBarLength);

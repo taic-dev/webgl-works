@@ -177,6 +177,7 @@ class App3 {
     this.wingGroup.add(this.wing2);
 
     this.cylinderGroup.add(this.wingGroup);
+    this.cylinderGroup.position.y = -1.8;
     this.scene.add(this.cylinderGroup);
 
     // コントロール
@@ -194,6 +195,7 @@ class App3 {
     }
     gui.add(this.guiValue, "mainRotation");
     gui.add(this.guiValue, "wingRotation");
+    gui.close();
   }
 
   render() {
