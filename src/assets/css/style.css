@@ -96,3 +96,22 @@ header {
   height: 100%;
   object-fit: cover;
 }
+@media screen and (max-width:500px) {
+  .mv {
+    padding: 16px;
+  }
+  .mv__list {
+    position: relative;
+    top: unset;
+    right: unset;
+    margin-top: 16px;
+  }
+  .item {
+    width: 50%;
+  }
+  .item-number {
+    width: 10.5vw;
+    height: 10.5vw;
+    font-size: 6vw;
+  }
+}
