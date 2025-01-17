@@ -47,7 +47,7 @@ export class Setup {
     const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
     const dist = window.innerHeight / 2 / Math.tan(fovRad);
 
-    this.camera.position.set(0, 0, 1);
+    this.camera.position.set(0, 0, 0.5);
   }
 
   setHelper() {

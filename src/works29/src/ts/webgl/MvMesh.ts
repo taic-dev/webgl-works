@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Setup } from "./Setup";
-import fragmentShader from "./shader/fragmentShader.glsl";
-import vertexShader from "./shader/vertexShader.glsl";
+import fragmentShader from "./shader/mv/fragmentShader.glsl";
+import vertexShader from "./shader/mv/vertexShader.glsl";
 import { PARAMS } from "../utils/constants";
 import {
   getElementPositionAndSize,
