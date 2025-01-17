@@ -46,30 +46,24 @@ export class MvMesh {
 
   setMesh(info: ElementPositionAndSize) {
     const uniforms = this.setUniforms(info);
-    const geometry = new THREE.SphereGeometry(1, 32, 32);
+    const geometry = new THREE.SphereGeometry(1.5, 32, 32);
     const material = new THREE.ShaderMaterial({
       // wireframe: true,
       uniforms: uniforms,
       fragmentShader: fragmentShader,
       vertexShader: vertexShader,
+      side: THREE.DoubleSide,
     });
     this.mesh = new THREE.Mesh(geometry, material);
     this.setup.scene?.add(this.mesh);
-
-    this.mesh.scale.x = info.dom.width;
-    this.mesh.scale.y = info.dom.height;
-
-    // this.mesh.scale.x = 500;
-    // this.mesh.scale.y = 500;
     this.mesh.position.x = info.dom.x;
     this.mesh.position.y = info.dom.y;
+    this.mesh.position.z = 0;
   }
 
   updateMesh() {
     if (!this.mesh || !this.element) return;
     const info = getElementPositionAndSize(this.element);
-    this.mesh.scale.x = info.dom.width;
-    this.mesh.scale.y = info.dom.height;
     this.mesh.position.x = info.dom.x;
     this.mesh.position.y = info.dom.y;
   }
