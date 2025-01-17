@@ -44,8 +44,8 @@ mat2 rotate2d(float _angle){
 vec3 palette(float t) {
   vec3 a = vec3(0.5098, 0.5373, 0.4941);
   vec3 b = vec3(0.5137, 0.5373, 0.498);
-  vec3 c = vec3(0.4667, 0.4784, 0.4706);
-  vec3 d = vec3(0.0, 0.2549, 0.3098);
+  vec3 c = vec3(0.3725, 0.3725, 0.0);
+  vec3 d = vec3(0.2, 0.2667, 0.4706);
 
   return a+b*cos(6.28318*(c*t+d));
 }
