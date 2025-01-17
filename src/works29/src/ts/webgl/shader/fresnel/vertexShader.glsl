@@ -2,9 +2,9 @@ varying vec2 vUv;
 varying vec3 vPosition;
 
 float mRefractionRatio = 1.02;
-float mFresnelBias = 0.1;
-float mFresnelScale = 2.;
-float mFresnelPower = 1.;
+float mFresnelBias = 0.3;
+float mFresnelScale = 5.;
+float mFresnelPower = 15.;
 
 varying vec3 vReflect;
 varying vec3 vRefract[3];

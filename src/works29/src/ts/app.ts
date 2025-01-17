@@ -1,6 +1,6 @@
 import { gsap } from "gsap";
 import { App } from "./webgl/App";
-import { BREAK_POINT } from "./utils/constants";
+import { viewportReload } from "./utils/viewportReload";
 
 window.addEventListener("load", () => {
   document.body.classList.add("is-loaded");
@@ -14,8 +14,5 @@ gsap.ticker.add(() => webgl.render());
 // resize
 window.addEventListener('resize', () => {
   webgl.resize()
-
-  if(window.innerWidth < BREAK_POINT.MD) {
-    location.reload();
-  }
+  viewportReload();
 })

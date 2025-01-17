@@ -23,13 +23,13 @@ export class Setup {
     this.setRenderer();
     this.setScene();
     this.setCamera();
-    this.setHelper();
+    // this.setHelper();
   }
 
   setRenderer() {
     const element = document.querySelector(".webgl");
     this.renderer = new THREE.WebGLRenderer({ alpha: true });
-    this.renderer.setSize(PARAMS.WINDOW.W, PARAMS.WINDOW.H);
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
     element?.appendChild(this.renderer.domElement);
   }
 
@@ -47,7 +47,7 @@ export class Setup {
     // const fovRad = (PARAMS.CAMERA.FOV / 2) * (Math.PI / 180);
     // const dist = window.innerHeight / 2 / Math.tan(fovRad);
 
-    this.camera.position.set(0, 0, 0.5);
+    this.camera.position.set(0, 0, 1);
   }
 
   setHelper() {
@@ -64,9 +64,9 @@ export class Setup {
 
   resize() {
     if (!this.camera) return;
-    this.renderer?.setPixelRatio(window.devicePixelRatio);
     this.camera.aspect = window.innerWidth / window.innerHeight;
-    this.renderer?.setSize(window.innerWidth, window.innerHeight);
     this.camera?.updateProjectionMatrix();
+    this.renderer?.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer?.setSize(window.innerWidth, window.innerHeight);
   }
 }

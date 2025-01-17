@@ -42,9 +42,8 @@ export class FresnelMesh {
 
   setMesh() {
     const uniforms = this.setUniforms();
-    const geometry = new THREE.SphereGeometry(0.4, 32, 32);
+    const geometry = new THREE.SphereGeometry(1.8, 32, 32);
     const material = new THREE.ShaderMaterial({
-      // wireframe: true,
       uniforms: uniforms,
       fragmentShader: fragmentShader,
       vertexShader: vertexShader,
@@ -54,24 +53,26 @@ export class FresnelMesh {
     });
     this.mesh = new THREE.Mesh(geometry, material);
     this.setup.scene?.add(this.mesh);
-    // this.mesh.position.x = info.dom.x;
-    // this.mesh.position.y = info.dom.y;
-    this.mesh.position.z = -1.;
+    this.mesh.position.x = 1;
+    this.mesh.position.y = 0.5;
+    this.mesh.position.z = -1.8;
 
     this.cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, {
       format: THREE.RGBAFormat,
       generateMipmaps: true,
       minFilter: THREE.LinearMipMapNearestFilter,
-      // encoding: THREE.sRGBEncoding
     });
 
     this.cubeCamera = new THREE.CubeCamera(0.1, 10, this.cubeRenderTarget);
+  }
+
+  resize() {
+    (this.mesh?.material as any).uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
   }
 
   raf() {
     if(!this.setup.renderer || !this.setup.scene) return
     this.cubeCamera?.update(this.setup.renderer, this.setup.scene);
     (this.mesh?.material as any).uniforms.tCube.value = this.cubeRenderTarget?.texture;
-
   }
 }

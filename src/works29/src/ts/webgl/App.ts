@@ -29,12 +29,8 @@ export class App {
     this.mvPostEffect.raf();
   }
 
-  update() {
-    this.mvMesh.updateMesh();
-  }
-
   resize() {
     this.setup.resize();
-    this.mvMesh.resize();
+    this.FresnelMesh.resize();
   }
 }
