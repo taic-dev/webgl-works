@@ -27,6 +27,9 @@ export class MvMesh {
       },
       uMouse: { value: new THREE.Vector2(0, 0) },
       uTime: { value: 0.0 },
+      uColor1: { value: 0.2 },
+      uColor2: { value: 0.2667 },
+      uColor3: { value: 0.4706 }
     };
 
     return {
@@ -51,5 +54,8 @@ export class MvMesh {
   raf() {
     if (!this.mesh) return;
     (this.mesh.material as any).uniforms.uTime.value += 0.01;
+    (this.mesh.material as any).uniforms.uColor1.value = this.setup.guiValue.color1;
+    (this.mesh.material as any).uniforms.uColor2.value = this.setup.guiValue.color2;
+    (this.mesh.material as any).uniforms.uColor3.value = this.setup.guiValue.color3;
   }
 }

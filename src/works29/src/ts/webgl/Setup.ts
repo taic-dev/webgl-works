@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { PARAMS } from "../utils/constants";
+import GUI from "lil-gui";
 
 export class Setup {
   renderer: THREE.WebGLRenderer | null;
@@ -8,6 +9,7 @@ export class Setup {
   camera: THREE.PerspectiveCamera | null;
   loader: THREE.TextureLoader;
   controls: OrbitControls | null;
+  guiValue: any;
 
   constructor() {
     this.renderer = null;
@@ -23,6 +25,7 @@ export class Setup {
     this.setRenderer();
     this.setScene();
     this.setCamera();
+    this.setGui();
     // this.setHelper();
   }
 
@@ -48,6 +51,18 @@ export class Setup {
     // const dist = window.innerHeight / 2 / Math.tan(fovRad);
 
     this.camera.position.set(0, 0, 1);
+  }
+
+  setGui() {
+    const gui = new GUI();
+    this.guiValue = {
+      color1: 0.2,
+      color2: 0.2667,
+      color3: 0.4706
+    };
+    gui.add(this.guiValue, "color1", 0, 1, 0.0001);
+    gui.add(this.guiValue, "color2", 0, 1, 0.0001);
+    gui.add(this.guiValue, "color3", 0, 1, 0.0001);
   }
 
   setHelper() {
