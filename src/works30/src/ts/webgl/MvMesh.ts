@@ -13,7 +13,7 @@ export class MvMesh {
 
   constructor(setup: Setup) {
     this.setup = setup
-    this.element = document.querySelector<HTMLImageElement>('.js-mv-image')
+    this.element = document.querySelector<HTMLImageElement>('.js-mv')
     this.mesh = null
     this.loader = null
   }
@@ -66,6 +66,7 @@ export class MvMesh {
       this.mesh.scale.y = info.dom.height;
       this.mesh.position.x = info.dom.x;
       this.mesh.position.y = info.dom.y;
+      (this.mesh.material as any).uniforms.uTime.value += 0.01;
   }
 
   resize() {
