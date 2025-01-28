@@ -3,7 +3,7 @@ import { Setup } from "./Setup";
 import fragmentShader from "../../shader/mv/fragmentShader.glsl"
 import vertexShader from "../../shader/mv/vertexShader.glsl"
 import { PARAMS } from "./constants";
-import { getElementPositionAndSize, getImagePositionAndSize, ImagePositionAndSize } from "../utils/getElementSize";
+import { getImagePositionAndSize, ImagePositionAndSize } from "../utils/getElementSize";
 
 export class MvMesh {
   setup: Setup
