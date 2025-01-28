@@ -3,7 +3,7 @@ import { Setup } from "./Setup";
 import fragmentShader from "../../shader/mv/fragmentShader.glsl"
 import vertexShader from "../../shader/mv/vertexShader.glsl"
 import { PARAMS } from "./constants";
-import { getImagePositionAndSize, ImagePositionAndSize } from "../utils/getElementSize";
+import { getElementPositionAndSize, getImagePositionAndSize, ImagePositionAndSize } from "../utils/getElementSize";
 
 export class MvMesh {
   setup: Setup
@@ -66,7 +66,11 @@ export class MvMesh {
       this.mesh.scale.y = info.dom.height;
       this.mesh.position.x = info.dom.x;
       this.mesh.position.y = info.dom.y;
-      (this.mesh.material as any).uniforms.uTime.value += 0.01;
+  }
+
+  raf() {
+    if (!this.mesh) return;
+    (this.mesh.material as any).uniforms.uTime.value += 0.005;
   }
 
   resize() {

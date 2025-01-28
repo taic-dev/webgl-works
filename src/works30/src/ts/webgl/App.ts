@@ -11,14 +11,15 @@ export class App {
   }
 
   init() {
-    this.setup.init();
     this.mvMesh.init();
   }
 
   render() {
     if(!this.setup.scene || !this.setup.camera) return
     this.setup.renderer?.render(this.setup.scene, this.setup.camera)
+    this.mvMesh.raf();
     this.update();
+    requestAnimationFrame(() => this.render());
   }
 
   update() {

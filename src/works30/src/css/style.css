@@ -1,3 +1,19 @@
+.webgl {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow: clip;
+}
+
+.webgl canvas {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
 .mv {
   display: flex;
   gap: 80px;

@@ -40,25 +40,9 @@ vec3 overlay(vec3 base, vec3 blend) {
 }
 
 void main() {
-  // アスペクトを計算
-  float planeAspect = uPlaneSize.x / uPlaneSize.y;
-  float calligraphyAspect = uTextureSize.x / uTextureSize.y;
-
-  // 画像のアスペクトとプレーンのアスペクトを比較し、短い方に合わせる
-  vec2 ratio = vec2(
-    min(planeAspect / calligraphyAspect, 1.0),
-    min((1.0 / planeAspect) / (1.0 / calligraphyAspect), 1.0)
-  );
-
-  // 計算結果を用いて補正後のuv値を生成
-  vec2 fixedUv = vec2(
-    (vUv.x - 0.5) * ratio.x + 0.5,
-    (vUv.y - 0.5) * ratio.y + 0.5
-  );
-
   float n = noise(vPosition + uTime);
-  vec3 bColor = vec3(0.0, 0.5843, 1.0);
+  vec3 bColor = vec3(0.0, 0.6667, 1.0);
   vec3 nColor = vec3(n,n,0.);
-  vec3 effectColor = overlay(bColor, nColor);
+  vec3 effectColor = overlay(bColor, nColor * 2.5);
   gl_FragColor = vec4(vec3(effectColor), 1.0);
 }
