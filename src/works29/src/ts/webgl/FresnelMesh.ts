@@ -71,8 +71,10 @@ export class FresnelMesh {
   }
 
   raf() {
-    if(!this.setup.renderer || !this.setup.scene) return
+    if(!this.mesh || !this.setup.renderer || !this.setup.scene) return
+    this.mesh.visible = false
     this.cubeCamera?.update(this.setup.renderer, this.setup.scene);
+    this.mesh.visible = true;
     (this.mesh?.material as any).uniforms.tCube.value = this.cubeRenderTarget?.texture;
   }
 }
