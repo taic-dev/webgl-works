@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Setup } from "./Setup";
-import fragmentShader from "../../shader/mv/fragmentShader.glsl"
-import vertexShader from "../../shader/mv/vertexShader.glsl"
+import fragmentShader from "./shader/mv/fragmentShader.glsl"
+import vertexShader from "./shader/mv/vertexShader.glsl"
 import { PARAMS } from "./constants";
 import { getImagePositionAndSize, ImagePositionAndSize } from "../utils/getElementSize";
 
@@ -70,7 +70,7 @@ export class MvMesh {
 
   raf() {
     if (!this.mesh) return;
-    (this.mesh.material as any).uniforms.uTime.value += 0.005;
+    (this.mesh.material as any).uniforms.uTime.value += 0.01;
   }
 
   resize() {

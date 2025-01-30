@@ -6,6 +6,7 @@ export class Setup {
   renderer: THREE.WebGLRenderer | null
   scene: THREE.Scene | null
   camera: THREE.PerspectiveCamera | null
+  directionalLight: THREE.DirectionalLight | null;
   loader: THREE.TextureLoader
   controls: OrbitControls | null
 
@@ -13,6 +14,7 @@ export class Setup {
     this.renderer = null;
     this.scene = null;
     this.camera = null;
+    this.directionalLight = null
     this.controls = null;
     this.loader = new THREE.TextureLoader();
 
@@ -23,6 +25,7 @@ export class Setup {
     this.setRenderer();
     this.setScene();
     this.setCamera();
+    // this.setDirectionalLight();
     this.setHelper();
   }
 
@@ -34,7 +37,6 @@ export class Setup {
   }
 
   updateRenderer() {
-    console.log(window.innerWidth, window.innerHeight)
     this.renderer?.setSize(window.innerWidth, window.innerHeight);
     this.renderer?.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   }
@@ -51,6 +53,12 @@ export class Setup {
       PARAMS.CAMERA.FAR
     );
     this.updateCamera();
+  }
+
+  setDirectionalLight() {
+    this.directionalLight = new THREE.DirectionalLight(0xfff0dd, 1);
+    this.directionalLight.position.set(0, 5, 10);
+    this.scene?.add(this.directionalLight);
   }
 
   updateCamera() {
