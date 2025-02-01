@@ -28,6 +28,7 @@
   z-index: 1;
   font-size: 10vw;
   color: #315eff;
+  opacity: 0.2;
 }
 
 .mv__text {
