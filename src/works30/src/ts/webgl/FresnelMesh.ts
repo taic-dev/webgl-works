@@ -1,3 +1,4 @@
+import { gsap } from "gsap";
 import * as THREE from "three";
 import { Setup } from "./Setup";
 
@@ -5,20 +6,19 @@ export class FresnelMesh {
   setup: Setup;
   mesh: THREE.Mesh | null;
   loader: THREE.TextureLoader | null;
-  cubeRenderTarget: THREE.WebGLCubeRenderTarget | null;
-  cubeCamera: THREE.CubeCamera | null;
+  pointer: THREE.Vector2
 
   constructor(setup: Setup) {
     this.setup = setup;
     this.mesh = null;
     this.loader = null;
-    this.cubeRenderTarget = null;
-    this.cubeCamera = null;
+    this.pointer = new THREE.Vector2(0,0);
   }
 
   init() {
     this.setUniforms();
     this.setMesh();
+    this.setMouse();
   }
 
   setUniforms() {
@@ -39,11 +39,27 @@ export class FresnelMesh {
     const material = new THREE.MeshPhysicalMaterial({
       roughness: 0,
       transmission: 1,
-      thickness: 100,
+      thickness: 80,
+      ior: 1.5,
     });
     this.mesh = new THREE.Mesh(geometry, material);
     this.setup.scene?.add(this.mesh);
-    this.mesh.position.set(0, -150, 100);
+    this.mesh.position.set(0, 0, 0);
+  }
+  
+  setMouse() {
+    window.addEventListener('pointermove', (e) => {
+      if(!this.mesh) return
+      this.pointer.x = e.clientX - (window.innerWidth / 2);
+      this.pointer.y = -e.clientY + (window.innerHeight / 2);
+
+      gsap.to(this.mesh.position, {
+        x: this.pointer.x,
+        y: this.pointer.y,
+        ease: 'ease-out',
+        duration: 0.6,
+      })
+    })
   }
 
   resize() {

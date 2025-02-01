@@ -53,7 +53,5 @@ export class TextMesh {
     // mesh.scale.set(info.dom.width, info.dom.height, 0)
     mesh.position.set(info.dom.x, info.dom.y, 1);
     this.setup.scene?.add(mesh);
-
-    console.log(mesh)
   }
 }

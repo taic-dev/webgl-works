@@ -14,8 +14,6 @@ export class App {
     this.mvMesh = new MvMesh(this.setup);
     this.textMesh = new TextMesh(this.setup);
     this.fresnelMesh = new FresnelMesh(this.setup);
-
-    console.log(this.setup.scene)
   }
 
   init() {
