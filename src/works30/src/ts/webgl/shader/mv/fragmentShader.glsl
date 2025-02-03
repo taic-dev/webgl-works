@@ -41,7 +41,7 @@ vec3 overlay(vec3 base, vec3 blend) {
 
 void main() {
   float n = noise(vPosition + uTime);
-  vec3 bColor = vec3(0.0, 0.6667, 1.0);
+  vec3 bColor = vec3(1.0, 0.251, 0.0);
   vec3 nColor = vec3(n,n,0.);
   vec3 effectColor = overlay(bColor, nColor * 2.5);
   gl_FragColor = vec4(vec3(effectColor), 1.0);
