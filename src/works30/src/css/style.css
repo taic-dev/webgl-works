@@ -67,19 +67,5 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center;
-}
-
-/* .mv__text {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  margin-top: 40px;
-  font-size: 24px;
   opacity: 0;
 }
-
-.mv__text span {
-  display: block;
-  width: fit-content;
-  line-height: 0.5;
-} */

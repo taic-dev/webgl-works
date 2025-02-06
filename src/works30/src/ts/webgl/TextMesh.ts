@@ -35,9 +35,7 @@ export class TextMesh {
   }
 
   setMesh(string: string, info: ElementPositionAndSize) {
-    console.log(info)
     const fontSize = info.dom.height * 0.1;
-    console.log(fontSize)
     this.geometry = new TextGeometry(string, {
       font: font,
       size: fontSize,

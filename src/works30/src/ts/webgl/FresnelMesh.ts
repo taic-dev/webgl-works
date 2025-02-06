@@ -39,8 +39,7 @@ export class FresnelMesh {
     const material = new THREE.MeshPhysicalMaterial({
       roughness: 0,
       transmission: 1.1,
-      thickness: 50,
-      ior: 2,
+      thickness: 130,
     });
     this.mesh = new THREE.Mesh(geometry, material);
     this.setup.scene?.add(this.mesh);
