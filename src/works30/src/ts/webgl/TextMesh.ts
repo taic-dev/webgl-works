@@ -44,7 +44,7 @@ export class TextMesh {
       bevelEnabled: false,
     });
     const material = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
+      color: 0x333cff,
       roughness: 0.3,
       metalness: 0.5
     });

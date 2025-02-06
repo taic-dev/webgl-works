@@ -39,6 +39,13 @@ body {
   line-height: 1;
 }
 
+@media screen and (max-width: 500px) {
+  .mv__desc {
+    top: 55vw;
+    left: 30px;
+  }
+}
+
 .mv__title {
   font-size: 10vw;
   opacity: 0;
@@ -54,12 +61,24 @@ body {
 .mv__image {
   position: absolute;
   top: 50%;
-  right: 10%;
+  left: 50%;
+  right: unset;
   transform: translateY(-50%);
   z-index: 1;
 
   width: 30vw;
   height: 40vw;
+}
+
+@media screen and (max-width: 500px) {
+  .mv__image {
+    top: 50%;
+    right: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 90%;
+    height: auto;
+  }
 }
 
 .mv__image img {

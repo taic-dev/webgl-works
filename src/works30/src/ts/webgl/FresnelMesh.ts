@@ -1,18 +1,20 @@
 import { gsap } from "gsap";
 import * as THREE from "three";
 import { Setup } from "./Setup";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
+import empty_warehouse_01_2k from "../../hdr/empty_warehouse_01_2k.hdr";
 
 export class FresnelMesh {
   setup: Setup;
   mesh: THREE.Mesh | null;
   loader: THREE.TextureLoader | null;
-  pointer: THREE.Vector2
+  pointer: THREE.Vector2;
 
   constructor(setup: Setup) {
     this.setup = setup;
     this.mesh = null;
     this.loader = null;
-    this.pointer = new THREE.Vector2(0,0);
+    this.pointer = new THREE.Vector2(0, 0);
   }
 
   init() {
@@ -35,30 +37,35 @@ export class FresnelMesh {
   }
 
   setMesh() {
-    const geometry = new THREE.IcosahedronGeometry(130, 15);
+    const geometry = new THREE.IcosahedronGeometry(130, 10);
+    const loader = new RGBELoader();
+    const hdrEquirect = loader.load(empty_warehouse_01_2k, () => {
+      hdrEquirect.mapping = THREE.EquirectangularReflectionMapping;
+    });
     const material = new THREE.MeshPhysicalMaterial({
       roughness: 0,
-      transmission: 1.1,
-      thickness: 130,
+      transmission: 1,
+      thickness: 150,
+      envMap: hdrEquirect,
     });
     this.mesh = new THREE.Mesh(geometry, material);
     this.setup.scene?.add(this.mesh);
     this.mesh.position.set(0, 0, 50);
   }
-  
+
   setMouse() {
-    window.addEventListener('pointermove', (e) => {
-      if(!this.mesh) return
-      this.pointer.x = e.clientX - (window.innerWidth / 2);
-      this.pointer.y = -e.clientY + (window.innerHeight / 2);
+    window.addEventListener("pointermove", (e) => {
+      if (!this.mesh) return;
+      this.pointer.x = e.clientX - window.innerWidth / 2;
+      this.pointer.y = -e.clientY + window.innerHeight / 2;
 
       gsap.to(this.mesh.position, {
         x: this.pointer.x,
         y: this.pointer.y,
-        ease: 'ease-out',
+        ease: "ease-out",
         duration: 0.6,
-      })
-    })
+      });
+    });
   }
 
   resize() {
@@ -70,6 +77,5 @@ export class FresnelMesh {
 
   raf() {
     if (!this.mesh || !this.setup.renderer || !this.setup.scene) return;
-
   }
 }

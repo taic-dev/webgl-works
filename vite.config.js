@@ -9,7 +9,7 @@ export default defineConfig({
   root: "src",
   plugins: [
     glslify(),
-    gltf({ include: ["**/*.gltf", '**/*.glb'] }),
+    gltf({ include: ["**/*.gltf", '**/*.glb', '**/*.hdr'] }),
     viteStaticCopy({
       targets: [
         {
@@ -57,7 +57,7 @@ export default defineConfig({
         works30: resolve(__dirname, 'src/works30/index.html'),
       },
     },
-    assetsInclude: ['*.gltf', '*.glb'],
+    assetsInclude: ['*.gltf', '*.glb', '*.hdr'],
     chunkSizeWarningLimit: 100000000,
   },
 })
