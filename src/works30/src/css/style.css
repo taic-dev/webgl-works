@@ -8,6 +8,10 @@ body {
   font-family: 'Montserrat-Bold';
 }
 
+body.w-30 {
+  overflow: hidden;
+}
+
 .webgl {
   position: absolute;
   top: 0;
