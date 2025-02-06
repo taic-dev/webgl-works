@@ -2,7 +2,6 @@ import { gsap } from "gsap";
 import * as THREE from "three";
 import { Setup } from "./Setup";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
-import empty_warehouse_01_2k from "../../hdr/empty_warehouse_01_2k.hdr";
 
 export class FresnelMesh {
   setup: Setup;
@@ -36,21 +35,26 @@ export class FresnelMesh {
     };
   }
 
-  setMesh() {
+  async setMesh() {
     const geometry = new THREE.IcosahedronGeometry(130, 10);
     const loader = new RGBELoader();
-    const hdrEquirect = loader.load(empty_warehouse_01_2k, () => {
+    try {
+      const hdrEquirect = await loader.loadAsync(new URL("../../hdr/empty_warehouse_01_2k.hdr", import.meta.url).href);
       hdrEquirect.mapping = THREE.EquirectangularReflectionMapping;
-    });
-    const material = new THREE.MeshPhysicalMaterial({
-      roughness: 0,
-      transmission: 1,
-      thickness: 150,
-      envMap: hdrEquirect,
-    });
-    this.mesh = new THREE.Mesh(geometry, material);
-    this.setup.scene?.add(this.mesh);
-    this.mesh.position.set(0, 0, 50);
+
+      const material = new THREE.MeshPhysicalMaterial({
+        roughness: 0,
+        transmission: 1,
+        thickness: 150,
+          envMap: hdrEquirect
+      });
+
+      this.mesh = new THREE.Mesh(geometry, material);
+      this.setup.scene?.add(this.mesh);
+      this.mesh.position.set(0, 0, 50);
+  } catch (error) {
+      console.error("HDR texture loading error:", error);
+  }
   }
 
   setMouse() {
