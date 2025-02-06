@@ -26,7 +26,7 @@ export class Setup {
     this.setScene();
     this.setCamera();
     // this.setDirectionalLight();
-    this.setHelper();
+    // this.setHelper();
   }
 
   setRenderer() {

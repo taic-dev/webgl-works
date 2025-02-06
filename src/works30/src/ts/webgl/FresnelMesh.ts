@@ -35,16 +35,16 @@ export class FresnelMesh {
   }
 
   setMesh() {
-    const geometry = new THREE.IcosahedronGeometry(100, 15);
+    const geometry = new THREE.IcosahedronGeometry(130, 15);
     const material = new THREE.MeshPhysicalMaterial({
       roughness: 0,
-      transmission: 1,
-      thickness: 80,
-      ior: 1.5,
+      transmission: 1.1,
+      thickness: 50,
+      ior: 2,
     });
     this.mesh = new THREE.Mesh(geometry, material);
     this.setup.scene?.add(this.mesh);
-    this.mesh.position.set(0, 0, 0);
+    this.mesh.position.set(0, 0, 50);
   }
   
   setMouse() {

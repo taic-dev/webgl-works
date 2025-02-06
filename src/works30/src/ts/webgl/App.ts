@@ -18,7 +18,7 @@ export class App {
 
   init() {
     this.mvMesh.init();
-    this.textMesh.init('WebGL\nLens Refraction', document.querySelector('.mv__title')!);
+    this.textMesh.init();
     this.fresnelMesh.init();
   }
 
@@ -37,5 +37,6 @@ export class App {
   resize() {
     this.setup.resize();
     this.mvMesh.resize();
+    this.textMesh.resize();
   }
 }
