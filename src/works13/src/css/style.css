@@ -6,7 +6,7 @@
 body {
   background-color: #fff;
 }
-canvas {
+.webgl canvas {
   position: relative;
 }
 .webgl__wrapper {
