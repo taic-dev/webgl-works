@@ -8,7 +8,7 @@ html,
 body {
   overflow-x: hidden;
 }
-canvas {
+.webgl canvas {
   position: absolute;
   top: 0;
   left: 0;
@@ -21,15 +21,16 @@ canvas {
   left: 100px;
   transform: translateY(-50%);
 }
-h2 {
+
+.container h2 {
   font-size: 3rem;
   margin: 15px;
 }
-p {
+.container p {
   font-family: serif;
   width: 600px;
 }
-button {
+.container button {
   margin-top: 30px;
   display: block;
   line-height: 0;
