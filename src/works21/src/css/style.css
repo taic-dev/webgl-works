@@ -33,6 +33,7 @@ main {
 
 .w-21 .item {
   width: calc(33.3333% - 2vw);
+  aspect-ratio: unset;
 }
 
 .w-21 .item-image {
