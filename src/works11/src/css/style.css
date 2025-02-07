@@ -22,7 +22,7 @@ canvas {
   z-index: -1;
 }
 
-h2 {
+.webgl h2 {
   font-family: SixCaps;
   font-size: 60rem;
   color: #000;
