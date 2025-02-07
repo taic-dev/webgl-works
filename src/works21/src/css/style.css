@@ -7,7 +7,7 @@ html,body {
   overflow: hidden;
 }
 
-canvas {
+.webgl canvas {
   position: fixed;
   top: 0;
   left: 0;
@@ -25,22 +25,22 @@ main {
   padding: 10rem 5rem;
 }
 
-.list {
+.w-21 .list {
   display: flex;
   flex-wrap: wrap;
   gap: 3vw;
 }
 
-.item {
+.w-21 .item {
   width: calc(33.3333% - 2vw);
 }
 
-.item-image {
+.w-21 .item-image {
   width: 100%;
   aspect-ratio: 2 / 3;
 }
 
-.item-image img {
+.w-21 .item-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
