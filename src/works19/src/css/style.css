@@ -15,7 +15,7 @@ body {
   color: #D3A955;
   background-color: #3657BD;
 }
-canvas {
+.webgl canvas {
   position: fixed;
   top: 0;
   left: 0;
