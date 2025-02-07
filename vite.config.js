@@ -22,6 +22,7 @@ export default defineConfig({
   build: {
     outDir: './dist',
     emptyOutDir: true,
+    cssCodeSplit: false,
     rollupOptions: {
       input: {
         index: resolve(__dirname, 'src/index.html'),
